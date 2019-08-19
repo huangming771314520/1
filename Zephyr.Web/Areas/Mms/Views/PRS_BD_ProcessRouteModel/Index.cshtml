@@ -1,0 +1,109 @@
+﻿@{
+    ViewBag.Title = "PRS_BD_ProcessRouteModel";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@section scripts{
+    <script src="/Content/js/viewModel/com.viewModel.searchEdit.js"></script>
+    <script type="text/javascript">
+        using(['validatebox', 'combobox','lookup','datebox','numberbox','datetimebox','combogrid','combotree','extend','menu'],easyuifix.datagrid_editor_extend);
+        var viewModel = function(data){
+            var self = this;
+            com.viewModel.searchEdit.apply(self,arguments);
+
+        }
+        var data = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model));
+        ko.bindingViewModel(new viewModel(data));
+    </script>
+}
+<div class="z-toolbar">
+    <a href="#" plain="true" class="easyui-linkbutton" icon="icon-arrow_refresh" title="刷新" data-bind="click:refreshClick">刷新</a>
+    <a href="#" plain="true" class="easyui-linkbutton" icon="icon-add" title="新增" data-bind="click:addClick">新增</a>
+    <a href="#" plain="true" class="easyui-linkbutton" icon="icon-edit" title="编辑" data-bind="click:editClick">编辑</a>
+    <a href="#" plain="true" class="easyui-linkbutton" icon="icon-cross" title="删除" data-bind="click:deleteClick">删除</a>
+    <a href="#" plain="true" class="easyui-linkbutton" icon="icon-save" title="保存" data-bind="click:saveClick">保存</a>
+    <a href="#" plain="true" class="easyui-splitbutton" data-options="menu:'#dropdown',iconCls:'icon-download'">导出</a>
+</div>
+
+<div id="dropdown" style="width:100px; display:none;">
+    <div data-options="iconCls:'icon-ext-xls'" suffix="xls" data-bind="click:downloadClick">Excel2003   </div>
+    <div data-options="iconCls:'icon-page_excel'" suffix="xlsx" data-bind="click:downloadClick">Excel2007   </div>
+    <div data-options="iconCls:'icon-ext-doc'" suffix="doc" data-bind="click:downloadClick">Word2003    </div>
+</div>
+
+<div class="container_12" style="position:relative;">
+    <div class="grid_1 lbl">工艺路线编码</div>
+    <div class="grid_2 val"><input type="text" data-bind="value:form.ProcessRouteCode" class="z-txt " /></div>
+    <div class="grid_1 lbl">工艺路线名称</div>
+    <div class="grid_2 val"><input type="text" data-bind="value:form.ProcessRouteName" class="z-txt " /></div>
+
+    <div class="clear"></div>
+    <div class="grid_1 lbl">&nbsp;</div>
+    <div class="grid_2 val">&nbsp;</div>
+    <div class="clear"></div>
+
+    <div class="prefix_9" style="position:absolute;top:5px;height:0;">
+        <a id="a_search" href="#" class="buttonHuge button-blue" data-bind="click:searchClick" style="margin:0 15px;">查询</a>
+        <a id="a_reset" href="#" class="buttonHuge button-blue" data-bind="click:clearClick">清空</a>
+    </div>
+</div>
+
+<table data-bind="datagrid:grid" style="display:none" id="tt">
+    <thead>
+        <tr>
+            <th field="ID" hidden="true" sortable="true" align="left" width="150" editor="text">主键ID</th>
+            <th field="ProcessRouteCode" sortable="true" align="left" width="150" editor="{type:'validatebox',options:{required:true}}">工艺路线编码</th>
+            <th field="ProcessRouteName" sortable="true" align="left" width="150" editor="{type:'validatebox',options:{required:true}}">工艺路线名称</th>
+            @*<th field="ProcessCode" 	  	 sortable="true" 	 align="left" 	 width="150" editor="{type:'combobox',options:{}}" >标准工序</th>*@
+            <th field="ProcessType" sortable="true" align="left" width="150" editor="{type:'validatebox',options:{required:true}}">工艺类型</th>
+            <th field="ProcessCode" sortable="true" align="left" width="100" editor="{type:'combogrid',options:{
+                        url:'/Commons/GetCommonSearchList',
+                    queryParams : {
+                     tableName:'[PRS_BD_StandardProcess]',
+                         searchField:'[ProcessCode],[ProcessName]',
+                         firstFightField:'[ProcessCode]',
+                                     connName:'Mms'
+                            },
+                            method: 'GET',
+                            panelWidth:400,
+                            fit:true,
+                            delay: 1000,
+                            mode: 'remote',
+                            value: 'ProcessCode',
+                            idField: 'ProcessCode',
+                            textField: 'ProcessName',
+                            columns:[[
+                            { field: 'ProcessCode',title: '工序编码',width: 200 },
+                            { field: 'ProcessName',title: '工序名称',width: 200 },
+                            { field: 'ProcessType',title: '工艺类型',width: 200, hidden=true}
+                                ]],
+                    onSelect: function (rowIndex, rowData) {
+                           var index =  $('#tt').datagrid('getRowIndex',$('#tt').datagrid('getSelected'));
+                           $('#tt').datagrid('getEditor',{index:index,field:'ProcessCode'}).target.val(rowData['ProcessCode']);
+                           $('#tt').datagrid('getEditor',{index:index,field:'ProcessType'}).target.val(rowData['ProcessType']);
+                },
+
+                 keyHandler:{
+                   query:function(keyword) {
+                   var queryParams=$(this).combogrid('grid').datagrid('options').queryParams;
+                   queryParams.keyword=keyword;
+                   $(this).combogrid('grid').datagrid('options').queryParams=queryParams;
+                   $(this).combogrid('grid').datagrid('reload');
+                  $(this).combogrid('setValue', keyword);
+                }}
+                }}">标准工序</th>
+
+            <th field="ProcessLineCode" sortable="true" align="left" width="150" editor="{type:'numberbox',options:{required:true}}">工序行号</th>
+            <th field="Remark" sortable="true" align="left" width="150" editor="text">备注</th>
+
+            <th field="IsEnable" sortable="true" align="left" width="70" data-options="formatter:function(value,row){ return (value == true || value == 'true') ? '是':'否';}" editor="{type:'combobox',
+            options:{data:[{value:true,text:'是'},{value:false,text:'否'}],panelWidth:100,panelHeight: 100,valueField: 'value',textField: 'text'}}">
+                是否可用
+            </th>
+            <th field="CraetePerson" hidden="true" sortable="true" align="left" width="150" editor="text">创建人</th>
+            <th field="CreateTime" hidden="true" sortable="true" align="left" width="150" editor="text">创建时间</th>
+            <th field="ModifyPerson" hidden="true" sortable="true" align="left" width="150" editor="text">审批人</th>
+            <th field="ModifyTime" hidden="true" sortable="true" align="left" width="150" editor="text">审批时间</th>
+        </tr>
+    </thead>
+</table>

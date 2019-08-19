@@ -1,0 +1,35 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<SequenceDesignerModel xmlns:dm0="http://schemas.microsoft.com/VisualStudio/2008/DslTools/Core" xmlns:dm1="http://schemas.microsoft.com/dsltools/Kernel" xmlns:dm2="http://schemas.microsoft.com/dsltools/Component" xmlns:dm3="http://schemas.microsoft.com/dsltools/UseCase" xmlns:dm4="http://schemas.microsoft.com/dsltools/Activity" xmlns:dm5="http://schemas.microsoft.com/dsltools/Interaction" xmlns:dm6="http://schemas.microsoft.com/dsltools/UmlModelLibrary" xmlns:dm7="http://schemas.microsoft.com/dsltools/UmlDiagrams" xmlns:dm8="http://schemas.microsoft.com/dsltools/ModelStore" xmlns:dm9="http://schemas.microsoft.com/dsltools/SimpleShapesModel" xmlns:dm10="http://schemas.microsoft.com/VisualStudio/TeamArchitect/ActivityDesigner" dslVersion="1.0.0.0" Id="2eecdcdb-c04d-4838-91e0-dd670b3de3e3" name="12车间领料状态" linkedPackageId="c29eab28-2d2b-4699-bccd-f87c6ee7a3ba" xmlns="http://schemas.microsoft.com/VisualStudio/TeamArchitect/SequenceDesigner">
+  <profileInstances>
+    <packageHasProfileInstances Id="eedd2d2c-e20b-49d8-8875-b6813cd0fe3e">
+      <profileInstance Id="6679565c-917f-4a29-a458-06eaee8516d2" name="StandardProfileL2">
+        <elementDefinition Id="e34d544e-0fea-4ed6-ac5e-1b74119ac791" />
+      </profileInstance>
+      <elementDefinition Id="0caec977-1f8c-4ba3-a7db-8cc9ad9cc73b" />
+    </packageHasProfileInstances>
+    <packageHasProfileInstances Id="2ccc9a23-5739-4b25-901f-ee3c1dfe7144">
+      <profileInstance Id="107a7607-591d-4537-8ee4-99ba83e6e872" name="StandardProfileL3">
+        <elementDefinition Id="532ea607-fb19-44b8-8502-3351b05452be" />
+      </profileInstance>
+      <elementDefinition Id="29349502-908c-4fda-9054-c48619c59ed0" />
+    </packageHasProfileInstances>
+  </profileInstances>
+  <packagedElements>
+    <packageHasNamedElement>
+      <interaction Id="afe082a9-1a82-49a4-9ce3-164bea0b9b8a" name="12车间领料状态" collapseFragmentsFlag="false" isActiveClass="false" isAbstract="false" isLeaf="false" isReentrant="false">
+        <elementDefinition Id="3dbecf58-bfe2-449e-ba62-d285756eb3a2" />
+        <lifelines>
+          <lifeline Id="8cf3ad16-7987-471d-9ace-83f9c130ef8c" name="编辑" isActor="false" lifelineDisplayName="‎编辑‎">
+            <elementDefinition Id="7b249d60-e0da-47bb-86d7-1851e53f9477" />
+          </lifeline>
+          <lifeline Id="f4f156ca-e701-4725-abd4-d3d6ab3701bb" name="Lifeline2" isActor="false" lifelineDisplayName="Lifeline2">
+            <elementDefinition Id="c5b61aa0-a449-4692-8809-9b8e9319b268" />
+          </lifeline>
+        </lifelines>
+      </interaction>
+    </packageHasNamedElement>
+  </packagedElements>
+  <package Id="c29eab28-2d2b-4699-bccd-f87c6ee7a3ba" name="HCJXUML">
+    <elementDefinition Id="6348ac1d-75ba-4a39-8ebf-237333c18d4f" />
+  </package>
+</SequenceDesignerModel>

@@ -1,0 +1,90 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<activityRootModel xmlns:dm0="http://schemas.microsoft.com/VisualStudio/2008/DslTools/Core" xmlns:dm1="http://schemas.microsoft.com/dsltools/Kernel" xmlns:dm2="http://schemas.microsoft.com/dsltools/Component" xmlns:dm3="http://schemas.microsoft.com/dsltools/UseCase" xmlns:dm4="http://schemas.microsoft.com/dsltools/Activity" xmlns:dm5="http://schemas.microsoft.com/dsltools/Interaction" xmlns:dm6="http://schemas.microsoft.com/dsltools/UmlModelLibrary" xmlns:dm7="http://schemas.microsoft.com/dsltools/UmlDiagrams" xmlns:dm8="http://schemas.microsoft.com/dsltools/ModelStore" xmlns:dm9="http://schemas.microsoft.com/dsltools/SimpleShapesModel" dslVersion="1.0.0.0" Id="1eb7f658-1e1a-4327-9060-37895517cefa" name="0102任务查询" linkedPackageId="2bbc7134-1835-4c88-ae6d-144be1bdb822" xmlns="http://schemas.microsoft.com/VisualStudio/TeamArchitect/ActivityDesigner">
+  <packagedElements>
+    <activityRootModelHasActivity>
+      <activity Id="bffc3492-9cb8-4024-b29e-2239b6848ec2" name="0102任务查询" isAbstract="false" isLeaf="false" isActiveClass="false" isReentrant="false" isReadOnly="false" isSingleExecution="false">
+        <elementDefinition Id="09a0a68e-7900-4862-8ed3-ef81d15b5fc9" />
+        <nodes>
+          <initialNode Id="85c6336f-218b-4c66-8036-d507f93265a8" name="Initial1" isLeaf="false">
+            <elementDefinition Id="63be9854-2aa3-434f-b37b-f313034da7d7" />
+            <flowNodeTargets>
+              <controlFlow Id="8a576e3f-e8bc-4ce7-a7ae-5eb6a9fcb1cc" isLeaf="false">
+                <opaqueActionMoniker Id="01e79a04-0788-47cc-86a7-44daadfd6adc" LastKnownName="输入合同号" />
+                <elementDefinition Id="11361e43-974b-4ca6-90c5-79a3cf73d44d" />
+              </controlFlow>
+            </flowNodeTargets>
+          </initialNode>
+          <opaqueAction Id="01e79a04-0788-47cc-86a7-44daadfd6adc" name="输入合同号" isLeaf="false">
+            <elementDefinition Id="3deca94d-8d30-4413-a651-fb371081dba0" />
+            <flowNodeTargets>
+              <controlFlow Id="77a36282-c69c-45f1-b3cb-9834173ae4ce" isLeaf="false">
+                <forkNodeMoniker Id="09293b13-cf7a-46d6-8dc5-f58b4ff550cb" LastKnownName="Fork1" />
+                <elementDefinition Id="ff5bd309-fab3-41d2-b950-4260ac074662" />
+              </controlFlow>
+            </flowNodeTargets>
+          </opaqueAction>
+          <forkNode Id="09293b13-cf7a-46d6-8dc5-f58b4ff550cb" name="Fork1" isLeaf="false">
+            <elementDefinition Id="247bc6b5-38d0-4679-8617-7ddb42a98782" />
+            <flowNodeTargets>
+              <controlFlow Id="dd8cfebf-ff0b-41a9-8a62-642eaa879d16" isLeaf="false">
+                <opaqueActionMoniker Id="7ae68a1c-1e80-4a0d-bcd8-09b973c8cfd0" LastKnownName="查询任务信息" />
+                <elementDefinition Id="c2523d29-e8ef-4efa-973d-56b8e497fd37" />
+              </controlFlow>
+              <controlFlow Id="20dad222-282d-471f-a1b8-21dc675400ea" isLeaf="false">
+                <opaqueActionMoniker Id="4361510a-aeb4-482b-aa2e-208888329579" LastKnownName="查询设计任务明细" />
+                <elementDefinition Id="76d32a98-5dfe-4197-9b65-c51fe95c77a7" />
+              </controlFlow>
+            </flowNodeTargets>
+          </forkNode>
+          <opaqueAction Id="7ae68a1c-1e80-4a0d-bcd8-09b973c8cfd0" name="查询任务信息" isLeaf="false">
+            <elementDefinition Id="ee665bca-09f6-408f-b8eb-74b7990ec2e5" />
+            <flowNodeTargets>
+              <controlFlow Id="c15cab6a-09cd-4d38-bab9-4a040f15218d" isLeaf="false">
+                <joinNodeMoniker Id="b8e7ff83-932a-4478-943a-775f6ac740a0" LastKnownName="Join1" />
+                <elementDefinition Id="365dd037-2bc8-4a81-96e3-cfa21cc79ec8" />
+              </controlFlow>
+            </flowNodeTargets>
+          </opaqueAction>
+          <opaqueAction Id="4361510a-aeb4-482b-aa2e-208888329579" name="查询设计任务明细" isLeaf="false">
+            <elementDefinition Id="b11382bf-08b3-4f5f-99bd-156b5221a0ae" />
+            <flowNodeTargets>
+              <controlFlow Id="20a1153a-fb17-44db-aa7d-b908feb6ee2b" isLeaf="false">
+                <joinNodeMoniker Id="b8e7ff83-932a-4478-943a-775f6ac740a0" LastKnownName="Join1" />
+                <elementDefinition Id="db9ad6e2-3609-412b-ad1d-24e8f7604c45" />
+              </controlFlow>
+            </flowNodeTargets>
+          </opaqueAction>
+          <joinNode Id="b8e7ff83-932a-4478-943a-775f6ac740a0" name="Join1" isLeaf="false">
+            <elementDefinition Id="dd5c9233-1c1f-49d6-bc2f-ce338f86e3f1" />
+            <flowNodeTargets>
+              <controlFlow Id="87ef001a-e104-4260-968d-1e9b56e80eb2" isLeaf="false">
+                <activityFinalNodeMoniker Id="cf13e251-5b79-4e29-91ab-ff5ea97d49aa" LastKnownName="ActivityFinal1" />
+                <elementDefinition Id="78d53561-29a4-4f8d-a5a0-809d79164ffd" />
+              </controlFlow>
+            </flowNodeTargets>
+          </joinNode>
+          <activityFinalNode Id="cf13e251-5b79-4e29-91ab-ff5ea97d49aa" name="ActivityFinal1" isLeaf="false">
+            <elementDefinition Id="958ad045-d5af-4ddf-a60e-12bd419b6148" />
+          </activityFinalNode>
+        </nodes>
+      </activity>
+    </activityRootModelHasActivity>
+  </packagedElements>
+  <package Id="2bbc7134-1835-4c88-ae6d-144be1bdb822" name="HCJXUML">
+    <elementDefinition Id="6348ac1d-75ba-4a39-8ebf-237333c18d4f" />
+    <profileInstances>
+      <packageHasProfileInstances Id="eae59f87-d394-4a41-aecb-ed74b3210d62">
+        <profileInstance Id="ac72980b-e017-4b2b-b865-70edf720f141" name="StandardProfileL2">
+          <elementDefinition Id="e34d544e-0fea-4ed6-ac5e-1b74119ac791" />
+        </profileInstance>
+        <elementDefinition Id="0caec977-1f8c-4ba3-a7db-8cc9ad9cc73b" />
+      </packageHasProfileInstances>
+      <packageHasProfileInstances Id="c938b820-c93e-445f-a1d0-cfc68e21ce5f">
+        <profileInstance Id="5bdb9977-e3b6-4ca2-8037-a5014b2d3325" name="StandardProfileL3">
+          <elementDefinition Id="532ea607-fb19-44b8-8502-3351b05452be" />
+        </profileInstance>
+        <elementDefinition Id="29349502-908c-4fda-9054-c48619c59ed0" />
+      </packageHasProfileInstances>
+    </profileInstances>
+  </package>
+</activityRootModel>

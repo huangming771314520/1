@@ -1,0 +1,362 @@
+﻿
+@{
+    ViewBag.Title = "QMS_ProcessInspectionItem";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@section scripts{
+<script src="/Content/js/viewModel/com.viewModel.edit.js"></script>
+<script type="text/javascript">
+
+    var myself;
+    using(['validatebox','combotree','numberspinner','combobox','lookup','datebox','datetimebox','combogrid'],easyuifix.datagrid_editor_extend);
+    var viewModel = function(data){ 
+        var self = this;
+        com.viewModel.edit.apply(self,arguments);
+        myself=self;
+        this.grid0.size={w:8,h:125};
+        this.StorageClick=function(){
+            var post = {
+                BillCode:self.dataSource.pageData.form.BillCode,
+            };
+            debugger;
+            com.ajax({
+                type:'POST',
+                url:self.urls.storageSave,
+                data:JSON.stringify(post),
+                success:function(d){
+                    com.message('success',d);
+                    window.location.reload();
+                }
+            });
+        }
+
+        this.SearchDialog = function () {
+            var gridRows = self.grid0.datagrid('getData').rows;
+            var setting = {
+                type: this.type,
+                targetField: this.targetField,
+                sourceField: this.sourceField,
+                settingArray: this.settingArray
+            }
+            //settingArray 0:width 1:height 2:xmlName
+            var target = parent.$('#CommonSearchDialog').length ? parent.$('#CommonSearchDialog') : parent.$('<div id="CommonSearchDialog"></div>').appendTo('body');
+            utils.clearIframe(target);
+            var opt;
+            opt = { title: '列表', width: setting.settingArray[0], height: setting.settingArray[1], modal: true, collapsible: false, minimizable: false, maximizable: true, closable: true };
+            opt.content = "<iframe src='/mms/home/CommonDialog?xmlName=" + setting.settingArray[2] + "' style='height:100%;width:100%;border:0;' frameborder='0'></iframe>";  //frameborder="0" for ie7
+            params = { xmlName: setting.settingArray[2] };
+            opt.paramater = params;
+            opt.onSelect = function (data) {
+                myself.pageData.form.BillCode()!=null?self.pageData.form.BillCode():"系统生成";
+                myself.pageData.form.PBillCode(data[0].BillCode);
+                myself.pageData.form.ContractCode(data[0].ContractCode);
+                myself.pageData.form.ProjectName(data[0].pName);
+                myself.pageData.form.ProductName(data[0].ProductName);
+                myself.pageData.form.PartCode(data[0].PartCode);
+                myself.pageData.form.PartName(data[0].PartName);
+                myself.pageData.form.partFigure(data[0].partFigure);
+                myself.pageData.form.MaterialCode(data[0].MaterialCode);
+                myself.pageData.form.CheckQuantity(data[0].CheckQuantity);
+                myself.pageData.form.Unit(data[0].Unit);
+                myself.pageData.form.OperatorCode(data[0].OperatorCode);
+                myself.pageData.form.EquipmentCode(data[0].EquipmentCode);
+                myself.pageData.form.EquipmentName(data[0].EquipmentName);
+                myself.pageData.form.IsEnable=1;
+                myself.pageData.form.BillState=1;
+            };
+            target.window(opt);
+        }
+
+        this.SearchDialog1 = function () {
+            debugger;
+            var setting = {
+                type: this.type,
+                targetField: this.targetField,
+                sourceField: this.sourceField,
+                settingArray: this.settingArray
+            }
+            var target = parent.$('#CommonSearchDialog').length ? parent.$('#CommonSearchDialog') : parent.$('<div id="CommonSearchDialog"></div>').appendTo('body');
+            utils.clearIframe(target);
+            var opt;
+            opt = { title: '列表', width: setting.settingArray[0], height: setting.settingArray[1], modal: true, collapsible: false, minimizable: false, maximizable: true, closable: true };
+            opt.content = "<iframe src='/mms/home/CommonDialog?xmlName=" + setting.settingArray[2] + "' style='height:100%;width:100%;border:0;' frameborder='0'></iframe>";  //frameborder="0" for ie7
+            params = { xmlName: setting.settingArray[2] };
+            opt.paramater = params;
+            opt.onSelect = function (data) {
+                com.ajax({
+                    type: 'GET',
+                    url: '/api/Mms/QMS_GoodsCheck/GetCheckItem?&InspectionTypeCode='+data[0].InspectionTypeCode,
+                    cache:false,
+                    async:false,
+                    success: function (list) {
+                        if (list!=null) {
+                            self.grid0.datagrid('loadData',{total:0,rows:[]});
+                            for (var i = 0; i < list.length; i++) {
+                                com.ajax({
+                                    type: 'GET',
+                                    url: self.urls.newkey,
+                                    data: { type: 'grid0', key: self.pageData.scrollKeys.current() },
+                                    cache:false,
+                                    async:false,
+                                    success: function (d) {
+                                        var jsonstr = new Object();
+                                        jsonstr.ProcessCheckItemCode=i+1;
+                                        jsonstr.ID=d;
+                                        jsonstr.MainID=self.pageData.scrollKeys.current();
+                                        jsonstr.InspectionItemCode=list[i].CheckItemCode;
+                                        jsonstr.InspectionItemName=list[i].CheckItemName;
+                                        //jsonstr.IsQualified=1;
+                                        jsonstr.IsEnable=1;
+                                        self.grid0.datagrid('appendRow', jsonstr);
+                                    }
+                                });
+                            }
+                        }
+                        else{
+                            com.message('success', "请先维护质检类型和质检项目！");
+                            return;
+                        }
+                    }
+                });
+            };
+            target.window(opt);
+        }
+
+    } 
+     
+    var data = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model));
+    ko.bindingViewModel(new viewModel(data));
+</script>
+}
+
+<div class="z-toolbar">
+    <a id="a_save" href="#" plain="true" class="easyui-linkbutton" icon="icon-save" data-bind="click:readonly()?null:saveClick,linkbuttonDisable:readonly" title="保存">保存</a>
+    @*<a id="a_undo" href="#" plain="true" class="easyui-linkbutton" icon="icon-undo" data-bind="click:readonly()?null:rejectClick,linkbuttonDisable:readonly" title="撤消">撤消</a>*@
+    <a id="a_audit" href="#" plain="true" class="easyui-linkbutton" icon="icon-user-accept" data-bind="click:StorageClick,easyuiLinkbutton:approveButton" title="审核">审核</a>
+    @*<a id="a_add" href="#" class="easyui-linkbutton" data-options="iconCls:'icon-search',plain:true" data-bind="event: { click: function(data, event) {SearchDialog.call({type:'form',targetField:'Name',sourceField:'Name','settingArray':['600','400','ChooseProcessCheckRequest']})}}">选择生产过程报检单</a>*@
+    @*<a id="a_printer" href="#" plain="true" class="easyui-linkbutton" icon="icon-printer" title="打印" data-bind="click:printClick">打印</a>*@
+    @*<div class="datagrid-btn-separator"></div>
+    <a id="a_other" href="#" class="easyui-splitbutton" data-options="menu:'#divother',iconCls:'icon-application_go'" title="其他">其他</a>
+    <div class="datagrid-btn-separator"></div>
+    <a id="a_first" href="#" plain="true" class="easyui-linkbutton" icon="icon-resultset_first" data-bind="click:firstClick,linkbuttonEnable:pageData.scrollKeys.firstEnable" title="第一条"></a> 
+    <a id="a_previous" href="#" plain="true" class="easyui-linkbutton" icon="icon-resultset_previous" data-bind="click:previousClick,linkbuttonEnable:pageData.scrollKeys.previousEnable" title="上一条"></a> 
+    <a id="a_next" href="#" plain="true" class="easyui-linkbutton" icon="icon-resultset_next" data-bind="click:nextClick,linkbuttonEnable:pageData.scrollKeys.nextEnable" title="下一条"></a> 
+    <a id="a_last" href="#" plain="true" class="easyui-linkbutton" icon="icon-resultset_last" data-bind="click:lastClick,linkbuttonEnable:pageData.scrollKeys.lastEnable" title="最后一条"></a>*@ 
+</div>
+
+@*<div id="divother" style="width:100px; display:none;">
+    <div data-options="iconCls:'icon-add'">新增</div>
+    <div data-options="iconCls:'icon-cross'">删除</div>
+    <div data-options="iconCls:'icon-arrow_refresh'">刷新</div>
+</div>*@  
+
+<div id="master" class="container_12" data-bind="inputwidth:0.9">
+    <div class="grid_1 lbl">质检批号</div>
+    <div class="grid_2 val"><input type="text" data-bind="value:pageData.form.BatchCode ,readOnly : readonly" class="z-txt " /></div>
+    <div class="grid_1 lbl">合同编号</div>
+    <div class="grid_2 val"><input type="text" data-bind="value:pageData.form.ContractCode ,readOnly : true" class="z-txt " /></div>
+    @*<div class="grid_2 val"><input type="text" data-bind="value:pageData.form.ProjectName ,readOnly:readonly" class="z-txt " /></div>*@
+    @*<div class="grid_2 val">
+        <input type="text" data-bind="combogridValue:pageData.form.ProjectName" class="z-txt easyui-combogrid" data-options="url:'/Commons/GetCommonSearchList',
+                queryParams : {
+                     tableName:'[PMS_BN_Project]',
+                         searchField:'[ContractCode],[ProjectName]',
+                         firstFightField:'[ProjectName]',
+                         connName:'Mms'
+                },
+                method: 'GET',
+                panelWidth:250,
+                fit:true,
+                delay: 1000,
+                mode: 'remote',
+                value: 'ContractCode',
+                idField: 'ProjectName',
+                textField: 'ProjectName',
+                columns:[[
+                { field: 'ContractCode',title: '合同编号',width: 150 },
+                { field: 'ProjectName',title:'项目名称',width:150 }
+                    ]],
+                 onSelect: function (rowIndex, rowData) {
+                 myself.pageData.form.ContractCode(rowData['ContractCode']);
+               },
+            keyHandler:{
+            query:function(keyword) {
+           var queryParams=$(this).combogrid('grid').datagrid('options').queryParams;
+           queryParams.keyword=keyword;
+           $(this).combogrid('grid').datagrid('options').queryParams=queryParams;
+           $(this).combogrid('grid').datagrid('reload');
+           }}" />
+    </div>*@
+    <div class="grid_1 lbl">产品名称</div>
+    @*<div class="grid_2 val"><input type="text" data-bind="value:pageData.form.ProductName ,readOnly:readonly" class="z-txt " /></div>*@
+    <div class="grid_2 val">
+        <input type="text" data-bind="combogridValue:pageData.form.ProductName" class=" z-txt easyui-combogrid" data-options="url:'/Commons/GetCommonSearchList',
+                queryParams : {
+                     tableName:'[PMS_BN_ProjectDetail]',
+                         searchField:'[ProductName],[Model],[Specifications],[FigureNumber]',
+                         firstFightField:'[ProductName]',
+                         connName:'Mms'
+                },
+                method: 'GET',
+                panelWidth:600,
+                fit:true,
+                delay: 1000,
+                mode: 'remote',
+                value: 'ProductName',
+                idField: 'ProductName',
+                textField: 'ProductName',
+                columns:[[
+                { field: 'ProductName',title: '产品名称',width: 100 },
+                   { field: 'Model',title: '型号',width: 100 },
+                   { field: 'Specifications',title: '规格',width: 100 },
+                { field: 'FigureNumber',title:'图号',width:150 }
+                    ]],
+                onSelect: function (rowIndex, rowData) {
+                 myself.pageData.form.ProductFigureNumber(rowData['FigureNumber']);
+                 
+               },
+            keyHandler:{
+            query:function(keyword) {
+           var queryParams=$(this).combogrid('grid').datagrid('options').queryParams;
+           queryParams.keyword=keyword;
+           $(this).combogrid('grid').datagrid('options').queryParams=queryParams;
+           $(this).combogrid('grid').datagrid('reload');
+           }}" />
+    </div>
+    <div class="clear"></div>
+    
+    <div class="grid_1 lbl">零件名称</div>
+    <div class="grid_2 val"><input type="text" data-bind="value:pageData.form.PartName ,readOnly:readonly" class="z-txt " /></div>
+    <div class="grid_1 lbl">材料牌号</div>
+    <div class="grid_2 val"><input type="text" data-bind="value:pageData.form.MaterialCode ,readOnly:readonly" class="z-txt " /></div>
+    <div class="grid_1 lbl">合格数量</div>
+    <div class="grid_2 val"><input type="text" data-bind="value:pageData.form.QualifiedQuntity ,readOnly:readonly" class="z-txt " /></div>
+
+    <div class="clear"></div>
+</div>
+
+<div  class="easyui-tabs">  
+    <div title="生产过程检验明细">
+        <table data-bind="datagrid:grid0" id="tt">
+            <thead>
+                <tr>
+                    <th field="ID" hidden="true" sortable="true" align="left" width="80" editor="text">主键ID</th>
+                    <th field="ProcessCheckItemCode" sortable="true" align="left" width="80" editor="text">过程检验检验项目序号</th>
+                    <th field="MainID" hidden="true" sortable="true" align="left" width="80" editor="text">主表ID</th>
+                    <th field="InspectionItemCode" hidden sortable="true" align="left" width="80" editor="text">质检项目编码</th>
+
+                    <th field="InspectionItemName" sortable="true" align="left" width="80">质检项目名称</th>
+                    <th field="InspectionStandard" sortable="true" align="left" width="80" editor="text">检验标准</th>
+                    <th field="CheckRecord" sortable="true" align="left" width="80" editor="text">检验记录</th>
+                    @*<th field="Inspector" sortable="true" align="left" width="80" editor="text">质检员</th>*@
+
+                    <th field="Inspector" sortable="true" align="left" width="100" editor="{type:'combogrid',options:{
+                        url:'/Commons/GetCommonSearchList',
+                    queryParams : {
+                     tableName:'[SYS_BN_User]',
+                         searchField:'[UserCode],[UserName]',
+                         firstFightField:'[DepartmentCode]',
+                 whereSql:'DepartmentCode =0116',
+                                     connName:'Mms'
+                            },
+                            method: 'GET',
+                            panelWidth:400,
+                            fit:true,
+                            delay: 1000,
+                            mode: 'remote',
+                            value: 'UserCode',
+                            idField: 'UserName',
+                            textField: 'UserName',
+                            columns:[[
+                            { field: 'UserCode',title: '员工编号',width: 200 ,hidden:true},
+                            { field: 'UserName',title: '员工姓名',width: 200 }
+                                ]],
+                    onSelect: function (rowIndex, rowData) {
+                           var index =  $('#tt').datagrid('getRowIndex',$('#tt').datagrid('getSelected'));
+                           $('#tt').datagrid('getEditor',{index:index,field:'Inspector'}).target.val(rowData['UserName']);
+                           $('#tt').datagrid('getEditor',{index:index,field:'InspectionCode'}).target.val(rowData['UserCode']);
+                },
+                 keyHandler:{
+                   query:function(keyword) {
+                   var queryParams=$(this).combogrid('grid').datagrid('options').queryParams;
+                   queryParams.keyword=keyword;
+                   $(this).combogrid('grid').datagrid('options').queryParams=queryParams;
+                   $(this).combogrid('grid').datagrid('reload');
+                  $(this).combogrid('setValue', keyword);
+                }}
+                }}">质检员姓名</th>
+
+                    <th field="InspectionCode" hidden="true" sortable="true" align="left" hidden="hidden" width="80" editor="text">质检编号</th>
+                    @*<th field="IsEnable"		sortable="true"	align="left"	width="80" editor="{type:'combobox',options:{}}" >是否可用</th>*@
+                    <th field="IsEnable" sortable="true" align="left" width="70" data-options="formatter:function(value,row){ return (value == 1) ? '是':'否';}" editor="{type:'combobox',
+            options:{data:[{value:1,text:'是'},{value:0,text:'否'}],panelWidth:100,panelHeight: 100,valueField: 'value',textField: 'text'}}">
+                        是否可用
+                    </th>
+                    <th field="CreatePerson" hidden="true" sortable="true" align="left" width="80" editor="text">创建人</th>
+                    <th field="CreateTime" hidden="true" sortable="true" align="left" width="80" editor="text">创建时间</th>
+                    <th field="ModifyPerson" hidden="true" sortable="true" align="left" width="80" editor="text">更新人</th>
+                    <th field="ModifyTime" hidden="true" sortable="true" align="left" width="80" editor="text">更新时间</th>
+                    <th field="action" sortable="true" align="left" width="60" data-options="formatter:function(value,row){return op(row);}">操作</th>
+                    <th field="action2" sortable="true" align="left" width="60" data-options="formatter:function(value,row){return dowm(row);}">操作</th>
+                </tr>
+            </thead>
+            <div id="gridtb0">
+                <a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-search',plain:true" data-bind="click:readonly()?null:grid0.addRowClick,linkbuttonDisable:readonly">新增</a>
+                <a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-edit',plain:true" data-bind="click:readonly()?null:grid0.onClickRow,linkbuttonDisable:readonly">编辑</a>
+                <a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-remove',plain:true" data-bind="click:readonly()?null:grid0.removeRowClick,linkbuttonDisable:readonly">删除</a>
+                <a id="a_add" href="#" class="easyui-linkbutton" data-options="iconCls:'icon-search',plain:true" data-bind="event: { click: function(data, event) {SearchDialog1.call({type:'form',targetField:'Name',sourceField:'Name','settingArray':['600','400','ChooseProcessCheckModel']})}}">选择质检模型</a>
+            </div>
+        </table>
+    </div>
+</div>
+<script>
+    function RndNum(n) {
+        var rnd = "";
+        for (var i = 0; i < n; i++)
+            rnd += Math.floor(Math.random() * 10);
+        return rnd;
+    }
+    Date.prototype.Format = function (fmt) { //author: meizz
+        var o = {
+            "M+": this.getMonth() + 1,                 //月份
+            "d+": this.getDate(),                    //日
+            "h+": this.getHours(),                   //小时
+            "m+": this.getMinutes(),                 //分
+            "s+": this.getSeconds(),                 //秒
+            "q+": Math.floor((this.getMonth() + 3) / 3), //季度
+            "S": this.getMilliseconds()             //毫秒
+        };
+        if (/(y+)/.test(fmt))
+            fmt = fmt.replace(RegExp.$1, (this.getFullYear() + "").substr(4 - RegExp.$1.length));
+        for (var k in o)
+            if (new RegExp("(" + k + ")").test(fmt))
+                fmt = fmt.replace(RegExp.$1, (RegExp.$1.length == 1) ? (o[k]) : (("00" + o[k]).substr(("" + o[k]).length)));
+        return fmt;
+    }
+    function dowm(row){
+        if (row.DocName!=null) {
+            var html="<a href='/mms/home/FileDownload2?id="+row['ID']+"&docName="+row['DocName']+"&path="+row['FileAddress']+"'>下载文件</a>"
+            return html;
+        }
+       
+    }
+    function op(row){
+        if (row['ID']!="") {
+            var html="<span param='"+row['ID']+"' onclick='action(this);'>上传文件</span>";
+            return html;
+        }
+    }
+    function action(obj){
+        SearchUpload($(obj).attr('param'));
+    };
+    function SearchUpload(id) {
+        var target = parent.$('#CommonSearchDialog').length ? parent.$('#CommonSearchDialog') : parent.$('<div id="CommonSearchDialog"></div>').appendTo('body');
+        utils.clearIframe(target);
+        var opt;
+        opt = { title: '列表', width: 550, height: 480, modal: true, collapsible: false, minimizable: false, maximizable: true, closable: true };
+        opt.content = "<iframe src='/mms/home/UploadDialog?id=" + id + "&newFileName=" + new Date().Format("yyyyMMddhhmmss") + RndNum(5) + "&xmlName=QMS_ProcessInspectionItem" +"' style='height:100%;width:100%;border:0;' frameborder='0'></iframe>";  //frameborder="0" for ie7
+
+        target.window(opt);
+    }
+</script>

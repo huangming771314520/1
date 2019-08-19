@@ -1,0 +1,140 @@
+﻿
+@{
+    ViewBag.Title = "APS_ProjectProduceTemporaryTask";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@section scripts{
+    <script src="/Content/js/viewModel/com.viewModel.searchEdit.js"></script>
+    <script type="text/javascript">
+    using(['validatebox','combotree','numberspinner','combobox','lookup','datebox','datetimebox','combogrid'],easyuifix.datagrid_editor_extend);
+    var viewModel = function(data){
+        var self = this;
+        com.viewModel.searchEdit.apply(self,arguments);
+
+        this.audit1Click = function () {
+            var row = self.grid.datagrid('getSelected');
+            var whereSql="id='"+row.ID+"' ";
+            com.ajax({
+                type: 'GET',
+                url: self.urls.audit1+"?whereSql="+whereSql,
+                success: function (d) {
+                    if (!d) {
+                        com.message('success', "审核成功！");
+                    }else if (d=="1") {
+                        com.message('success', "单据已经审核过！");
+                    }else if (d=="2") {
+                        com.message('success', "请先保存再审核！");
+                    }
+                }
+            });
+        };
+        this.saveClick1 = function () {
+            self.gridEdit.ended(); //结束grid编辑状态
+            var post = {};
+            post.list = self.gridEdit.getChanges(self.setting.postListFields);
+            if (self.gridEdit.ended() && post.list._changed) {
+                com.ajax({
+                    url: self.urls.edit,
+                    data: ko.toJSON(post),
+                    success: function (d) {
+                        com.message('success', self.resx.editSuccess);
+                        self.gridEdit.accept();
+                        self.refreshClick();
+                    }
+                });
+            }
+        };
+
+        this.deleteClick1 = function () {
+            if (self.grid.datagrid('getSelected') == "" || self.grid.datagrid('getSelected') == null || self.grid.datagrid('getSelected') =="undefined") {
+                com.message('success', "请选择要删除的数据！");
+                return;
+            }
+            else {
+                self.deleteClick();
+            }
+        }
+    }
+    var data = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model));
+    ko.bindingViewModel(new viewModel(data));
+    </script>
+}
+<div class="z-toolbar">
+    <a href="#" plain="true" class="easyui-linkbutton" icon="icon-arrow_refresh" title="刷新" data-bind="click:refreshClick">刷新</a>
+    <a href="#" plain="true" class="easyui-linkbutton" icon="icon-add" title="新增" data-bind="click:addClick">新增</a>
+    <a href="#" plain="true" class="easyui-linkbutton" icon="icon-edit" title="编辑" data-bind="click:editClick">编辑</a>
+    <a href="#" plain="true" class="easyui-linkbutton" icon="icon-cross" title="删除" data-bind="click:deleteClick1">删除</a>
+    <a href="#" plain="true" class="easyui-linkbutton" icon="icon-user-accept" title="保存" data-bind="click:audit1Click">审核</a>
+    <a href="#" plain="true" class="easyui-linkbutton" icon="icon-save" title="保存" data-bind="click:saveClick1">保存</a>
+</div>
+
+<div class="container_12" style="position:relative;">
+    <div class="grid_1 lbl">合同号</div>
+    <div class="grid_2 val"><input type="text" data-bind="value:form.ContractCode" class="z-txt " /></div>
+
+    <div class="clear"></div>
+    <div class="grid_1 lbl">&nbsp;</div>
+    <div class="grid_2 val">&nbsp;</div>
+    <div class="clear"></div>
+
+    <div class="prefix_9" style="position:absolute;top:5px;height:0;">
+        <a id="a_search" href="#" class="buttonHuge button-blue" data-bind="click:searchClick" style="margin:0 15px;">查询</a>
+        <a id="a_reset" href="#" class="buttonHuge button-blue" data-bind="click:clearClick">清空</a>
+    </div>
+</div>
+
+<table data-bind="datagrid:grid" id="dg">
+    <thead>
+        <tr>
+            <th field="ID" sortable="true" align="left" width="80" hidden editor="text"></th>
+            <th field="BillCode" sortable="true" align="left" width="100">任务单号</th>
+            <th field="TemporaryTaskDec" sortable="true" align="left" width="200" editor="text">任务描述</th>
+            <th field="WorkshopID" sortable="true" align="left" width="80" editor="text" hidden="hidden"></th>
+            <th field="WorkshopName" sortable="true" align="left" width="100" editor="{type:'combogrid',options:{
+                required:true,
+                url:'/Commons/GetCommonSearchList',
+            queryParams : {
+             tableName:'[SYS_BN_Department]',
+                 searchField:'[DepartmentCode],[DepartmentName]',
+                 firstFightField:'[DepartmentName]',
+                    whereSql:'IsWorkshop=1',
+                             CacheKey:'SYS_BN_Department',
+                             CacheTime:'480',
+                             connName:'Mms'
+                    },
+                    method: 'GET',
+                    panelWidth:400,
+                    fit:true,
+                    delay: 1000,
+                    mode: 'remote',
+                    value: 'DepartmentCode',
+                    idField: 'DepartmentName',
+                    textField: 'DepartmentName',
+                    columns:[[
+                    { field: 'DepartmentCode',title: '部门编码',width: 200 },
+                    { field: 'DepartmentName',title: '部门名称',width: 200 }
+                        ]],
+            onSelect: function (rowIndex, rowData) {
+
+                   var index =  $('#dg').datagrid('getRowIndex',$('#dg').datagrid('getSelected'));
+                   $('#dg').datagrid('getEditor',{index:index,field:'WorkshopName'}).target.val(rowData['DepartmentName']);
+                   $('#dg').datagrid('getEditor',{index:index,field:'WorkshopID'}).target.val(rowData['DepartmentCode']);
+
+        },
+
+         keyHandler:{
+           query:function(keyword) {
+           var queryParams=$(this).combogrid('grid').datagrid('options').queryParams;
+           queryParams.keyword=keyword;
+           $(this).combogrid('grid').datagrid('options').queryParams=queryParams;
+           $(this).combogrid('grid').datagrid('reload');
+          $(this).combogrid('setValue', keyword);
+        }}
+        }}">整改车间</th>
+            <th field="ApproveState" sortable="true" align="left" width="60" data-options="formatter:function(value,row){ return value == '1' ? '已发布':'编辑中';}">
+                单据状态
+            </th>
+        </tr>
+    </thead>
+</table>

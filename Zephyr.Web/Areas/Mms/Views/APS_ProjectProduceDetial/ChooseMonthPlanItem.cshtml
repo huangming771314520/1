@@ -1,0 +1,310 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>ChooseDispatchModel</title>
+    <link href="~/Content/js/jquery-easyui-1.7.0/themes/icon.css" rel="stylesheet" />
+    <link href="~/Content/js/jquery-easyui-1.7.0/themes/default/easyui.css" rel="stylesheet" />
+    <script src="~/Content/js/jquery-easyui-1.7.0/jquery.min.js"></script>
+    <script src="~/Content/js/jquery-easyui-1.7.0/jquery.easyui.min.js"></script>
+    <script src="~/Content/js/core/utils.js"></script>
+    <script src="~/Content/js/core/common.js"></script>
+</head>
+<body style="margin:5px;">
+    <div class="easyui-layout" id="layout_model" data-options="height:$(window).height()-10">
+        <div data-options="region:'west',title:'月度计划',split:true" style="width:25%;padding: 10px 10px;">
+            <div style="margin-bottom:10px">
+                <select class="easyui-combogrid" id="ContractCode" label="合同编号:" style="width: 100%;" labelwidth="80" labelalign="left" prompt="请选择合同" data-options="url:'/Commons/GetCommonSearchList',
+                            queryParams : {
+                            tableName:'[PMS_BN_Project] a join APS_MonthPlan b on a.ContractCode=b.ContractCode',
+                            searchField:'a.[ProjectID],a.[ContractCode],a.[ProjectName],b.[PlanType]',
+                            firstFightField:'a.[ProjectName]',
+                            whereSql:'a.IsEnable=1 and a.Is0tSartProduct=1'
+                    },
+                    method: 'GET',
+                    panelWidth:680,
+                    delay: 1000,
+                    mode: 'remote',
+                    value: '',
+                    idField: 'ContractCode',
+                    textField: 'ProjectName',
+                    fitColumns: true,
+                    columns:[[
+                    { field: 'ProjectID',title: '合同编号',width: 200,hidden:true },
+                    { field: 'ContractCode',title: '合同编号',width: 200 },
+                    { field: 'ProjectName',title: '项目名称',width: 200 },
+                    { field: 'PlanType',title: '计划类型',width: 200, formatter: function (value, row) { if(value==1){return '入库计划'} if(value==2){return '试压计划'} if(value==3){return '预试压计划'}} }
+                    ]],
+                    onSelect: function (rowIndex, rowData) {
+                     Page.ContractCode=rowData.ContractCode;
+                     var queryParams = $('#month_plan_dg').datagrid('options').queryParams;
+                     if(Page.ContractCode){
+                        queryParams.ContractCode=rowData.ContractCode;
+                        queryParams.PlanType=rowData.PlanType;
+                     }
+                     if(Page.ProductID){
+                        //queryParams.ProductID=rowData.ProductID;
+                        $('#ProductID')['combogrid']('clear');
+                     }
+                     $('#month_plan_dg').datagrid('reload');
+                     $('#ProductID').combogrid('grid').datagrid('options').queryParams.whereSql = 'IsEnable=1 and MainID=' + rowData.ProjectID;
+                     $('#ProductID').combogrid('grid').datagrid('reload');
+                    },
+                    keyHandler:{
+                    query:function(keyword) {
+                    var queryParams=$(this).combogrid('grid').datagrid('options').queryParams;
+                    queryParams.keyword=keyword;
+                    $(this).combogrid('grid').datagrid('options').queryParams=queryParams;
+                    $(this).combogrid('grid').datagrid('reload');
+                    $(this).combogrid('setValue', keyword);
+                    }}"></select>
+            </div>
+            <div style="margin-bottom:10px">
+                <select class="easyui-combogrid" id="ProductID" label="产品名称:" labelwidth="80" style="width: 100%;" labelalign="left" prompt="请选择产品" data-options="url:'/Commons/GetCommonSearchList',
+                     queryParams : {
+                            tableName:'[PMS_BN_ProjectDetail]',
+                            searchField:'[ID],[MainID],[ProductName],[Model],[Specifications],[Quantity]',
+                            firstFightField:'[ProductName]',
+                                whereSql:'IsEnable=1 '
+                            },
+                            method: 'GET',
+                            panelWidth:680,
+                            delay: 1000,
+                            mode: 'remote',
+                            value: '',
+                            idField: 'ID',
+                            textField: 'ProductName',
+                            fitColumns: true,
+                            columns:[[
+                             { field: 'ID',title: '产品ID',width: 200 ,hidden:true},
+                            { field: 'MainID',title: '项目ID',width: 200 ,hidden:true},
+                            { field: 'ProductName',title: '产品名称',width: 200 },
+                              { field: 'Model',title: '型号',width: 200 },
+                              { field: 'Specifications',title: '规格',width: 200 },
+                            { field: 'Quantity',title: '合同数量',width: 200 }
+
+                                ]],
+                     onSelect: function (rowIndex, rowData) {
+                        Page.ProductID=rowData.ID;
+                     var queryParams = $('#month_plan_dg').datagrid('options').queryParams;
+                     if(Page.ContractCode){
+                        queryParams.ContractCode=Page.ContractCode;
+                     }
+                     if(Page.ProductID){
+                        queryParams.ProductID=rowData.ID;
+                     }
+                     $('#month_plan_dg').datagrid('reload');
+                        }
+                    ,
+                 keyHandler:{
+                   query:function(keyword) {
+                   var queryParams=$(this).combogrid('grid').datagrid('options').queryParams;
+                   queryParams.keyword=keyword;
+                   $(this).combogrid('grid').datagrid('options').queryParams=queryParams;
+                   $(this).combogrid('grid').datagrid('reload');
+                  $(this).combogrid('setValue', keyword);
+                }}"></select>
+            </div>
+            <table id="month_plan_dg"></table>
+        </div>
+        <div data-options="region:'center',title:'调度任务明细'">
+            <form style="padding: 10px;">
+                <div style="margin-bottom:10px">
+                    <a href="#" class="easyui-linkbutton" id="Btn_OK">确 定</a>
+                </div>
+                <div>
+                    <table id="bom_tree_dg"></table>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        var Page = {
+            ContractCode: '',
+            ProductID: ''
+        };
+
+        var list = [1,2,4];
+
+        (function ($) {
+            "use strict";
+            var Page = {
+                init: function () {
+                    this.bind();
+                    this.load_month_plan_dg();
+                    this.load_bom_item_dg();
+                },
+                getThisIframe: function () {
+                    if (!parent) return null;
+                    var iframes = parent.document.getElementsByTagName('iframe');
+                    if (iframes.length == 0) return null;
+                    for (var i = 0; i < iframes.length; ++i) {
+                        var iframe = iframes[i];
+                        if (iframe.contentWindow === self) { //self 指的是当前窗口
+                            return iframe;
+                        }
+                    }
+                },
+                destroyIframe: function (iframeEl) {
+                    if (!iframeEl) return;
+                    iframeEl.parentNode.removeChild(iframeEl);
+                    iframeEl = null;
+                },
+                bind: function () {
+                    $("#Btn_OK").click(function () {
+                        var list = [];
+                        var row = $("#month_plan_dg").datagrid('getSelections');
+                        var PlanCode = row[0].PlanCode;
+                        var Quantity = row[0].Quantity;
+                        $("#bom_tree_dg").treegrid('getPanel').find("td[field]").find("img[src='/Content/images/checkmark.gif']").each(function () {
+                            var ContractCode = $(this).attr('ContractCode');
+                            var ProcessType = $(this).attr('ProcessType');
+                            var ProductID = $(this).attr('ProductID');
+                            var PartCode = $(this).attr('PartCode');
+                            list.push(
+                                {
+                                    ContractCode: ContractCode,
+                                    ProductID: ProductID,
+                                    PartCode: PartCode,
+                                    PlanCode: PlanCode,
+                                    ProcessType: ProcessType,
+                                    Quantity: Quantity
+                                });
+                        });
+                        var iframe = Page.getThisIframe();
+                        var thiswin = parent.$(iframe).parent();
+                        var options = thiswin.window("options");
+                        if (list.length > 0) {
+                            //console.log(thiswin);
+                            //options.onSelect(list);
+                            $(iframe).parent().parent().hide();
+                            $(iframe).parent().parent().siblings("div.panel.layout-panel.layout-panel-center").find('iframe[src="/mms/APS_ProjectProduceDetial/Index2"]')[0].contentWindow.ChooseMonthPlan(list);
+                            //options.onSelect();
+                            //Page.destroyIframe(iframe);
+                            //thiswin.window('destroy');
+                            //thiswin.window('close');
+                            // parent.ChooseMonthPlan();
+                        }
+                        else {
+                            $.messager.alert('提醒', '请选择工艺类型!', 'warning');
+                        }
+                    });
+                },
+                load_month_plan_dg: function () {
+                    $('#month_plan_dg').datagrid({
+                        url: '/api/Mms/APS_MonthPlan/GetMonthPlanList',
+                        method: 'get',
+                        width: '100%',
+                        columns: [[
+                            { field: 'PlanCode', title: '计划编号', width: 70, hidden: 'true' },
+                            { field: 'Quantity', title: '计划编号', width: 70, hidden: 'true' },
+                            { field: 'ContractCode', title: '合同编号', width: 70 },
+                            { field: 'ProductName', title: '产品名称', width: 100 },
+                            { field: 'PartFigureCode', title: '根零件图号', width: 180 },
+                            { field: 'PartCode', title: '零件编号', width: 130, hidden: 'true' }
+                        ]],
+                        checkOnSelect: true,
+                        selectOnCheck: false,
+                        singleSelect: true,
+                        onClickRow: this.click_row_month_plan_dg
+                    });
+                    var queryParams = $('#month_plan_dg').datagrid('options').queryParams = { ContractCode: '0' };
+                    $('#month_plan_dg').datagrid('reload');
+                },
+                load_bom_item_dg: function () {
+                    $('#bom_tree_dg').treegrid({
+                        queryParams: { TableName: 'PRS_Process_BOM', NodeField: 'PartCode', ParentNodeField: 'ParentCode', ParentNodeValue: '0' },
+                        url: '/Commons/GetTreeNodeList',
+                        method: 'get',
+                        animate: true,
+                        width: '100%',
+                        height: $(window).height() - 105,
+                        rownumbers: true,
+                        striped: true,
+                        singleSelect: true,
+                        idField: 'PartCode',
+                        treeField: 'PartFigureCode',
+                        columns: [[
+                            { title: '图号', field: 'PartFigureCode', width: 300 },
+                            { title: 'ID', field: 'ID', hidden: 'true', width: 60 },
+                            { title: '零件名称', field: 'PartName', width: 210 },
+                            {
+                                title: '下料', field: 'Blanking', width: 80, align: 'center', styler: Page.setColumnBackColor, formatter: function (value, row) { return Page.setColumnCheckBox(value, row, 1) }
+                            },
+                            {
+                                title: '焊接', field: 'Welding', width: 80, align: 'center', styler: Page.setColumnBackColor, formatter: function (value, row) { return Page.setColumnCheckBox(value, row, 2) }
+                            },
+                            {
+                                title: '机加', field: 'Machining', width: 80, align: 'center', styler: Page.setColumnBackColor, formatter: function (value, row) { return Page.setColumnCheckBox(value, row, 3) }
+                            },
+                            {
+                                title: '装配', field: 'Assembling', width: 80, align: 'center', styler: Page.setColumnBackColor, formatter: function (value, row) { return Page.setColumnCheckBox(value, row, 4) }
+                            }
+                        ]],
+                        //rowStyler: function (row, index) {
+                        //    if (row.IsSelfMade == "1") {
+                        //        return 'background-color:#D8FEFE;';
+                        //    }
+                        //    else {
+                        //        return 'background-color:#FBECDB;';
+                        //    }
+                        //},
+                        loadFilter: function (d) {
+                            if (d != null && d.length > 0) {
+                                var jsonData = eval(d);
+                                return utils.toTreeData(jsonData, 'PartCode', 'ParentCode', "children");
+                            }
+                            else {
+                                return '';
+                            }
+                        },
+                        onLoadSuccess: function () {
+                            $("#bom_tree_dg").treegrid('getPanel').find("td[field]").find("img").click(function () {
+                                var img = $(this).attr('src');
+                                $(this).attr('src', img == '/Content/images/checknomark.gif' ? '/Content/images/checkmark.gif' : '/Content/images/checknomark.gif');
+                            });
+                        }
+                        //onAfterEdit: function (row, changes) { },
+                        //onDblClickRow: function (row) { },
+                        //onClickRow: function (row) { }
+                    })
+                },
+                click_row_month_plan_dg: function (index, row) {
+                    var PartCode = row.PartCode;
+                    $('#bom_tree_dg').treegrid("options").queryParams =
+                        {
+                            TableName: 'PRS_Process_BOM',
+                            NodeField: 'PartCode',
+                            ParentNodeField: 'ParentCode',
+                            ParentNodeValue: PartCode,
+                            WhereSql: 'order by new_id',
+                            IsLevel: true
+                        };
+                    $('#bom_tree_dg').treegrid('reload');//重新加载树
+                    $('#bom_tree_dg').treegrid('collapseAll');//默认折叠所有节点
+                },
+                fixWidth: function (percent) {
+                    return document.body.clientWidth * percent;//根据自身情况更改
+                },
+                setColumnBackColor: function (value, row, index) {
+                    if (value == 0) {
+                        return 'background-color: red;';
+                    }
+                    else if (value > 0) {
+                        return 'background-color: #C0FF3E;';
+                    }
+                },
+                setColumnCheckBox: function (value, row, ProcessType) {
+                    return value == -1 ? '无' : '<img class="ckb" ContractCode="' + row.ContractCode + '" ProductID="' + row.ProductID + '" PartCode="' + row.PartCode + '" ProcessType="' + ProcessType + '" src="/Content/images/checknomark.gif"/>';
+                }
+            };
+            $(document).ready(function () {
+                Page.init();
+            });
+        })(window.jQuery);
+    </script>
+
+</body>
+
+</html>

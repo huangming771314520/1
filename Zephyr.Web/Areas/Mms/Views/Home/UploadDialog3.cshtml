@@ -1,0 +1,187 @@
+﻿<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width" />
+    <title>Index</title>
+    <link href="~/Content/js/uploader/Content/themes/base/jquery-ui.css" rel="stylesheet" />
+    <link href="~/Content/js/uploader/Content/themes/base/jquery.ui.accordion.css" rel="stylesheet" />
+    <link href="~/Content/js/uploader/Content/themes/base/jquery.ui.all.css" rel="stylesheet" />
+    <link href="~/Content/js/uploader/Content/themes/base/jquery.ui.autocomplete.css" rel="stylesheet" />
+    <link href="~/Content/js/uploader/Content/themes/base/jquery.ui.base.css" rel="stylesheet" />
+    <link href="~/Content/js/uploader/Content/themes/base/jquery.ui.button.css" rel="stylesheet" />
+    <link href="~/Content/js/uploader/Content/themes/base/jquery.ui.core.css" rel="stylesheet" />
+    <link href="~/Content/js/uploader/Content/themes/base/jquery.ui.datepicker.css" rel="stylesheet" />
+    <link href="~/Content/js/uploader/Content/themes/base/jquery.ui.dialog.css" rel="stylesheet" />
+    <link href="~/Content/js/uploader/Content/themes/base/jquery.ui.menu.css" rel="stylesheet" />
+    <link href="~/Content/js/uploader/Content/themes/base/jquery.ui.progressbar.css" rel="stylesheet" />
+    <link href="~/Content/js/uploader/Content/themes/base/jquery.ui.resizable.css" rel="stylesheet" />
+    <link href="~/Content/js/uploader/Content/themes/base/jquery.ui.selectable.css" rel="stylesheet" />
+    <link href="~/Content/js/uploader/Content/themes/base/jquery.ui.slider.css" rel="stylesheet" />
+    <link href="~/Content/js/uploader/Content/themes/base/jquery.ui.spinner.css" rel="stylesheet" />
+    <link href="~/Content/js/uploader/Content/themes/base/jquery.ui.tabs.css" rel="stylesheet" />
+    <link href="~/Content/js/uploader/Content/themes/base/jquery.ui.theme.css" rel="stylesheet" />
+    <link href="~/Content/js/uploader/Content/themes/base/jquery.ui.tooltip.css" rel="stylesheet" />
+    <link href="~/Content/js/uploader/Content/bootstrap.css" rel="stylesheet" />
+    <link href="~/Content/js/uploader/Content/jquery.fileupload-ui-noscript.css" rel="stylesheet" />
+    <link href="~/Content/js/uploader/Content/jquery.fileupload-ui.css" rel="stylesheet" />
+
+    <!-- Shim to make HTML5 elements usable in older Internet Explorer versions -->
+    <!--[if lt IE 9]><script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+</head>
+<body>
+    <div class="container">
+
+        <form id="formUpload" action="/api/upload" enctype="multipart/form-data">
+            <div class="row fileupload-buttonbar">
+                <div class="span7">
+                    <div class="well">
+                        <i class="icon-plus"></i><span>&nbsp;&nbsp;</span>
+                        <input type="file" id="fileupload" name="fileupload" accept=".dwg,.DWG" multiple="multiple">
+                        <button id="btnUploadAll" class="btn btn-success pull-right" type="button">
+                            上传
+                        </button>
+                        <div class="clearfix">
+                        </div>
+                        <div class="progress">
+                            <div class="bar" id="overallbar" style="width: 0%">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="span7">
+                    <div class="well hide" id="filelistholder">
+                    </div>
+                </div>
+                <div class="span7">
+                </div>
+            </div>
+        </form>
+
+    </div>
+    <script src="~/Content/js/uploader/jquery-1.8.3.js"></script>
+    <script src="~/Content/js/uploader/jquery-ui-1.9.2.js"></script>
+    <script src="~/Content/js/uploader/jquery.fileupload.js"></script>
+    <script src="~/Content/js/uploader/jquery.iframe-transport.js"></script>
+    <script src="~/Content/js/uploader/bootstrap.js"></script>
+    <script src="~/Content/js/core/utils.js"></script>
+
+    <script type="text/javascript">
+        function getParam(paramName) {
+            paramValue = "", isFound = !1;
+            if (this.location.search.indexOf("?") == 0 && this.location.search.indexOf("=") > 1) {
+                arrSource = unescape(this.location.search).substring(1, this.location.search.length).split("&"), i = 0;
+                while (i < arrSource.length && !isFound) arrSource[i].indexOf("=") > 0 && arrSource[i].split("=")[0].toLowerCase() == paramName.toLowerCase() && (paramValue = arrSource[i].split("=")[1], isFound = !0), i++
+            }
+            return paramValue == "" && (paramValue = null), paramValue
+        }
+
+        $(function () {
+
+            var newFileName = getParam("newFileName");
+            var Path = "";
+
+            $('#btnUploadAll').click(function () {
+                var xmlname = getParam("xmlName");
+                var id = getParam("id");
+                $.ajax({
+                    type: 'GET',
+                    url: '/api/Mms/MES_BN_ProductProcessRoute/GetUpdateProcessFigureIsEnableByProcessBomID?processBomID=' + id,
+                    async: false,
+                    success: function (result) {
+
+                    }
+                });
+
+                $.ajax({
+                    type: 'GET',
+                    url: '/api/Mms/Home/GetPath?xmlName=' + xmlname,
+                    cache: false,
+                    async: false,
+                    success: function (path) {
+                        Path = path;
+                    }
+                });
+            });
+
+            var num1 = 0;
+            var fileNames = [];
+
+            $('#fileupload').fileupload({
+                dataType: "json",
+                //url: "/api/Mms/PMS_BN_PartFile/PostUpload?filePath=" + filePath,
+                limitConcurrentUploads: 1,
+                sequentialUploads: true,
+                progressInterval: 1,
+                //maxChunkSize: 10000,
+                add: function (e, data) {
+                    $('#filelistholder').removeClass('hide');
+                    data.context = $('<div />').text(data.files[0].name).appendTo('#filelistholder');
+                    $('</div><div class="progress"><div class="bar" style="width:0%"></div></div>').appendTo(data.context);
+
+                    //$('#btnUploadAll').click(function () {
+                    //    var docName = newFileName + num1;
+                    //    fileNames.push({
+                    //        key: data.files[0].name,
+                    //        value: docName
+                    //    });
+                    //    num1++;
+
+                    //    $("#formUpload").attr("action", "/api/Mms/Home/PostUpload?docName=" + docName + "&path=" + Path);
+                    //    data.submit();
+                    //});
+
+                    $('#btnUploadAll').click(function () {
+                        var docName = newFileName + num1;
+                        fileNames.push({
+                            key: data.files[0].name,
+                            value: docName
+                        });
+                        num1++;
+                        $("#formUpload").attr("action", "/api/Mms/COM_UploadFileManage/PostFTPUpload?docName=" + docName + "&path=" + Path);
+                        data.submit();
+                    });
+                },
+                done: function (e, data) {
+                    data.context.text(data.files[0].name + '...已完成');
+                    $('</div><div class="progress"><div class="bar" style="width:100%"></div></div>').appendTo(data.context);
+
+                    var id = getParam("id");
+                    var fileName = "";
+
+                    for (var i = 0; i < fileNames.length; i++) {
+                        if (fileNames[i].key == data.files[0].name) {
+                            fileName = fileNames[i].value;
+                        }
+                    }
+
+                    var filePath = Path;
+                    var xmlName = getParam("xmlName");
+                    var docName = data.files[0].name;
+                    $.ajax({
+                        type: 'POST',
+                        async: false,
+                        url: "/api/Mms/Home/PostUpdate5?id=" + id + "&docName=" + docName + "&tableName=" + xmlName + "&fileName=" + fileName + "&filePath=" + filePath,
+                        success: function (d) {
+                            var iframe = utils.getThisIframe();
+                            var thiswin = parent.$(iframe).parent();
+                            var options = thiswin.window("options");
+                            options.onSelect();
+                        }
+                    });
+                },
+                progressall: function (e, data) {
+                    var progress = parseInt(data.loaded / data.total * 100, 10);
+                    $('#overallbar').css('width', progress + '%');
+                },
+                progress: function (e, data) {
+                    var progress = parseInt(data.loaded / data.total * 100, 10);
+                    data.context.find('.bar').css('width', progress + '%');
+                }
+            });
+
+
+        });
+    </script>
+
+</body>
+</html>

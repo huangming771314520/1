@@ -1,0 +1,190 @@
+﻿
+@{
+    ViewBag.Title = "PRS_BarCreateMateMain";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@section scripts{
+    <script src="/Content/js/viewModel/com.viewModel.searchEdit.js"></script>
+    <script type="text/javascript">
+    var viewModel = function(data){
+        var self = this;
+        com.viewModel.searchEdit.apply(self,arguments);
+        self.grid.pagination=false;
+        this.TotalClick=function(){
+            var selectRow = self.grid.datagrid('getChecked');
+            var isTrue = true;
+            if (selectRow.length > 0) {
+
+                var check_array = [];
+
+                for (var i = 0; i < selectRow. length; i++) {
+                        check_array.push(selectRow[i].ID);
+                }
+
+                com.ajax({
+                    url: "/api/Mms/PRS_BarCreateMateMain/GetIsSum",
+                    data: { bomList: check_array.join(',') },
+                    async: false,
+                    type: "GET",
+                    success: function (d) {
+                        if (d) {
+                        }
+                        else {
+                            com.message("warning", "请选择相同的定料棒材汇总");
+                            isTrue = false;
+                            return;
+                        }
+                    }
+                });
+
+                if (isTrue) {
+                    com.openTab('棒材统计', "/Mms/PRS_BarCreateMateDetail/Index?BomList=" + check_array.join(','));
+                }
+
+                //if (isTrue) {
+                //    com.ajax({
+                //        url: "/api/Mms/PRS_BarCreateMateMain/GetBomList",
+                //        data: { BomList: check_array.join(',') },
+                //        type: "GET",
+                //        success: function (d) {
+                //            if (d.length > 0) {
+                //                com.openTab('棒材统计', "/Mms/PRS_BarCreateMateDetail/Index?BomList=" + check_array.join(','));
+                //            }
+                //            else {
+                //                com.message("warning", "此合同棒材已经报料");
+                //                return;
+                //            }
+                //        }
+                //    });
+                //}
+            }
+            else{
+                com.message('warning', '请选择需要汇总的行项目!');
+            }
+        }
+    }
+    var data = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model));
+    ko.bindingViewModel(new viewModel(data));
+    </script>
+}
+<div class="z-toolbar">
+    <a href="#" plain="true" class="easyui-linkbutton" icon="icon-arrow_refresh" title="刷新" data-bind="click:refreshClick">刷新</a>
+    <a href="#" plain="true" class="easyui-linkbutton" icon="icon-add" title="汇总" data-bind="click:TotalClick">汇总</a>
+</div>
+
+<div class="container_12" style="position:relative;">
+    <div class="grid_1 lbl">合同编号</div>
+    <div class="grid_2 val">
+        <input type="text" data-bind="combogridValue:form.ContractCode" class="z-txt easyui-combogrid" data-options="
+                        url:'/Commons/GetCommonSearchList',
+                    queryParams : {
+                     tableName:'[PMS_BN_Project]',
+                         searchField:'[ProjectID],[ContractCode],[ProjectName]',
+                         firstFightField:'[ProjectName]',
+                                     connName:'Mms'
+                            },
+                            method: 'GET',
+                            panelWidth:400,
+                            fit:true,
+                            delay: 1000,
+                            mode: 'remote',
+                            value: 'ContractCode',
+                            idField: 'ContractCode',
+                            textField: 'ProjectName',
+                            columns:[[
+                            { field: 'ContractCode',title: '合同编号',width: 200 },
+                            { field: 'ProjectName',title: '项目名称',width: 200 }
+                                ]],
+                    onSelect: function (rowIndex, rowData) {
+                                       $('#produceCode').combogrid('setValue', '');
+                                       $('#produceCode').combogrid('grid').datagrid('options').queryParams.whereSql='IsEnable=1 and MainID = \''+rowData.ProjectID+'\'';
+                                       $('#produceCode').combogrid('grid').datagrid('reload');
+                                       },
+                 keyHandler:{
+                   query:function(keyword) {
+                   var queryParams=$(this).combogrid('grid').datagrid('options').queryParams;
+                   queryParams.keyword=keyword;
+                   $(this).combogrid('grid').datagrid('options').queryParams=queryParams;
+                   $(this).combogrid('grid').datagrid('reload');
+                  $(this).combogrid('setValue', keyword);
+                }}
+                " />
+    </div>
+
+    <div class="clear"></div>
+    <div class="grid_1 lbl">产品编号</div>
+    <div class="grid_2 val">
+        <input id="produceCode" type="text" data-bind="combogridValue:form.ProductID" class="z-txt easyui-combogrid" data-options="
+                        url:'/Commons/GetCommonSearchList',
+                    queryParams : {
+                     tableName:'[PMS_BN_ProjectDetail]',
+                         searchField:'[ID],[MainID],[ProductName],[Model],[Specifications]',
+                         whereSql:' IsEnable=1 ',
+                         firstFightField:'[ProductName]',
+                                     connName:'Mms'
+                            },
+                            method: 'GET',
+                            panelWidth:400,
+                            fit:true,
+                            delay: 1000,
+                            mode: 'remote',
+                            value: 'ID',
+                            idField: 'ID',
+                            textField: 'ProductName',
+                            columns:[[
+                            { field: 'ProductName',title: '产品',width: 100 },
+                            { field: 'Model',title: '项目名称',width: 100 },
+                            { field: 'Specifications',title: '合同编号',width: 100 }
+                                ]],
+                    onSelect: function (rowIndex, rowData) {},
+                 keyHandler:{
+                   query:function(keyword) {
+                   var queryParams=$(this).combogrid('grid').datagrid('options').queryParams;
+                   queryParams.keyword=keyword;
+                   $(this).combogrid('grid').datagrid('options').queryParams=queryParams;
+                   $(this).combogrid('grid').datagrid('reload');
+                  $(this).combogrid('setValue', keyword);
+                }}
+                " />
+    </div>
+    <div class="clear"></div>
+    <div class="prefix_9" style="position:absolute;top:5px;height:0;">
+        <a id="a_search" href="#" class="buttonHuge button-blue" data-bind="click:searchClick" style="margin:0 15px;">查询</a>
+        <a id="a_reset" href="#" class="buttonHuge button-blue" data-bind="click:clearClick">清空</a>
+    </div>
+</div>
+
+<table data-bind="datagrid:grid" style="display:none">
+    <thead>
+        <tr>
+            @*
+                <th field="ID" sortable="true" align="left" width="80" checkbox="true">主键ID</th>
+                <th field="InventoryCode" sortable="true" align="left" width="150">零件编号</th>
+                <th field="PartName" sortable="true" align="left" width="120">零件名称</th>
+                <th field="SetMateName" sortable="true" align="left" width="120">定料材料</th>
+                <th field="FigureCode" sortable="true" align="left" width="120">定料图号</th>
+                <th field="Model" sortable="true" align="left" width="120">型号</th>
+                <!--<th field="Spec" sortable="true" align="left" width="120">规格</th>-->
+                <th field="SetMateNum" sortable="true" align="left" width="120">定料数量</th>
+                <!--<th field="QuantityUnit" hidden sortable="true" align="left" width="120">单位</th>-->
+                <th field="InPlanceSize" sortable="true" align="left" width="120">到位尺寸</th>
+                <th field="BlankingSize" sortable="true" align="left" width="120">下料尺寸</th>
+                <th field="MateParamValue" sortable="true" align="left" width="120">直径</th>
+            *@
+
+            <th field="ID" sortable="true" align="left" width="80" checkbox="true">主键ID</th>
+            <th field="ContractCode" sortable="true" align="left" width="150">合同编号</th>
+            <th field="ProjectName" sortable="true" align="left" width="150">工程项目</th>
+            <th field="ProductName" sortable="true" align="left" width="150">产品名称</th>
+            <th field="PartFigureCode" sortable="true" align="left" width="150">零件图号</th>
+            <th field="PartName" sortable="true" align="left" width="150">零件名称</th>
+            <th field="InventoryName" sortable="true" align="left" width="150">材料名称</th>
+            <th field="Model" sortable="true" align="left" width="150">型号规格</th>
+            <th field="SetMateNum" sortable="true" align="left" width="150">定料数量</th>
+            <th field="InPlanceSize" sortable="true" align="left" width="150">到位尺寸</th>
+            <th field="BlankingSize" sortable="true" align="left" width="150">下料尺寸</th>
+            <th field="MateParamValue" sortable="true" align="left" width="150">直径</th>
+        </tr>
+    </thead>
+</table>

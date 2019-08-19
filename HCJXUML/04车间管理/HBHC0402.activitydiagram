@@ -1,0 +1,137 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<activityRootModel xmlns:dm0="http://schemas.microsoft.com/VisualStudio/2008/DslTools/Core" xmlns:dm1="http://schemas.microsoft.com/dsltools/Kernel" xmlns:dm2="http://schemas.microsoft.com/dsltools/Component" xmlns:dm3="http://schemas.microsoft.com/dsltools/UseCase" xmlns:dm4="http://schemas.microsoft.com/dsltools/Activity" xmlns:dm5="http://schemas.microsoft.com/dsltools/Interaction" xmlns:dm6="http://schemas.microsoft.com/dsltools/UmlModelLibrary" xmlns:dm7="http://schemas.microsoft.com/dsltools/UmlDiagrams" xmlns:dm8="http://schemas.microsoft.com/dsltools/ModelStore" xmlns:dm9="http://schemas.microsoft.com/dsltools/SimpleShapesModel" dslVersion="1.0.0.0" Id="5980e63f-9244-4494-812f-bc0aefdf7e54" name="0402临时任务" linkedPackageId="a60824b7-c44d-4639-bf8e-14d16ce952ae" xmlns="http://schemas.microsoft.com/VisualStudio/TeamArchitect/ActivityDesigner">
+  <ownedCommentsInternal>
+    <comment Id="3b9c13c6-a1e1-4a84-8a9a-62dcddc072af">
+      <elementDefinition Id="e64dfc72-0ce4-4183-a0d4-c6f7b69c0fa6" />
+      <body>1、临时任务编码规则？
+2、临时任务只需要维护发起车间(自动录入，不可修改)、责任车间(必输)、任务描述(非必输)</body>
+      <annotatedElements>
+        <opaqueActionMoniker Id="d69f13cd-02e4-4950-b7e1-b538b1ffed2f" LastKnownName="新增临时任务" />
+      </annotatedElements>
+    </comment>
+    <comment Id="fcb64033-83d6-4af1-90be-e9e8b55786b1">
+      <elementDefinition Id="089f5ed3-f5b2-494b-8531-e9380df13f47" />
+      <body>未审核的临时任务才可以修改或删除
+UPDATE A
+SET A.IsEnable='0'
+FROM [dbo].[APS_ProjectProduceTemporaryTask] A
+WHERE A.ID=''
+AND a.PlanState='1'</body>
+      <annotatedElements>
+        <opaqueActionMoniker Id="40d30a8c-2701-42e3-b3bf-4a54e902b109" LastKnownName="修改/删除临时任务" />
+      </annotatedElements>
+    </comment>
+    <comment Id="bcf0de23-9a17-48c9-8a6f-d99de01c10b5">
+      <elementDefinition Id="de871151-3f88-47c5-a442-f05b2856fb70" />
+      <body>只查询有效的临时任务
+SELECT A.*
+FROM [dbo].[APS_ProjectProduceTemporaryTask] A
+WHERE A.IsEnable = '1';</body>
+      <annotatedElements>
+        <opaqueActionMoniker Id="d9fa7e57-34de-4da5-a908-4dfb86172dc6" LastKnownName="查询临时任务" />
+      </annotatedElements>
+    </comment>
+    <comment Id="4833fdde-ee16-4247-90ce-37b394a6c7e0">
+      <elementDefinition Id="7076b1db-5ae1-4ced-b00b-61946bdd9069" />
+      <body>UPDATE A
+SET A.PlanState='2'
+FROM [dbo].[APS_ProjectProduceTemporaryTask] A
+WHERE A.ID=''
+AND A.IsEnable='1'
+AND A.PlanState='1'</body>
+      <annotatedElements>
+        <opaqueActionMoniker Id="2dec5e99-879a-454f-93a5-c55c73c6a91c" LastKnownName="审核临时任务" />
+      </annotatedElements>
+    </comment>
+    <comment Id="601c976f-c9cf-408a-b15b-a703167ed9aa">
+      <elementDefinition Id="bbb2244c-ecbd-4286-b5c3-ed85bbe75b39" />
+      <body>审核通过的临时任务才可以做整改方案或者开工</body>
+      <annotatedElements>
+        <opaqueActionMoniker Id="f6e60b28-90d7-4cb1-be44-2e04234faafc" LastKnownName="打印临时任务条码" />
+      </annotatedElements>
+    </comment>
+  </ownedCommentsInternal>
+  <packagedElements>
+    <activityRootModelHasActivity>
+      <activity Id="b7335b37-104d-4ceb-a643-5748337d374f" name="0402临时任务" isAbstract="false" isLeaf="false" isActiveClass="false" isReentrant="false" isReadOnly="false" isSingleExecution="false">
+        <elementDefinition Id="6d241970-4e77-471a-848f-af9a2e896321" />
+        <nodes>
+          <initialNode Id="6fb5ec96-f3d9-433f-a099-a1ccd96602a0" name="Initial1" isLeaf="false">
+            <elementDefinition Id="eac1c277-7985-4a6a-9436-868e51dea076" />
+            <flowNodeTargets>
+              <controlFlow Id="ee64b53b-dd12-44d0-b851-a22d079ca11e" isLeaf="false">
+                <opaqueActionMoniker Id="d69f13cd-02e4-4950-b7e1-b538b1ffed2f" LastKnownName="新增临时任务" />
+                <elementDefinition Id="b362b88f-e121-4bf8-bb18-eef76a3f2d70" />
+              </controlFlow>
+            </flowNodeTargets>
+          </initialNode>
+          <opaqueAction Id="d69f13cd-02e4-4950-b7e1-b538b1ffed2f" name="新增临时任务" isLeaf="false">
+            <elementDefinition Id="5a479a64-2dc6-4440-9fc8-99797c2cf7ba" />
+            <flowNodeTargets>
+              <controlFlow Id="95fc8377-4c24-452f-80d8-8f64dabef8b4" isLeaf="false">
+                <opaqueActionMoniker Id="d9fa7e57-34de-4da5-a908-4dfb86172dc6" LastKnownName="查询临时任务" />
+                <elementDefinition Id="53cb8057-458c-4234-91a0-c95e08e610cf" />
+              </controlFlow>
+            </flowNodeTargets>
+          </opaqueAction>
+          <activityFinalNode Id="2cdcc117-9078-40c1-b515-81a510051a41" name="ActivityFinal1" isLeaf="false">
+            <elementDefinition Id="20eeef24-30a4-4ec1-99e3-2a80de3d9d57" />
+          </activityFinalNode>
+          <opaqueAction Id="d9fa7e57-34de-4da5-a908-4dfb86172dc6" name="查询临时任务" isLeaf="false">
+            <elementDefinition Id="0e964ec6-2a9f-4463-a744-dc5dbd11e275" />
+            <flowNodeTargets>
+              <controlFlow Id="82a6298d-5bbc-4d58-9793-47575bd7b7f7" isLeaf="false">
+                <opaqueActionMoniker Id="40d30a8c-2701-42e3-b3bf-4a54e902b109" LastKnownName="修改/删除临时任务" />
+                <elementDefinition Id="08928132-425d-409a-aebc-327146cdd5d7" />
+              </controlFlow>
+            </flowNodeTargets>
+          </opaqueAction>
+          <opaqueAction Id="40d30a8c-2701-42e3-b3bf-4a54e902b109" name="修改/删除临时任务" isLeaf="false">
+            <elementDefinition Id="ad8c482f-f4bd-4637-86bc-eafc9a0a9aab" />
+            <flowNodeTargets>
+              <controlFlow Id="38bcdbdd-1110-4bb0-89c5-c431f513f94f" isLeaf="false">
+                <opaqueActionMoniker Id="2dec5e99-879a-454f-93a5-c55c73c6a91c" LastKnownName="审核临时任务" />
+                <elementDefinition Id="463c1766-aef9-4280-abad-da9bc49b0599" />
+              </controlFlow>
+            </flowNodeTargets>
+          </opaqueAction>
+          <opaqueAction Id="2dec5e99-879a-454f-93a5-c55c73c6a91c" name="审核临时任务" isLeaf="false">
+            <elementDefinition Id="d90ce3f6-86bf-4288-beb0-a2afcbfddc62" />
+            <flowNodeTargets>
+              <controlFlow Id="89cfd51a-2203-4aa2-97d0-8f6df0123a67" isLeaf="false">
+                <opaqueActionMoniker Id="f6e60b28-90d7-4cb1-be44-2e04234faafc" LastKnownName="打印临时任务条码" />
+                <elementDefinition Id="3f50f540-11e5-43f8-a650-90cb02083e6c" />
+              </controlFlow>
+            </flowNodeTargets>
+          </opaqueAction>
+          <opaqueAction Id="f6e60b28-90d7-4cb1-be44-2e04234faafc" name="打印临时任务条码" isLeaf="false">
+            <elementDefinition Id="c7ed2a6e-a113-4b49-9904-2fc8f032976a" />
+            <flowNodeTargets>
+              <controlFlow Id="3ede180e-3fbd-462a-9916-b43f3125f9d8" isLeaf="false">
+                <activityFinalNodeMoniker Id="2cdcc117-9078-40c1-b515-81a510051a41" LastKnownName="ActivityFinal1" />
+                <elementDefinition Id="15e9350d-f104-4395-b27c-a82d1450c306" />
+              </controlFlow>
+            </flowNodeTargets>
+          </opaqueAction>
+        </nodes>
+      </activity>
+    </activityRootModelHasActivity>
+  </packagedElements>
+  <package Id="a60824b7-c44d-4639-bf8e-14d16ce952ae" name="HCJXUML">
+    <elementDefinition Id="6348ac1d-75ba-4a39-8ebf-237333c18d4f" />
+    <profileInstances>
+      <packageHasProfileInstances Id="2b372b0d-65f3-4ba7-b7e6-19755cf35d3c">
+        <profileInstance Id="9136c475-aa4c-4261-8e3b-9ef3ad1ff0df" name="StandardProfileL2">
+          <elementDefinition Id="e34d544e-0fea-4ed6-ac5e-1b74119ac791" />
+        </profileInstance>
+        <elementDefinition Id="0caec977-1f8c-4ba3-a7db-8cc9ad9cc73b" />
+      </packageHasProfileInstances>
+      <packageHasProfileInstances Id="85165eec-a54a-44a9-b2db-9b0fb53fcad9">
+        <profileInstance Id="1af9358c-777c-4bf9-b22f-a145df37c9f0" name="StandardProfileL3">
+          <elementDefinition Id="532ea607-fb19-44b8-8502-3351b05452be" />
+        </profileInstance>
+        <elementDefinition Id="29349502-908c-4fda-9054-c48619c59ed0" />
+      </packageHasProfileInstances>
+    </profileInstances>
+  </package>
+</activityRootModel>

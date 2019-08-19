@@ -1,0 +1,20 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<root>
+
+  <path dir="PMS_BN_PartFile" >
+    <node dir="文件类型" level="2" parm="FileType" />
+  </path>
+  
+  <path dir="SYS_DrawingApplication" >
+    <node dir="文件类型" level="2" parm="FileType" />
+  </path>
+
+  <!--
+  <path dir="PMS_BN_PartFile" >
+    <node dir="合同" level="1" parm="ProjectCode" />
+    <node dir="产品" level="3" parm="ProductCode" />
+    <node dir="零件" level="4" parm="PartCode" />
+    <node dir="文件类型" level="2" parm="FileType" />
+  </path>
+  -->
+</root>

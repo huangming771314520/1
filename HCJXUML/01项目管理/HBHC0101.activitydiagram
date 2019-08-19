@@ -1,0 +1,366 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<activityRootModel xmlns:dm0="http://schemas.microsoft.com/VisualStudio/2008/DslTools/Core" xmlns:dm1="http://schemas.microsoft.com/dsltools/Kernel" xmlns:dm2="http://schemas.microsoft.com/dsltools/Component" xmlns:dm3="http://schemas.microsoft.com/dsltools/UseCase" xmlns:dm4="http://schemas.microsoft.com/dsltools/Activity" xmlns:dm5="http://schemas.microsoft.com/dsltools/Interaction" xmlns:dm6="http://schemas.microsoft.com/dsltools/UmlModelLibrary" xmlns:dm7="http://schemas.microsoft.com/dsltools/UmlDiagrams" xmlns:dm8="http://schemas.microsoft.com/dsltools/ModelStore" xmlns:dm9="http://schemas.microsoft.com/dsltools/SimpleShapesModel" dslVersion="1.0.0.0" Id="b2357179-0f88-4045-8dcd-a3e89650bea5" name="0101合同信息" linkedPackageId="5bc805ff-fc63-4c71-8f35-bc1943323338" xmlns="http://schemas.microsoft.com/VisualStudio/TeamArchitect/ActivityDesigner">
+  <ownedCommentsInternal>
+    <comment Id="5be8227e-2c0a-4457-abde-996cc491ac17">
+      <elementDefinition Id="44c219a2-2754-423b-920f-07c94ffa70e7" />
+      <body>SELECT
+    --合同编号
+    A.ContractCode,
+    --工程项目
+    A.ProjectName,
+    --项目简称
+    A.ProjectForShort,
+    --合同接收时间
+    A.ContractReceiveTime,
+    --到预付款时间
+    A.AdvancePaymentDate,
+    --投产报告
+    --开始投产
+    A.Is0tSartProduct,
+    --备注
+    A.Remark
+FROM [dbo].[PMS_BN_Project] A
+WHERE A.IsEnable = '1'
+      --合同编号
+      AND A.ContractCode = '';</body>
+      <annotatedElements>
+        <opaqueActionMoniker Id="e9d2391e-1e85-4858-90d6-d778b7eb4429" LastKnownName="查询合同信息" />
+      </annotatedElements>
+    </comment>
+    <comment Id="73921f16-8d7c-407a-82c5-57725d6cd640">
+      <elementDefinition Id="0e1aee0a-e8b9-4ed0-a246-ae43e8bf353c" />
+      <body>SELECT
+    --合同编号
+    A.ContractCode,
+    --产品名称
+    B.ProductName,
+    --产品类型
+    C.Text ProductType,
+    --制造单位
+    D.Text ProductUnit,
+    --型号
+    B.Model,
+    --规格
+    B.Specifications,
+    --重量
+    B.TotalWeight,
+    --计划价
+    B.PlanPrice,
+    --合同数量
+    B.Quantity,
+    --完工数量
+    B.FigureNumber,
+    --交货日期
+    B.DeliveryTime,
+    --备注
+    B.Remark,
+    --项目紧急度
+    E.Text Urgent,
+    --项目状态
+    F.Text ProjectState
+FROM [dbo].[PMS_BN_Project] A
+    LEFT JOIN [dbo].[PMS_BN_ProjectDetail] B
+        ON A.ProjectID = B.MainID
+           AND B.IsEnable = '1'
+    LEFT JOIN [HBHC_Sys].[dbo].[sys_code] C
+        ON C.CodeType = 'ProductType'
+           AND B.ProductType = C.Value
+           AND C.IsEnable = '1'
+    LEFT JOIN [HBHC_Sys].[dbo].[sys_code] D
+        ON D.CodeType = 'ProductUnit'
+           AND B.ProductUnit = D.Value
+           AND D.IsEnable = '1'
+    LEFT JOIN [HBHC_Sys].[dbo].[sys_code] E
+        ON E.CodeType = 'Urgent'
+           AND B.Urgent = E.Value
+           AND E.IsEnable = '1'
+    LEFT JOIN [HBHC_Sys].[dbo].[sys_code] F
+        ON F.CodeType = 'ProjectState'
+           AND B.Urgent = F.Value
+           AND F.IsEnable = '1'
+-- LEFT JON 
+WHERE A.IsEnable = '1'
+      --合同编号
+      AND A.ContractCode = '';</body>
+      <annotatedElements>
+        <opaqueActionMoniker Id="cece05f7-1e60-4ea2-9009-e8b86c5879ed" LastKnownName="查询产品信息" />
+      </annotatedElements>
+    </comment>
+    <comment Id="d7930920-ee66-4e73-8237-9d1b748a98ae">
+      <elementDefinition Id="ca54604b-f89b-4cf8-b326-b707206eb7f1" />
+      <body>SELECT
+    --合同编号
+    A.ContractCode,
+    --产品名称
+    B.ProductName,
+    --型号
+    B.Model,
+    --规格
+    B.Specifications,
+    --合同数量
+    B.Quantity,
+    --交货日期
+    B.DeliveryTime,
+    --设计任务开始日期
+    C.TaskStartDate,
+    --设计任务结束日期
+    C.TaskFinishDate,
+    --设计任务周期
+    C.TaskCycle,
+    --采购任务开始日期
+    D.TaskStartDate,
+    --采购任务结束日期
+    D.TaskFinishDate,
+    --采购任务周期
+    D.TaskCycle,
+    --生产任务开始日期
+    E.TaskStartDate,
+    --生产任务结束日期
+    E.TaskFinishDate,
+    --生产任务周期
+    E.TaskCycle
+FROM [dbo].[PMS_BN_Project] A
+    LEFT JOIN [dbo].[PMS_BN_ProjectDetail] B
+        ON A.ProjectID = B.MainID
+           AND B.IsEnable = '1'
+    LEFT JOIN [dbo].[PMS_ProductTask] C
+        ON B.ID = C.ProductID
+           AND C.TaskType = '1'
+           AND C.IsEnable = '1'
+    LEFT JOIN [dbo].[PMS_ProductTask] D
+        ON B.ID = D.ProductID
+           AND D.TaskType = '2'
+           AND D.IsEnable = '1'
+    LEFT JOIN [dbo].[PMS_ProductTask] E
+        ON B.ID = E.ProductID
+           AND E.TaskType = '3'
+           AND E.IsEnable = '1'
+WHERE A.IsEnable = '1'
+      --合同编号
+      AND A.ContractCode = '';</body>
+      <annotatedElements>
+        <opaqueActionMoniker Id="b08a8126-0145-4a90-8cd9-31c0c520f36f" LastKnownName="查询任务信息" />
+      </annotatedElements>
+    </comment>
+    <comment Id="c0b410a2-b99f-4746-8d5d-0fc8bf6ccf08">
+      <elementDefinition Id="738afcf2-d7de-4b79-b561-4ea7975b73cd" />
+      <body>SELECT
+    --合同编号
+    A.ContractCode,
+    --产品名称
+    B.ProductName,
+    --型号
+    B.Model,
+    --规格
+    B.Specifications,
+    --产品类型
+    D.Text TaskType,
+    --任务描述
+    C.TaskDescription,
+    --开始日期
+    C.TaskStartDate,
+    --结束日期
+    C.TaskFinishDate
+FROM [dbo].[PMS_BN_Project] A
+    LEFT JOIN [dbo].[PMS_BN_ProjectDetail] B
+        ON A.ProjectID = B.MainID
+           AND B.IsEnable = '1'
+    LEFT JOIN [dbo].[PMS_DesignTaskDetail] C
+        ON B.ID = C.ProductID
+           AND C.IsEnable = '1'
+		    LEFT JOIN [HBHC_Sys].[dbo].[sys_code] D
+        ON D.CodeType = 'TaskType'
+           AND C.TaskType = D.Value
+           AND D.IsEnable = '1'
+WHERE A.IsEnable = '1'
+      --合同编号
+      AND A.ContractCode = '190111';</body>
+      <annotatedElements>
+        <opaqueActionMoniker Id="a8764bbc-49e7-4e10-b671-b625271983a0" LastKnownName="查询设计任务明细" />
+      </annotatedElements>
+    </comment>
+    <comment Id="6eef98b6-8658-4cce-81b3-35b6fb7b2436">
+      <elementDefinition Id="b0a2c24a-4877-4724-a92f-0328107f821e" />
+      <body>SELECT
+    --合同编号
+    A.ContractCode,
+    --产品名称
+    B.ProductName,
+    --型号
+    B.Model,
+    --规格
+    B.Specifications,
+	 --合同数量
+    B.Quantity,
+    --交货日期
+    B.DeliveryTime
+    --批次生产台数
+	,c.ProductQuantity
+   --批次交货期
+   ,c.PlanFinishDate
+FROM [dbo].[PMS_BN_Project] A
+    LEFT JOIN [dbo].[PMS_BN_ProjectDetail] B
+        ON A.ProjectID = B.MainID
+           AND B.IsEnable = '1'
+    LEFT JOIN [dbo].[PMS_ProductPlanDetail]  C
+        ON B.ID = C.ProductID
+           AND C.IsEnable = '1'	
+WHERE A.IsEnable = '1'
+      --合同编号
+      AND A.ContractCode = '190111';</body>
+      <annotatedElements>
+        <opaqueActionMoniker Id="ba9df0d9-fcf9-4180-8a0f-de3345e49125" LastKnownName="查询生产任务明细" />
+      </annotatedElements>
+    </comment>
+  </ownedCommentsInternal>
+  <profileInstances>
+    <packageHasProfileInstances Id="f504d138-f2a2-4b1c-80d4-7e08255da0d9">
+      <profileInstance Id="8734b85a-7454-41d3-92ed-02ef1d9afad5" name="StandardProfileL2">
+        <elementDefinition Id="e34d544e-0fea-4ed6-ac5e-1b74119ac791" />
+      </profileInstance>
+      <elementDefinition Id="0caec977-1f8c-4ba3-a7db-8cc9ad9cc73b" />
+    </packageHasProfileInstances>
+    <packageHasProfileInstances Id="1daf8bbf-c72a-4ca9-b32c-69521ccd166b">
+      <profileInstance Id="2aa2f714-db6e-4317-8a5b-182dd91f643d" name="StandardProfileL3">
+        <elementDefinition Id="532ea607-fb19-44b8-8502-3351b05452be" />
+      </profileInstance>
+      <elementDefinition Id="29349502-908c-4fda-9054-c48619c59ed0" />
+    </packageHasProfileInstances>
+  </profileInstances>
+  <packagedElements>
+    <activityRootModelHasActivity>
+      <activity Id="e9007176-a8ba-4742-9595-5dc0b54705ad" name="0101合同信息" isAbstract="false" isLeaf="false" isActiveClass="false" isReentrant="false" isReadOnly="false" isSingleExecution="false">
+        <elementDefinition Id="35b69f5f-ef95-4163-85b0-a310f8ec4771" />
+        <nodes>
+          <initialNode Id="7347352a-7726-44ee-a62c-cc68305f4367" name="Initial1" isLeaf="false">
+            <elementDefinition Id="b25ce000-9e26-4181-9968-098c0d842433" />
+            <flowNodeTargets>
+              <controlFlow Id="25348beb-2d6b-4dd4-9179-7737322bf0cb" isLeaf="false">
+                <opaqueActionMoniker Id="07125b7d-be97-4667-8c68-c3dade755c31" LastKnownName="新增合同信息" />
+                <elementDefinition Id="38f323c8-2a35-404b-9f30-8b2d16d634b1" />
+              </controlFlow>
+            </flowNodeTargets>
+          </initialNode>
+          <opaqueAction Id="07125b7d-be97-4667-8c68-c3dade755c31" name="新增合同信息" isLeaf="false">
+            <elementDefinition Id="d4ddce21-549b-4108-af1e-ffe2a130a04e" />
+            <flowNodeTargets>
+              <controlFlow Id="8dac63e7-a3b9-4b23-8f7a-106cb49dc91a" isLeaf="false">
+                <opaqueActionMoniker Id="e9d2391e-1e85-4858-90d6-d778b7eb4429" LastKnownName="查询合同信息" />
+                <elementDefinition Id="28b24fe2-afb8-4a80-9612-3de71af7a3be" />
+              </controlFlow>
+            </flowNodeTargets>
+          </opaqueAction>
+          <opaqueAction Id="e9d2391e-1e85-4858-90d6-d778b7eb4429" name="查询合同信息" isLeaf="false">
+            <elementDefinition Id="c37caed2-9d82-4bc0-ab92-63489d26c67d" />
+            <flowNodeTargets>
+              <controlFlow Id="63f00e26-1683-4d7d-b893-a15eb21fa783" isLeaf="false">
+                <opaqueActionMoniker Id="234bb65a-a40d-474f-bc91-0cf7285208d3" LastKnownName="新增产品信息" />
+                <elementDefinition Id="2a06e55b-43d0-426f-9c04-757757d7bfb7" />
+              </controlFlow>
+            </flowNodeTargets>
+          </opaqueAction>
+          <opaqueAction Id="234bb65a-a40d-474f-bc91-0cf7285208d3" name="新增产品信息" isLeaf="false">
+            <elementDefinition Id="bef1ef88-fc9a-4b68-870f-71ee86ecbbe5" />
+            <flowNodeTargets>
+              <controlFlow Id="3b666aa7-0d39-485f-8360-6346b8269c52" isLeaf="false">
+                <opaqueActionMoniker Id="cece05f7-1e60-4ea2-9009-e8b86c5879ed" LastKnownName="查询产品信息" />
+                <elementDefinition Id="ae8df5e7-1b64-4769-a740-d2deac5b2b52" />
+              </controlFlow>
+            </flowNodeTargets>
+          </opaqueAction>
+          <opaqueAction Id="cece05f7-1e60-4ea2-9009-e8b86c5879ed" name="查询产品信息" isLeaf="false">
+            <elementDefinition Id="891d4130-2f67-4695-8579-8498f8371f0a" />
+            <flowNodeTargets>
+              <controlFlow Id="105212c9-9f79-4438-ac28-132873bce2c1" isLeaf="false">
+                <opaqueActionMoniker Id="86d83460-2721-434b-aab8-609f14b65485" LastKnownName="新增任务信息" />
+                <elementDefinition Id="cb83938a-28f1-4a02-815d-82f3e24ba83f" />
+              </controlFlow>
+            </flowNodeTargets>
+          </opaqueAction>
+          <opaqueAction Id="86d83460-2721-434b-aab8-609f14b65485" name="新增任务信息" isLeaf="false">
+            <elementDefinition Id="1dadcdee-37a7-49b4-8975-5c9307d8254f" />
+            <flowNodeTargets>
+              <controlFlow Id="696beee1-00d3-4aad-bef5-567dfb7c2f99" isLeaf="false">
+                <opaqueActionMoniker Id="b08a8126-0145-4a90-8cd9-31c0c520f36f" LastKnownName="查询任务信息" />
+                <elementDefinition Id="c54d7c3c-3ea7-4ab4-ba11-6f436409ce64" />
+              </controlFlow>
+            </flowNodeTargets>
+          </opaqueAction>
+          <opaqueAction Id="b08a8126-0145-4a90-8cd9-31c0c520f36f" name="查询任务信息" isLeaf="false">
+            <elementDefinition Id="0b638df9-ccd0-45af-8095-95a18a6630a1" />
+            <flowNodeTargets>
+              <controlFlow Id="7b1aa5f6-d0c9-479b-98b4-4419776c79ab" isLeaf="false">
+                <forkNodeMoniker Id="08f59a02-105b-448e-9331-595c5affe09f" LastKnownName="Fork1" />
+                <elementDefinition Id="13ccc5c8-9d11-4da8-9c7c-5b22a77f180e" />
+              </controlFlow>
+            </flowNodeTargets>
+          </opaqueAction>
+          <opaqueAction Id="c525a334-9ae0-4770-9942-d54b82f9353c" name="新增设计任务明细" isLeaf="false">
+            <elementDefinition Id="889139ae-114c-4b1c-8722-38aa65c799ca" />
+            <flowNodeTargets>
+              <controlFlow Id="c6be500a-de18-4326-98df-8026e0ba9c57" isLeaf="false">
+                <opaqueActionMoniker Id="a8764bbc-49e7-4e10-b671-b625271983a0" LastKnownName="查询设计任务明细" />
+                <elementDefinition Id="5344cbec-2c75-4ddb-a881-e0e2a1d1d5fc" />
+              </controlFlow>
+            </flowNodeTargets>
+          </opaqueAction>
+          <opaqueAction Id="a8764bbc-49e7-4e10-b671-b625271983a0" name="查询设计任务明细" isLeaf="false">
+            <elementDefinition Id="f768dad7-9976-4296-966a-d4982777a35f" />
+            <flowNodeTargets>
+              <controlFlow Id="1d6c1db4-e1a3-4b13-b49a-c071be5cec4f" isLeaf="false">
+                <joinNodeMoniker Id="f6118949-e97b-4c6d-a8c6-cd72e33b06d6" LastKnownName="Join1" />
+                <elementDefinition Id="6763b9b3-3829-47e8-89b6-74c3e5125063" />
+              </controlFlow>
+            </flowNodeTargets>
+          </opaqueAction>
+          <opaqueAction Id="43ec13d2-cf03-4b58-96b9-dc7136909c20" name="新增生产任务明细" isLeaf="false">
+            <elementDefinition Id="0ae28331-3696-4d46-9e21-8be6c34ae27a" />
+            <flowNodeTargets>
+              <controlFlow Id="f37ad948-9066-4cdb-ad21-1b900e785204" isLeaf="false">
+                <opaqueActionMoniker Id="ba9df0d9-fcf9-4180-8a0f-de3345e49125" LastKnownName="查询生产任务明细" />
+                <elementDefinition Id="a2b16d90-ab2e-4404-97e7-e4325f025092" />
+              </controlFlow>
+            </flowNodeTargets>
+          </opaqueAction>
+          <opaqueAction Id="ba9df0d9-fcf9-4180-8a0f-de3345e49125" name="查询生产任务明细" isLeaf="false">
+            <elementDefinition Id="dec2ba19-295e-4967-be94-06bfb4f598d0" />
+            <flowNodeTargets>
+              <controlFlow Id="0a86fcde-8878-4a63-95e6-5f874c03dd89" isLeaf="false">
+                <joinNodeMoniker Id="f6118949-e97b-4c6d-a8c6-cd72e33b06d6" LastKnownName="Join1" />
+                <elementDefinition Id="bd360137-6dd6-4d62-8783-3de259352160" />
+              </controlFlow>
+            </flowNodeTargets>
+          </opaqueAction>
+          <forkNode Id="08f59a02-105b-448e-9331-595c5affe09f" name="Fork1" isLeaf="false">
+            <elementDefinition Id="3475cd6f-9ea8-4599-9e15-c49fa2f1028b" />
+            <flowNodeTargets>
+              <controlFlow Id="63195801-d26d-45d7-8bad-aa75b63260a5" isLeaf="false">
+                <opaqueActionMoniker Id="c525a334-9ae0-4770-9942-d54b82f9353c" LastKnownName="新增设计任务明细" />
+                <elementDefinition Id="a9d6ffda-1ca2-4eb3-b108-6d5682545e92" />
+              </controlFlow>
+              <controlFlow Id="babb6661-5931-4979-82cb-3e738d353fff" isLeaf="false">
+                <opaqueActionMoniker Id="43ec13d2-cf03-4b58-96b9-dc7136909c20" LastKnownName="新增生产任务明细" />
+                <elementDefinition Id="f5ce17fb-6f4a-4020-9e7d-34e73ae8ad63" />
+              </controlFlow>
+            </flowNodeTargets>
+          </forkNode>
+          <joinNode Id="f6118949-e97b-4c6d-a8c6-cd72e33b06d6" name="Join1" isLeaf="false">
+            <elementDefinition Id="84468f5c-0e23-4750-b65e-e0b677454749" />
+            <flowNodeTargets>
+              <controlFlow Id="5d97ffef-ff46-4187-b7e7-61e971731292" isLeaf="false">
+                <activityFinalNodeMoniker Id="ac3025a3-c6c4-4bed-8a20-269dc4f1dfcc" LastKnownName="ActivityFinal1" />
+                <elementDefinition Id="84481326-492f-4692-a23b-bfb3fd38ac1c" />
+              </controlFlow>
+            </flowNodeTargets>
+          </joinNode>
+          <activityFinalNode Id="ac3025a3-c6c4-4bed-8a20-269dc4f1dfcc" name="ActivityFinal1" isLeaf="false">
+            <elementDefinition Id="ff84ba29-b3bb-4c82-a68c-67021473276c" />
+          </activityFinalNode>
+        </nodes>
+      </activity>
+    </activityRootModelHasActivity>
+  </packagedElements>
+  <package Id="5bc805ff-fc63-4c71-8f35-bc1943323338" name="HCJXUML">
+    <elementDefinition Id="6348ac1d-75ba-4a39-8ebf-237333c18d4f" />
+  </package>
+</activityRootModel>

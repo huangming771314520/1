@@ -1,0 +1,72 @@
+﻿@{
+    ViewBag.Title = "SYS_WorkGroup";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var Cols = new Zephyr.Models.sys_roleMenuColumnMapService().GetCurrentUserMenuColumns();
+}
+
+@section scripts{
+    <script src="/Content/js/viewModel/com.viewModel.search.js"></script>
+    <script type="text/javascript">
+        var data = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model));
+        var viewModel = function(){
+            com.viewModel.search.apply(this,arguments);
+            this.deleteClick1=function(){
+                com.message('confirm', this.resx.deleteConfirm, function (b) {
+                    if (b) {
+                        var row=$("#dg").datagrid("getSelected");
+                        com.ajax({
+                            type: 'GET',
+                            url: "/api/Mms/SYS_WorkGroupDetail/GetDelete?id="+row.ID,
+                            cache:false,
+                            async:false,
+                            success: function (d) {
+                                if (d>0) {
+                                    com.message('success', "删除成功！");
+                                    $("#a_search").click();
+                                }
+                            }
+                        });
+                    }
+                   
+                });
+            }
+        }
+        ko.bindingViewModel(new viewModel(data));
+    </script>
+}
+<div class="z-toolbar">
+    <a href="#" plain="true" class="easyui-linkbutton" icon="icon-arrow_refresh" title="刷新" data-bind="click:refreshClick">刷新</a>
+    <a id="a_add" href="#" class="easyui-linkbutton" data-options="iconCls:'icon-add',plain:true" data-bind="click:addClick">新增</a>
+    <a href="#" plain="true" class="easyui-linkbutton" icon="icon-edit" title="编辑" data-bind="click:editClick">编辑</a>
+    <a href="#" plain="true" class="easyui-linkbutton" icon="icon-cross" title="删除" data-bind="click:deleteClick1">删除</a>
+</div>
+
+<div class="container_12" style="position:relative;">
+    <div class="grid_1 lbl">编码</div>
+    <div class="grid_2 val"><input type="text" data-bind="value:form.TeamCode" class="z-txt " /></div>
+    <div class="grid_1 lbl">名称</div>
+    <div class="grid_2 val"><input type="text" data-bind="value:form.TeamName" class="z-txt " /></div>
+
+    <div class="clear"></div>
+    <div class="grid_1 lbl">所在车间</div>
+    <div class="grid_2 val"><input type="text" data-bind="value:form.DepartName,readOnly:true" class="z-txt " /></div>
+    <div class="clear"></div>
+
+    <div class="prefix_9" style="position:absolute;top:5px;height:0;">
+        <a id="a_search" href="#" class="buttonHuge button-blue" data-bind="click:searchClick" style="margin:0 15px;">查询</a>
+        <a id="a_reset" href="#" class="buttonHuge button-blue" data-bind="click:clearClick" style="display:none;">清空</a>
+    </div>
+</div>
+
+<table data-bind="datagrid:grid" id="dg">
+    <thead>
+        <tr>
+            <th field="ID" sortable="true" align="left" width="80" hidden @Html.HideColumn(Cols, "ID")></th>
+            <th field="TeamCode" sortable="true" align="left" width="80" @Html.HideColumn(Cols, "TeamCode")>编码</th>
+            <th field="TeamName" sortable="true" align="left" width="80" @Html.HideColumn(Cols, "TeamName")>名称</th>
+            <th field="DepartID" sortable="true" align="left" width="80" @Html.HideColumn(Cols, "DepartID")>车间编码</th>
+            <th field="DepartName" sortable="true" align="left" width="80" @Html.HideColumn(Cols, "DepartName")>车间名称</th>
+            @*<th field="IsEnable" sortable="true" align="left" width="80" @Html.HideColumn(Cols, "IsEnable") data-options="formatter:function(value,row){ return value == '1' ? '是':'否';}">是否有效</th>*@
+        </tr>
+    </thead>
+</table>

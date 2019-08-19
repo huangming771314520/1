@@ -1,0 +1,286 @@
+﻿@{
+    Zephyr.Models.PMS_ProductPlanDetail ProductPlanDetail = ViewData["PMS_ProductPlanDetail"] as Zephyr.Models.PMS_ProductPlanDetail;
+    var date1 = "";
+    if (ProductPlanDetail.PlanFinishDate == null)
+    {
+        date1 = "";
+        //var date2 = Convert.ToDateTime(project.AdvancePaymentDate).Year + "-" + Convert.ToDateTime(project.AdvancePaymentDate).Month + "-" + Convert.ToDateTime(project.AdvancePaymentDate).Day;
+    }
+    else
+    {
+        date1 = Convert.ToDateTime(ProductPlanDetail.PlanFinishDate).Year + "-" + Convert.ToDateTime(ProductPlanDetail.PlanFinishDate).Month + "-" + Convert.ToDateTime(ProductPlanDetail.PlanFinishDate).Day;
+    }
+
+    //var date = Convert.ToDateTime(ProductPlanDetail.PlanFinishDate).Year + "-" + Convert.ToDateTime(ProductPlanDetail.PlanFinishDate).Month + "-" + Convert.ToDateTime(ProductPlanDetail.PlanFinishDate).Day;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title></title>
+
+    <link href="~/Content/js/jquery-easyui-1.7.0/themes/icon.css" rel="stylesheet" />
+    <link href="~/Content/js/jquery-easyui-1.7.0/themes/default/easyui.css" rel="stylesheet" />
+    <style type="text/css">
+        * {
+            font-family: "微软雅黑";
+        }
+
+        .icon-resultset_previous {
+            background-image: url('../../../../Content/js/jquery-easyui-1.7.0/themes/icons/resultset_first.png');
+        }
+
+        .icon-resultset_next {
+            background-image: url('../../../../Content/js/jquery-easyui-1.7.0/themes/icons/resultset_last.png');
+        }
+
+        .icon-edit {
+            background: url('../../../../Content/js/jquery-easyui-1.7.0/themes/icons/edit.png') no-repeat center center;
+        }
+    </style>
+
+</head>
+<body>
+    <div style="width:360px;height:100%;float:left;margin-right:5px;">
+        <div class="easyui-panel" title="详细信息" style="padding:20px;">
+            <ul data-bind="easyuiTree:tree" id="Ctree"></ul>
+        </div>
+    </div>
+    <div class="easyui-panel" title="生产任务明细" style="padding:20px;float:left;">
+        <div style="margin-bottom:10px" id="toolBtn">
+            <a href="/mms/PMS_ContractInfo/TaskInfoIndex?pID=@ViewData["pID"]&contractCode=@ViewData["contractcode"]&productid=@ViewData["projectdetailid"]&pState=@ViewData["pState"]" class=" easyui-linkbutton" icon="icon-back">返回任务信息</a>
+            <a id="add" href="#" onclick="onAdd()" class="easyui-linkbutton" icon="icon-add">新增</a>
+            <a id="cal" onclick="onCancle()" href="#" class="easyui-linkbutton" icon="icon-cancel">取消</a>
+            <a id="edit" onclick="onEdit()" href="#" class="easyui-linkbutton" icon="icon-edit">编辑</a>
+            <a id="save" href="#" class="easyui-linkbutton" onclick="OnSave()" icon="icon-save">保存</a>
+            <a id="remove" onclick="onDelete()" href="#" class="easyui-linkbutton" icon="icon-remove">删除</a>
+            <a onclick="onUpEntryData('up')" href="#" class="easyui-linkbutton" icon="icon-resultset_previous">上一条</a>
+            <a onclick="onUpEntryData('down')" href="#" class="easyui-linkbutton" icon="icon-resultset_next">下一条</a>
+        </div>
+        <hr style=" height:1px;border:none;border-top:1px solid #efefef;margin:20px 0px;" />
+        <div style="margin-bottom:10px">
+            <input id="ProjectID" hidden value="@ViewData["pID"]" />
+            <input id="ID" hidden value="@ProductPlanDetail.ID">
+            <input id="MainID" hidden value="@ViewData["MainID"]">
+            <input id="ContractCode" class="easyui-textbox" label="合同编号:" prompt="" disabled="disabled" style="width:100%" value="@ViewData["contractCode"]">
+        </div>
+        <div style="margin-bottom:10px">
+            <input id="ProductID" hidden value="@ViewData["ProductID"]">
+            <input class="easyui-textbox" id="ProductName" label="产品名称:" prompt="" disabled="disabled" style="width:100%" value="@ViewData["pName"]">
+        </div>
+        <div style="margin-bottom:10px">
+            <input class="easyui-textbox" label="型号:" prompt="" disabled="disabled" style="width:100%" value="@ViewData["pModel"]">
+        </div>
+        <div style="margin-bottom:10px">
+            <input class="easyui-textbox" label="规格:" prompt="" disabled="disabled" style="width:100%" value="@ViewData["pSpecifications"]">
+        </div>
+
+        <div style="margin-bottom:10px">
+            <input class="easyui-textbox" label="合同台数:" prompt="" disabled="disabled" style="width:100%" value="@ViewData["Quantity"]">
+        </div>
+        <div style="margin-bottom:10px">
+            <input class="easyui-datebox" label="交货日期:" prompt="" disabled="disabled" style="width:300px" value="@ViewData["DeliveryTime"]">
+        </div>
+
+        <div style="margin-bottom:10px">
+            <input id="ProductQuantity" class="easyui-textbox" label="批次生产数:" prompt="" style="width:100%" value="@ProductPlanDetail.ProductQuantity">
+        </div>
+        <div style="margin-bottom:10px">
+            <input id="PlanFinishDate" class="easyui-datebox" label="批次交货期:" prompt="" style="width:300px;" value="@date1">
+        </div>
+    </div>
+
+
+    <script src="~/Content/js/jquery-easyui-1.7.0/jquery.min.js"></script>
+    <script src="~/Content/js/jquery-easyui-1.7.0/jquery.easyui.min.js"></script>
+    <script src="~/Content/js/jquery-easyui-1.7.0/locale/easyui-lang-zh_CN.js"></script>
+    <script src="~/Content/js/core/common.js"></script>
+    <script src="~/Content/js/core/utils.js"></script>
+    <script type="text/javascript">
+        function onCancle() {
+            window.location.reload();
+        }
+        function onEdit() {
+            $("#save").linkbutton('enable');
+            $("#cal").linkbutton('enable');
+            $("#ProductQuantity").textbox('enable');
+            $("#PlanFinishDate").datebox('enable');
+
+        }
+        function setControlDisable() {
+            $("#ProductQuantity").textbox('disable');
+            $("#PlanFinishDate").datebox('disable');
+
+            var pState =@ViewData["pState"];
+            if (pState == 1) {
+                $("#add").linkbutton('disable');
+                $("#edit").linkbutton('disable');
+                $("#remove").linkbutton('disable');
+            }
+            else {
+                $("#add").linkbutton('enable');
+                $("#edit").linkbutton('enable');
+                $("#remove").linkbutton('enable');
+            }
+        }
+        $().ready(function () {
+            setControlDisable();
+            $("#save").linkbutton('disable');
+            $("#cal").linkbutton('disable');
+            if($("#PlanFinishDate").datebox("getValue")==null||$("#PlanFinishDate").datebox("getValue")=="")
+            {
+                $("#PlanFinishDate").datebox("setValue", "");
+            }
+        });
+        function onAdd() {
+            $("#toolBtn a").linkbutton('disable');
+            $("#cal").linkbutton('enable');
+            onEdit();
+            $("#ID").val("");
+            $("#ProductQuantity").textbox("setValue", "");
+            var myDate = new Date();
+            $("#PlanFinishDate").datebox("setValue", myDate.toLocaleDateString());
+
+        }
+        function OnSave() {
+            var quantity = $("#ProductQuantity").val();
+            if (quantity == "" || quantity == null || quantity == "undefined") {
+                com.message('success', "请输入批次生产数！");
+                return;
+            }
+
+            var model = [];
+            model.push({
+                ID: $("#ID").val(),
+                MainID: $("#MainID").val(),
+                ContractCode: $("#ContractCode").val(),
+                ProductID: $("#ProductID").val(),
+                ProductQuantity: $("#ProductQuantity").val(),
+                PlanFinishDate: $("#PlanFinishDate").textbox("getValue"),
+                IsEnable: 1,
+
+            });
+
+            $.ajax({
+                type: "POST",
+                url: '/api/Mms/PMS_ContractInfo/PostProductionTaskDetailOnSave',
+                data: JSON.stringify(model),
+                contentType: 'application/json;charset=utf-8',
+                async: false,
+                success: function (msg) {
+                    if (msg.result > 0) {
+                        com.message('success', "保存成功！");
+                        window.location.reload();
+                    }
+                    $('#Ctree').tree("options").queryParams = { cCode: $("#ContractCode").val() };
+                    $('#Ctree').tree('reload');
+                }
+            })
+        }
+        function onDelete() {
+
+            if (confirm("确定要删除批次生产任务吗?")) {
+                var model = [];
+                model.push({
+                    ID: $("#ID").val(),
+                    MainID: $("#MainID").val(),
+                    ContractCode: $("#ContractCode").val(),
+                    ProductID: $("#ProductID").val(),
+                    ProductQuantity: $("#ProductQuantity").val(),
+                    PlanFinishDate: $("#PlanFinishDate").textbox("getValue"),
+                    IsEnable: 0,
+                });
+                $.ajax({
+                    type: "POST",
+                    url: '/api/Mms/PMS_ContractInfo/PostProductionTaskDetailOnSave',
+                    data: JSON.stringify(model),
+                    contentType: 'application/json;charset=utf-8',
+                    async: false,
+                    success: function (msg) {
+                        if (msg.result > 0) {
+                            com.message('success', "删除成功！");
+                            return;
+                            window.location.reload();
+                        }
+                    }
+                })
+            }
+        }
+        function onUpEntryData(type) {
+            var post = {
+                tid: $("#ID").val(),
+                whereSql: " and ContractCode='" + $("#ContractCode").val() + "' and ProductID='" + $("#ProductID").val() + "'" + " and MainID=" + $("#MainID").val(),
+                table: 'PMS_ProductPlanDetail',
+                type: type
+            }
+            com.ajax({
+                type: "POST",
+                url: '/api/Mms/PMS_ContractInfo/PostProjectUpOrDownData',
+                data: JSON.stringify(post),
+                success: function (result) {
+                    if (result.length > 0) {
+                        $("#ID").val(result[0].ID);
+                        $("#ProductQuantity").textbox("setValue", result[0].ProductQuantity);
+                        $("#PlanFinishDate").datebox("setValue", result[0].PlanFinishDate);
+                    }
+                    else {
+                        com.message('success', "没有数据了！");
+                    }
+                }
+            })
+        }
+
+        $('#Ctree').tree({
+            method: 'GET',
+            queryParams: { cCode: $("#ContractCode").val() },
+            lines: true,
+            animate: true,
+            url: '/api/Mms/PMS_ContractInfo/GetTaskTree',
+            loadFilter: function (d) {
+                if (d != null && d.length > 0) {
+                    var jsonData = eval(d);
+                    return utils.toTreeData(jsonData, 'id', 'pid', "children");
+                }
+                else {
+                    return '';
+                }
+            },
+            onSelect: function (node) {
+                var pState =@ViewData["pState"];
+
+                if (node.pid == "0") {
+                    window.location.href = "/mms/PMS_ContractInfo/ContractInfoIndex?projectID=" + node.id.substring(1, node.id.length);
+                } else if (node.pid.substring(0, 1) == "P") {
+                    window.location.href = "/mms/PMS_ContractInfo/ProductInfoIndex?pID=" + $("#ProjectID").val() + "&cCode=" + $("#ContractCode").val() + "&pName=0&projectDetailID=0&sousid=" + node.id.substring(1, node.id.length)+ "&pState=" + pState;
+                } else if (node.pid.substring(0, 1) == "A") {
+                    $.get("/api/Mms/PMS_ContractInfo/GetProjectDetailData2?id=" + node.pid.substring(1, node.pid.length), function (result) {
+                        if (result.result) {
+                            window.location.href = '/mms/PMS_ContractInfo/TaskInfoIndex?pID=' + $("#ProjectID").val() + '&contractCode=' + $("#ContractCode").val() + "&productID=" + node.pid.substring(1, node.pid.length) + "&pName=" + result.data[0].ProductName + "&pModel=" + result.data[0].Model + "&pSpecifications=" + result.data[0].Specifications + "&DeliveryTime=" + result.data[0].DeliveryTime + "&Quantity=" + result.data[0].Quantity+ "&pState=" + pState;
+                        }
+                    })
+
+                }
+                else if (node.pid.substring(0, 1) == "B") {
+                    $.get("/api/Mms/PMS_ContractInfo/GetProjectDetailData2?id=" + node.text.substr(node.text.indexOf('&') + 1, node.text.lastIndexOf('&') - node.text.indexOf('&') - 1), function (result) {
+                        if (result.result) {
+                            window.location.href = '/mms/PMS_ContractInfo/DesignTaskDetailedIndex?pID=' + $("#ProjectID").val() + '&contractCode=' + $("#ContractCode").val() + "&productID=" + node.text.substr(node.text.indexOf('&') + 1, node.text.lastIndexOf('&') - node.text.indexOf('&') - 1) + "&pName=" + result.data[0].ProductName + "&pModel=" + result.data[0].Model + "&pSpecifications=" + result.data[0].Specifications + "&MainID=" + node.pid.substring(1, node.pid.length) + "&id=" + node.id+ "&pState=" + pState;
+                        }
+                    })
+                }
+                else if (node.pid.substring(0, 1) == "D") {
+                    $.get("/api/Mms/PMS_ContractInfo/GetProjectDetailData2?id=" + node.text.substr(node.text.indexOf('&') + 1, node.text.lastIndexOf('&') - node.text.indexOf('&') - 1), function (result) {
+                        if (result.result) {
+                            window.location.href = '/mms/PMS_ContractInfo/ProductionTaskDetailedIndex?pID=' + $("#ProjectID").val() + '&contractCode=' + $("#ContractCode").val() + "&productID=" + node.text.substr(node.text.indexOf('&') + 1, node.text.lastIndexOf('&') - node.text.indexOf('&') - 1) + "&pName=" + result.data[0].ProductName + "&pModel=" + result.data[0].Model + "&pSpecifications=" + result.data[0].Specifications + "&Quantity=" + result.data[0].Quantity + "&DeliveryTime=" + result.data[0].DeliveryTime + "&MainID=" + node.pid.substring(1, node.pid.length) + "&id=" + node.id+ "&pState=" + pState;
+                        }
+                    })
+                }
+            }
+
+        });
+
+    </script>
+
+</body>
+</html>

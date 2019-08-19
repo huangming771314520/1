@@ -1,0 +1,166 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Root>
+
+
+
+  <Excel name="SYS_BN_Department">
+    <tableName>SYS_BN_Department</tableName>
+    <ExcelTempletURL>\ExcelTemplet\部门管理基础数据表.xls|部门管理基础数据表</ExcelTempletURL>
+    <FieldList>
+      <ExcelFields>
+        [DepartmentCode]
+        ,[DepartmentName]
+        ,[ParentName]
+        ,[IsWorkshop]
+        ,[IsEnable]
+      </ExcelFields>
+      <ConvertFields>
+
+      </ConvertFields>
+    </FieldList>
+  </Excel>
+
+
+  <Excel name="SYS_BN_User">
+    <tableName>SYS_BN_User</tableName>
+    <ExcelTempletURL>\ExcelTemplet\员工管理基础数据表.xls|员工管理基础数据表</ExcelTempletURL>
+    <FieldList>
+      <ExcelFields>
+        [UserCode]
+        ,[UserName]
+        ,[DepartmentName]
+        ,[DepartmentCode]
+        ,[IsEnable]
+      </ExcelFields>
+      <ConvertFields>
+      
+      </ConvertFields>
+    </FieldList>
+  </Excel>
+
+
+  <Excel name="SYS_BN_Warehouse">
+    <tableName>SYS_BN_Warehouse</tableName>
+    <ExcelTempletURL>\ExcelTemplet\仓库管理基础数据表.xls|仓库管理基础数据表</ExcelTempletURL>
+    <FieldList>
+      <ExcelFields>
+        [WarehouseCode]
+        ,[WarehouseName]
+        ,[StoreKeeper]
+        ,[WarehouseType]
+        ,[IsEnable]
+        ,[UserCode]
+      </ExcelFields>
+      <ConvertFields>
+
+      </ConvertFields>
+    </FieldList>
+  </Excel>
+
+
+
+  <Excel name="SYS_BN_Supplier">
+    <tableName>SYS_BN_Supplier</tableName>
+    <ExcelTempletURL>\ExcelTemplet\供应商基础数据表.xls|供应商基础数据表</ExcelTempletURL>
+    <FieldList>
+      <ExcelFields>
+        [SupplierCode]
+        ,[SupplierName]
+        ,[SupplierForShort]
+        ,[IsEnable]
+      </ExcelFields>
+      <ConvertFields>
+
+      </ConvertFields>
+    </FieldList>
+  </Excel>
+
+  <Excel name="SYS_PartType">
+    <tableName>SYS_PartType</tableName>
+    <ExcelTempletURL>\ExcelTemplet\零件分类基础数据表.xls|零件分类基础数据表</ExcelTempletURL>
+    <FieldList>
+      <ExcelFields>
+        [PartTypeCode]
+        ,[TypeName]
+        ,[PPartTypeCode]
+        ,[PTypeName]
+      </ExcelFields>
+      <ConvertFields>
+
+      </ConvertFields>
+    </FieldList>
+  </Excel>
+
+  <Excel name="SYS_Part">
+    <tableName>SYS_Part</tableName>
+    <ExcelTempletURL>\ExcelTemplet\零件基础数据表.xls|零件基础数据表</ExcelTempletURL>
+    <FieldList>
+      <ExcelFields>
+         [PartCode]
+        ,[PartName]
+        ,[PartTypeID]
+        ,[InventoryCode]
+        ,[InventoryName]
+        ,[Model]
+        ,[Spec]
+        ,[Weight]
+        ,[SafetyStock]
+        ,[MaxStock]
+        ,[MinStock]
+        ,[PurchaseAdvanceTime]
+        ,[EconomicBatchQuantity]
+        ,[MinPackQuantity]
+        ,[EnconanmicOrderQuantity]
+        ,[QuantityUnit]
+        ,[FigureCode]
+        ,[QualityCode]
+        ,[CorrespondingBarcode]
+        ,[IsSelfMade]
+        ,[IsSupplyMade]
+        ,[IsCastforgeMatch]
+        ,[IsOutsouceWeiding]
+        ,[IsElectroHydraulicMatch]
+        ,[IsMarketMatch]
+        ,[WarehouseCode]
+        ,[WarehouseName]
+        ,[IsEnable]
+      </ExcelFields>
+      <ConvertFields>
+
+      </ConvertFields>
+    </FieldList>
+  </Excel>
+
+  <Excel name="SYS_BOM">
+    <tableName>SYS_BOM</tableName>
+    <ExcelTempletURL>\ExcelTemplet\BOM基础数据表.xls|BOM基础数据表</ExcelTempletURL>
+    <FieldList>
+      <ExcelFields>
+        [PartCode]
+        ,[PartName]
+        ,[PartQuantity]
+        ,[MaterialCode]
+        ,[ParentCode]
+        ,[Weight]
+        ,[Totalweight]
+        ,[PartFigureCode]
+        ,[InventoryCode]
+        ,[InventoryName]
+
+        ,[MaterialInventoryCode]
+        ,[MaterialInventoryName]
+        ,[MaterialQuantity]
+        ,[VersionCode]
+        ,[IsEnable]
+
+      </ExcelFields>
+      <ConvertFields>
+
+      </ConvertFields>
+    </FieldList>
+  </Excel>
+
+</Root>
+
+
+

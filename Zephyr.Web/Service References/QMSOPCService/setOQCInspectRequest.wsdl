@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="utf-8"?>
+<wsdl:definitions xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:wsaw="http://www.w3.org/2006/05/addressing/wsdl" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:ns="http://impl.webservice.spc.com" xmlns:ns1="http://org.apache.axis2/xsd" targetNamespace="http://impl.webservice.spc.com" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+  <wsdl:documentation>setOQCInspectRequest</wsdl:documentation>
+  <wsdl:types>
+    <xs:schema attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://impl.webservice.spc.com">
+      <xs:element name="setOQCInspectRequest">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element minOccurs="0" name="oqcJSON" nillable="true" type="xs:string" />
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="setOQCInspectRequestResponse">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element minOccurs="0" name="return" nillable="true" type="xs:string" />
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="setIQCInspectRequest">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element minOccurs="0" name="iqcJSON" nillable="true" type="xs:string" />
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="setIQCInspectRequestResponse">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element minOccurs="0" name="return" nillable="true" type="xs:string" />
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+    </xs:schema>
+  </wsdl:types>
+  <wsdl:message name="setOQCInspectRequestRequest">
+    <wsdl:part name="parameters" element="ns:setOQCInspectRequest" />
+  </wsdl:message>
+  <wsdl:message name="setOQCInspectRequestResponse">
+    <wsdl:part name="parameters" element="ns:setOQCInspectRequestResponse" />
+  </wsdl:message>
+  <wsdl:message name="setIQCInspectRequestRequest">
+    <wsdl:part name="parameters" element="ns:setIQCInspectRequest" />
+  </wsdl:message>
+  <wsdl:message name="setIQCInspectRequestResponse">
+    <wsdl:part name="parameters" element="ns:setIQCInspectRequestResponse" />
+  </wsdl:message>
+  <wsdl:portType name="setOQCInspectRequestPortType">
+    <wsdl:operation name="setOQCInspectRequest">
+      <wsdl:input wsaw:Action="urn:setOQCInspectRequest" message="ns:setOQCInspectRequestRequest" />
+      <wsdl:output wsaw:Action="urn:setOQCInspectRequestResponse" message="ns:setOQCInspectRequestResponse" />
+    </wsdl:operation>
+    <wsdl:operation name="setIQCInspectRequest">
+      <wsdl:input wsaw:Action="urn:setIQCInspectRequest" message="ns:setIQCInspectRequestRequest" />
+      <wsdl:output wsaw:Action="urn:setIQCInspectRequestResponse" message="ns:setIQCInspectRequestResponse" />
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:binding name="setOQCInspectRequestSoap11Binding" type="ns:setOQCInspectRequestPortType">
+    <soap:binding transport="http://schemas.xmlsoap.org/soap/http" />
+    <wsdl:operation name="setOQCInspectRequest">
+      <soap:operation soapAction="urn:setOQCInspectRequest" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="setIQCInspectRequest">
+      <soap:operation soapAction="urn:setIQCInspectRequest" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:binding name="setOQCInspectRequestSoap12Binding" type="ns:setOQCInspectRequestPortType">
+    <soap12:binding transport="http://schemas.xmlsoap.org/soap/http" />
+    <wsdl:operation name="setOQCInspectRequest">
+      <soap12:operation soapAction="urn:setOQCInspectRequest" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="setIQCInspectRequest">
+      <soap12:operation soapAction="urn:setIQCInspectRequest" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:binding name="setOQCInspectRequestHttpBinding" type="ns:setOQCInspectRequestPortType">
+    <http:binding verb="POST" />
+    <wsdl:operation name="setOQCInspectRequest">
+      <http:operation location="setOQCInspectRequest" />
+      <wsdl:input>
+        <mime:content part="parameters" type="application/xml" />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:content part="parameters" type="application/xml" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="setIQCInspectRequest">
+      <http:operation location="setIQCInspectRequest" />
+      <wsdl:input>
+        <mime:content part="parameters" type="application/xml" />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:content part="parameters" type="application/xml" />
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name="setOQCInspectRequest">
+    <wsdl:port name="setOQCInspectRequestHttpSoap11Endpoint" binding="ns:setOQCInspectRequestSoap11Binding">
+      <soap:address location="http://192.168.1.100:8080/SPC/services/setOQCInspectRequest.setOQCInspectRequestHttpSoap11Endpoint/" />
+    </wsdl:port>
+    <wsdl:port name="setOQCInspectRequestHttpSoap12Endpoint" binding="ns:setOQCInspectRequestSoap12Binding">
+      <soap12:address location="http://192.168.1.100:8080/SPC/services/setOQCInspectRequest.setOQCInspectRequestHttpSoap12Endpoint/" />
+    </wsdl:port>
+    <wsdl:port name="setOQCInspectRequestHttpEndpoint" binding="ns:setOQCInspectRequestHttpBinding">
+      <http:address location="http://192.168.1.100:8080/SPC/services/setOQCInspectRequest.setOQCInspectRequestHttpEndpoint/" />
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>

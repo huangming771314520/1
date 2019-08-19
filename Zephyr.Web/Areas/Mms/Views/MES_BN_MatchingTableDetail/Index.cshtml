@@ -1,0 +1,340 @@
+﻿@{
+    ViewBag.Title = "MES_BN_MatchingTableDetail";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@section scripts{
+    <script src="/Content/js/viewModel/com.viewModel.searchEdit.js"></script>
+    <script type="text/javascript">
+        using(['validatebox','combotree','numberspinner','combobox','lookup','datebox','datetimebox','combogrid'],easyuifix.datagrid_editor_extend);
+
+        var viewModel = function(data){
+            var self = this;
+            com.viewModel.searchEdit.apply(self,arguments);
+            this.grid.pagination= false;
+            this.grid.url = '';
+            //this.grid = {
+            //    size: { w: '100%', h: $(".z-toolbar").height() + $(".container_12").height() + $('.easyui-tabs').height() + 15 },
+            //    queryParams: ko.observable(),
+            //    pagination: false,
+            //    //singleSelect: self.singleSelect,
+            //    checkOnSelect: true,
+            //    selectOnCheck: false,
+            //    singleSelect: true
+            //};
+            this.searchClick = function () {
+                param = ko.toJS(this.form);
+                this.grid.url = self.urls.query;
+                //this.grid.queryParams(param);
+                //console.log(param);
+                //this.grid.queryParams({ContractCode:self.form.ContractCode(),ProjectDetailID:self.form.ProjectDetailID(),DesignTaskCode:self.form.DesignTaskCode()});
+                this.grid.queryParams({ ContractCode: self.form.ContractCode(), ProjectDetailID: self.form.ProjectDetailID(), Type: self.form.Type(), ProductType: self.form.ProductType()});
+            };
+            this.SearchDialog = function () {
+                var setting = {
+                    type: this.type,
+                    targetField: this.targetField,
+                    sourceField: this.sourceField,
+                    settingArray: this.settingArray
+                }
+                //settingArray 0:width 1:height 2:xmlName
+                var target = parent.$('#CommonSearchDialog').length ? parent.$('#CommonSearchDialog') : parent.$('<div id="CommonSearchDialog"></div>').appendTo('body');
+                utils.clearIframe(target);
+                var opt;
+                opt = { title: '列表', width: setting.settingArray[0], height: setting.settingArray[1], modal: true, collapsible: false, minimizable: false, maximizable: true, closable: true };
+                opt.content = "<iframe src='/mms/home/CommonDialog?xmlName=" + setting.settingArray[2] + "' style='height:100%;width:100%;border:0;' frameborder='0'></iframe>";  //frameborder="0" for ie7
+                params = { xmlName: setting.settingArray[2] };
+                opt.paramater = params;
+                opt.onSelect = function (data) {
+                    if (!data[0].PartCode) {
+                        alert("请先维护项目零件！");
+                        return;
+                    }
+                    //console.log(data);
+                    self.grid.datagrid('loadData', { total: 0, rows: [] });
+                    self.form.ContractCode(data[0].ContractCode);
+                    self.form.ProductName(data[0].ProductName);
+                    self.form.ProjectName(data[0].ProjectName);
+                    self.form.ProjectDetailID(data[0].ProjectDetailID);
+                    self.form.ProductType(data[0].ProductType);
+                    self.form.Model(data[0].Model);
+                    self.form.Specifications(data[0].Specifications);
+                    //self.form.ProductPlanCode(data[0].ProductPlanCode);
+                    //self.form.DesignTaskCode(data[0].DesignTaskCode);
+                    //console.log(data);
+                    com.ajax({
+                        type: 'GET',
+                        url: '/api/Mms/MES_BN_MatchingTableDetail/GetIsExit?ContractCode=' + data[0].ContractCode + '&ProjectDetailID=' + data[0].ProjectDetailID,
+                        //url: '/api/Mms/MES_BN_MatchingTableDetail/GetIsExit?ContractCode='+data[0].ContractCode+'&ProjectDetailID='+data[0].ProjectDetailID+'&ProductPlanCode='+data[0].ProductPlanCode,
+                        cache: false,
+                        async: false,
+                        success: function (d) {
+                            //console.log(d);
+                            if (d > 0) {
+                                //if (confirm("是否覆盖!")) {
+                                    com.ajax({
+                                        type: 'GET',
+                                        url: '/api/Mms/SYS_BOM/GetBom_Update?pCode=' + data[0].PartCode+"&cCode="+data[0].ContractCode+"&pID="+data[0].ProjectDetailID,
+                                        cache: false,
+                                        async: false,
+                                        success: function (bomList) { }
+                                    });
+                                //}
+                                self.searchClick();
+                            } else {
+                                com.ajax({
+                                    type: 'GET',
+                                    url: "/api/Mms/MES_BN_MatchingTableDetail/GetValue?text=采购供应",
+                                    cache: false,
+                                    async: false,
+                                    success: function (v) {
+                                        //console.log(v);
+                                        com.ajax({
+                                            type: 'GET',
+                                            url: '/api/Mms/SYS_BOM/GetBom?pCode=' + data[0].PartCode+"&cCode="+data[0].ContractCode+"&pID="+data[0].ProjectDetailID,
+                                            cache: false,
+                                            async: false,
+                                            success: function (bomList) {
+
+                                                for (var i = 0; i < bomList.length; i++) {
+
+                                                    com.ajax({
+                                                        type: 'GET',
+                                                        url: self.urls.newkey,
+                                                        cache: false,
+                                                        async: false,
+                                                        success: function (id) {
+
+                                                            var jsonstr = new Object();
+                                                            jsonstr.ID = id;
+                                                            jsonstr.ContractCode = data[0].ContractCode;
+                                                            jsonstr.ProjectName = data[0].ProjectName;
+                                                            jsonstr.ProductName = data[0].ProductName;
+                                                            jsonstr.PartFigureCode = bomList[i].PartFigureCode;
+                                                            jsonstr.ProductType = data[0].ProductType;
+                                                            jsonstr.Model = data[0].Model;
+                                                            jsonstr.Specifications = data[0].Specifications;
+                                                            jsonstr.ProjectDetailID = data[0].ProjectDetailID;
+                                                            //jsonstr.ProductPlanCode=data[0].ProductPlanCode;
+                                                            //jsonstr.Type = bomList[i].IsSelfMade == 0 ? v : 1;
+                                                            //jsonstr.TypeName = bomList[i].IsSelfMade == 0 ? "采购供应" : "加工件";
+                                                            jsonstr.Type = bomList[i].IsSelfMade;
+                                                            jsonstr.TypeName = bomList[i].IsSelfMade == 0 ? "成品件" : "加工件";
+                                                            jsonstr.PartCode = bomList[i].PartCode;
+                                                            jsonstr.PartName = bomList[i].PartName;
+                                                            jsonstr.PPartCode = bomList[i].ParentCode;
+                                                            jsonstr.PPartName = bomList[i].ParentName;
+                                                            jsonstr.BomQuantity = bomList[i].PartQuantityAll;
+                                                            jsonstr.TotalStock = bomList[i].TotalStock;
+                                                            jsonstr.NeedQuantity = data[0].Quantity * bomList[i].PartQuantityAll;
+                                                            jsonstr.IsMaterial = 0;
+                                                            jsonstr.IsEnable = 1;
+                                                            //jsonstr.DesignTaskCode=data[0].DesignTaskCode
+                                                            self.grid.datagrid('appendRow', jsonstr);
+                                                        }
+                                                    });
+
+                                                }
+                                                self.saveClick();
+                                            }
+                                        });
+                                    }
+                                });
+
+
+                            }
+                        }
+                    });
+
+
+                };
+                target.window(opt);
+            }
+
+            this.audit1Click = function () {
+                if (self.form.ContractCode() == "") {
+                    com.message('success', "请先选择项目！");
+                    return;
+                }
+                //var whereSql="ContractCode='"+self.form.ContractCode()+"' and ProjectDetailID='"+self.form.ProjectDetailID()+"'";
+                com.ajax({
+                    type: 'GET',
+                    url: self.urls.audit1,
+                    data: { ContractCode: self.form.ContractCode(), ProjectDetailID: self.form.ProjectDetailID() },
+                    success: function (d) {
+                        if (!d) {
+                            com.message('success', "单据已经审核过！");
+                        } else if (d == "1") {
+                            com.message('success', "请先保存再审核！");
+                        } else if (d == "2") {
+                            com.message('success', "请选择配套类型和是否加工件后再审核！");
+                        } else if (d == "3") {
+                            com.message('success', "审核成功！");
+                            self.searchClick();
+                        } else if (d == "4") {
+                            com.message('success', "审核失败！");
+                        }
+
+
+                    }
+                });
+            };
+            };
+
+
+
+        var data = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model));
+        ko.bindingViewModel(new viewModel(data));
+        function Set(type,typeName) {
+            var row = $('#t').datagrid('getChecked');
+            if (row.length==0) {
+                com.message('warning',"请选择一条数据！");
+                return;
+            }
+            var  ids="(";
+
+            for (var i = 0; i < row.length; i++) {
+                ids+="'"+row[i].ID+"',"
+            }
+            ids+=")"
+            var post = {
+                ids:ids,
+                type:type,
+                typeName:typeName
+            };
+
+            com.ajax({
+                type:'POST',
+                url:"/api/Mms/MES_BN_MatchingTableDetail/PostSetType",
+                data:JSON.stringify(post),
+                success:function(d){
+                    com.message('success',d);
+                    $('#a_search').click();
+                }
+            });
+        }
+    </script>
+}
+<div class="z-toolbar">
+    <a href="#" plain="true" class="easyui-linkbutton" icon="icon-arrow_refresh" title="刷新" data-bind="click:refreshClick">刷新</a>
+    <a href="#" plain="true" class="easyui-linkbutton" icon="icon-edit" title="编辑" data-bind="click:editClick">编辑</a>
+    @*<a href="#" plain="true" class="easyui-linkbutton" icon="icon-cross" title="删除" data-bind="click:deleteClick">删除</a>*@
+    <a href="#" plain="true" class="easyui-linkbutton" icon="icon-save" title="保存" data-bind="click:saveClick">保存</a>
+    <a id="a_add" href="#" class="easyui-linkbutton" data-options="iconCls:'icon-search',plain:true" data-bind="event: { click: function(data, event) {SearchDialog.call({type:'form',targetField:'Name',sourceField:'Name','settingArray':['850','400','MatchingChooseProjectPart']})}}">选择项目</a>
+    <a href="#" plain="true" class="easyui-linkbutton" icon="icon-user-accept" title="保存" data-bind="click:audit1Click">审核</a>
+    <a href="javascript:void(0)" class="easyui-linkbutton" data-options="iconCls:'icon-bullet_tick',plain:true" onclick="Set(1,'加工件')">自制件</a>
+    <a href="javascript:void(0)" class="easyui-linkbutton" data-options="iconCls:'icon-bullet_tick',plain:true" onclick="Set(2,'采购供应')">采购供应</a>
+    <a href="javascript:void(0)" class="easyui-linkbutton" data-options="iconCls:'icon-bullet_tick',plain:true" onclick="Set(3,'电液配套')">电液配套</a>
+    <a href="javascript:void(0)" class="easyui-linkbutton" data-options="iconCls:'icon-bullet_tick',plain:true" onclick="Set(4,'门市配套')">门市配套</a>
+    <a href="javascript:void(0)" class="easyui-linkbutton" data-options="iconCls:'icon-bullet_tick',plain:true" onclick="Set(5,'铸件配套')">铸件配套</a>
+    <a href="javascript:void(0)" class="easyui-linkbutton" data-options="iconCls:'icon-bullet_tick',plain:true" onclick="Set(6,'外协配套')">外协配套</a>
+</div>
+
+
+
+
+<div class="container_12" style="position:relative;">
+    <div class="grid_1 lbl">合同编码</div>
+    <div class="grid_2 val"><input type="text" data-bind="value:form.ContractCode,readOnly : true" class="z-txt " /></div>
+    <div class="grid_1 lbl">工程项目</div>
+    <div class="grid_2 val"><input type="text" data-bind="value:form.ProjectName,readOnly : true" class="z-txt " /></div>
+    <div class="grid_1 lbl">产品名称</div>
+    <div class="grid_2 val"><input type="text" data-bind="value:form.ProductName,readOnly : true" class="z-txt " /></div>
+    <div class="clear"></div>
+    <div class="grid_1 lbl">产品类型</div>
+    <div class="grid_2 val"><input type="text" data-bind="comboboxValue:form.ProductType,readOnly : true" data-options="url:'/Commons/GetComboboxList?CodeType=ProductType',valueField:'value',textField:'text'" class="z-txt easyui-combobox" /></div>
+    <div class="grid_1 lbl">型号</div>
+    <div class="grid_2 val"><input type="text" data-bind="value:form.Model,readOnly : true" class="z-txt " /></div>
+    <div class="grid_1 lbl">规格</div>
+    <div class="grid_2 val"><input type="text" data-bind="value:form.Specifications,readOnly : true" class="z-txt " /></div>
+
+    <div class="clear"></div>
+    <div class="grid_1 lbl">配套类型</div>
+    <div class="grid_2 val"><input type="text" data-bind="comboboxValue:form.Type,readOnly : true" data-options="url:'/Commons/GetComboboxList?CodeType=PeiTao',valueField:'value',textField:'text'" class="z-txt easyui-combobox" /></div>
+    <div class="clear"></div>
+
+    <div class="prefix_9" style="position:absolute;top:5px;height:0;">
+        <a id="a_search" href="#" class="buttonHuge button-blue" data-bind="click:searchClick" style="margin:0 15px;">查询</a>
+        <a id="a_reset" href="#" class="buttonHuge button-blue" data-bind="click:clearClick">清空</a>
+    </div>
+</div>
+
+<table data-bind="datagrid:grid" style="display:none" id="t">
+    <thead>
+        <tr>
+            <th field="ID" sortable="true" align="left" width="40" checkbox="true">ID</th>
+            <th field="ContractCode" hidden sortable="true" align="left" width="80">合同编码</th>
+            <th field="ProjectName" hidden sortable="true" align="left" width="80">项目名称</th>
+            <th field="ProductName" hidden sortable="true" align="left" width="80">产品名称</th>
+            <th field="ProductType" hidden sortable="true" align="left" width="100" data-options="formatter:function(value,row){return com.formatCombobox('ProductType',value);}">产品类型</th>
+            <th field="Model" hidden sortable="true" align="left" width="120">型号</th>
+            <th field="Specifications" hidden sortable="true" align="left" width="80">规格</th>
+            <th field="PPartCode" sortable="true" hidden align="left" width="80">父零件编号</th>
+            <th field="PPartName" sortable="true" hidden align="left" width="80">父零件名称</th>
+            <th field="PartFigureCode" sortable="true" align="left" width="150">子零件图号</th>
+            <th field="PartCode" sortable="true" align="left" width="150" hidden>子零件编号</th>
+            <th field="PartName" sortable="true" align="left" width="150">子零件名称</th>
+            <th field="MaterialCode" sortable="true" align="left" width="150">材质</th>
+            <th field="IsEnable" sortable="true" align="left" width="60" data-options="formatter:function(value,row){ return value == '1' ? '是':'否';}">
+                是否有效
+            </th>
+            <th field="BomQuantity" sortable="true" align="left" width="80">单台数量</th>
+            <th field="NeedQuantity" sortable="true" align="left" width="80">需求数量</th>
+            <th field="TotalStock" sortable="true" align="left" width="80">库存数量</th>
+            <th field="Type" sortable="true" align="left" width="80" editor="text" hidden>配套类型编码</th>
+            <th field="TypeName" sortable="true" align="left" width="60" editor="{type:'combogrid',options:{
+                        url:'/Commons/GetCommonSearchList',
+                    queryParams : {
+                     tableName:'[sys_code]',
+                         searchField:'[Text],[Value]',
+                         firstFightField:'[Text]',
+                whereSql:'CodeType=\'PeiTao\'',
+                                     CacheKey:'sys_code_PeiTao',
+                                     CacheTime:'480',
+                                     connName:'Sys'
+                            },
+                            method: 'GET',
+                            panelWidth:100,
+                            fit:true,
+                            delay: 1000,
+                            mode: 'remote',
+                            value: 'Value',
+                            idField: 'Text',
+                            textField: 'Text',
+                            columns:[[
+                            { field: 'Value',title: '编码',width: 200,hidden:true },
+                            { field: 'Text',title: '配套类型',width: 90 }
+                                ]],
+                    onSelect: function (rowIndex, rowData) {
+                           var index =  $('#t').datagrid('getRowIndex',$('#t').datagrid('getSelected'));
+                           $('#t').datagrid('getEditor',{index:index,field:'TypeName'}).target.val(rowData['Text']);
+                           $('#t').datagrid('getEditor',{index:index,field:'Type'}).target.val(rowData['Value']);
+                if(rowData['Value']=='1')
+                $('#t').datagrid('getEditor',{index:index,field:'IsMaterial'}).target.combobox('setValue','0');
+                else
+                $('#t').datagrid('getEditor',{index:index,field:'IsMaterial'}).target.combobox('setValue','1');
+                },
+                 keyHandler:{
+                   query:function(keyword) {
+                   var queryParams=$(this).combogrid('grid').datagrid('options').queryParams;
+                   queryParams.keyword=keyword;
+                   $(this).combogrid('grid').datagrid('options').queryParams=queryParams;
+                   $(this).combogrid('grid').datagrid('reload');
+                  $(this).combogrid('setValue', keyword);
+                }}
+                }}">配套类型</th>
+
+            <th field="IsMaterial" sortable="true" align="left" width="60" data-options="formatter:function(value,row){ return value == '1' ? '是':'否';}" editor="{type:'combobox',
+            options:{data:[{value:'1',text:'是'},{value:'0',text:'否'}],panelWidth:100,panelHeight: 100,valueField: 'value',textField: 'text'}}">
+                是否包料
+            </th>
+            <th field="ApproveState" sortable="true" align="left" width="80" data-options="formatter:function(value,row){ return value == '1' ? '已审核':'未审核';}">审核状态</th>
+
+            <th field="CreatePerson" hidden sortable="true" align="left" width="80" formatter="com.formatTime">创建人</th>
+            <th field="CreateTime" hidden sortable="true" align="left" width="80" formatter="com.formatTime">创建时间</th>
+            <th field="ModifyPerson" hidden sortable="true" align="left" width="80" formatter="com.formatTime">更新人</th>
+            <th field="ModifyTime" hidden sortable="true" align="left" width="80" formatter="com.formatTime">更新时间</th>
+            @*<th field="DesignTaskCode" hidden sortable="true" align="left" width="80" >设计任务编码</th>*@
+        </tr>
+    </thead>
+</table>

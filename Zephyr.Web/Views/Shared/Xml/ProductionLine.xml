@@ -1,0 +1,16 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<settings lookupType="LineCode" defaultOrderBy='LineCode'>
+  <module>Mms</module>
+  <select>
+
+    [LineCode] as LineCode ,[LineName] as LineName
+  </select>
+  <from>
+    [XYHP_Mes].[dbo].[EQP_BD_ProductionLine]
+  </from>
+  <where defaultForAll='true' defaultCp='equal' defaultIgnoreEmpty='true' >
+    <field name='LineCode'         cp='like'  ></field>
+    <field name='LineName'         cp='like'       ></field>
+
+  </where>
+</settings>

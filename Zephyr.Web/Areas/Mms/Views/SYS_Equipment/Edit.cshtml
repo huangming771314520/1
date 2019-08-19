@@ -1,0 +1,129 @@
+﻿@{
+    ViewBag.Title = "SYS_EquipmentDetail";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@section scripts{
+    <script src="/Content/js/viewModel/com.viewModel.edit.js"></script>
+    <script type="text/javascript">
+        var myself;
+        var viewModel = function(data){
+            var self = this;
+            com.viewModel.edit.apply(self,arguments);
+            myself=self;
+            this.grid0.size={w:8,h:151};
+        }
+        var data = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model));
+        ko.bindingViewModel(new viewModel(data));
+    </script>
+}
+
+<div class="z-toolbar">
+    <a id="a_save" href="#" plain="true" class="easyui-linkbutton" icon="icon-save" data-bind="click:readonly()?null:saveClick,linkbuttonDisable:readonly" title="保存">保存</a>
+    @*<a id="a_undo" href="#" plain="true" class="easyui-linkbutton" icon="icon-undo" data-bind="click:readonly()?null:rejectClick,linkbuttonDisable:readonly" title="撤消">撤消</a>*@
+    <a id="a_audit" href="#" plain="true" class="easyui-linkbutton" icon="icon-user-accept" data-bind="click:auditClick,easyuiLinkbutton:approveButton" title="审核">审核</a>
+    @*<a id="a_printer" href="#" plain="true" class="easyui-linkbutton" icon="icon-printer" title="打印" data-bind="click:printClick">打印</a>
+    <div class="datagrid-btn-separator"></div>
+    <a id="a_other" href="#" class="easyui-splitbutton" data-options="menu:'#divother',iconCls:'icon-application_go'" title="其他">其他</a>
+    <div class="datagrid-btn-separator"></div>
+    <a id="a_first" href="#" plain="true" class="easyui-linkbutton" icon="icon-resultset_first" data-bind="click:firstClick,linkbuttonEnable:pageData.scrollKeys.firstEnable" title="第一条"></a>
+    <a id="a_previous" href="#" plain="true" class="easyui-linkbutton" icon="icon-resultset_previous" data-bind="click:previousClick,linkbuttonEnable:pageData.scrollKeys.previousEnable" title="上一条"></a>
+    <a id="a_next" href="#" plain="true" class="easyui-linkbutton" icon="icon-resultset_next" data-bind="click:nextClick,linkbuttonEnable:pageData.scrollKeys.nextEnable" title="下一条"></a>
+    <a id="a_last" href="#" plain="true" class="easyui-linkbutton" icon="icon-resultset_last" data-bind="click:lastClick,linkbuttonEnable:pageData.scrollKeys.lastEnable" title="最后一条"></a>*@
+</div>
+
+<div id="divother" style="width:100px; display:none;">
+    <div data-options="iconCls:'icon-add'">新增</div>
+    <div data-options="iconCls:'icon-cross'">删除</div>
+    <div data-options="iconCls:'icon-arrow_refresh'">刷新</div>
+</div>
+
+<div id="master" class="container_12" data-bind="inputwidth:0.9">
+    <div class="grid_1 lbl">设备编码</div>
+    <div class="grid_3 val"><input type="text" data-bind="value:pageData.form.EquipmentCode ,readOnly:readonly" class="z-txt " /></div>
+    <div class="grid_1 lbl">设备名称</div>
+    <div class="grid_3 val"><input type="text" data-bind="value:pageData.form.EquipmentName ,readOnly:readonly" class="z-txt " /></div>
+    <div class="grid_1 lbl">设备类型</div>
+    @*<div class="grid_3 val"><input type="text" data-bind="value:pageData.form.EquipmentType ,readOnly:readonly" class="z-txt " /></div>*@
+    <div class="grid_3 val">
+        <input type="text" data-bind="comboboxValue:pageData.form.EquipmentType" data-options="url:'/Commons/GetComboboxList?CodeType=EquipmentType',valueField:'value',textField:'text'" class="z-txt easyui-combobox" />
+    </div>
+    <div class="clear"></div>
+
+    <div class="grid_1 lbl">所属车间</div>
+    <div class="grid_3 val">
+        <input type="text" data-bind="combogridValue:pageData.form.AffiliatedWorkshopName" class="z-txt easyui-combogrid" data-options="url:'/Commons/GetCommonSearchList',
+                queryParams : {
+                     tableName:'[SYS_BN_Department]',
+                         searchField:'[DepartmentCode],[DepartmentName],[ParentName]',
+                         whereSql:'IsWorkshop=1',
+                         connName:'Mms'
+                },
+                method: 'GET',
+                panelWidth:150,
+                fit:true,
+                delay: 1000,
+                mode: 'remote',
+                value: 'DepartmentName',
+                idField: 'DepartmentName',
+                textField: 'DepartmentName',
+                columns:[[
+                { field: 'DepartmentCode',title: '部门编号',width: 100 },
+                { field: 'DepartmentName',title: '车间名称',width: 100 },
+                { field: 'ParentName',title:'父级部门',width:150 }
+                    ]],
+                onSelect: function (rowIndex, rowData) {
+                 myself.pageData.form.AffiliatedWorkshopID(rowData['DepartmentCode']);
+                myself.pageData.form.AffiliatedWorkshopName(rowData['DepartmentName']);
+               },
+            keyHandler:{
+            query:function(keyword) {
+           var queryParams=$(this).combogrid('grid').datagrid('options').queryParams;
+           queryParams.keyword=keyword;
+           $(this).combogrid('grid').datagrid('options').queryParams=queryParams;
+           $(this).combogrid('grid').datagrid('reload');
+           }}" />
+
+    </div>
+
+    <div class="grid_1 lbl">设备参数</div>
+    <div class="grid_3 val"><input type="text" data-bind="value:pageData.form.EquipmentParms ,readOnly:readonly" class="z-txt " /></div>
+    <div class="grid_1 lbl">设备状态</div>
+    <div class="grid_3 val">
+        <input type="text" data-bind="comboboxValue:pageData.form.EquipmentState" data-options="url:'/Commons/GetComboboxList?CodeType=EquipmentState',valueField:'value',textField:'text'" class="z-txt easyui-combobox" />
+        @*<div class="grid_3 val"><input type="text" data-bind="value:pageData.form.EquipmentState ,readOnly:readonly" class="z-txt " /></div>*@
+    </div>
+    <div class="clear"></div>
+
+
+
+
+</div>
+
+<div id="tt" class="easyui-tabs">
+    <div title="设备对应工艺类型表">
+        <table data-bind="datagrid:grid0">
+            <thead>
+                <tr>
+                    <th field="ID" hidden="true" sortable="true" align="left" width="80" editor="text">主键ID</th>
+                    <th field="MainID" hidden="true" sortable="true" align="left" width="80" editor="text">主表ID</th>
+                    @*<th field="ProcessType"		sortable="true"	align="left"	width="80" editor="text" >工艺类型</th>*@
+                    <th field="ProcessType" sortable="true" align="left" width="100" data-options="formatter:function(value,row){return com.formatCombobox('ProcessType',value);}"
+                        editor="{type:'combobox',options:{required:true,url:'/Commons/GetComboboxList?CodeType=ProcessType',method:'GET',panelWidth:100,panelHeight:100,valueField:'value',textField:'text'}}">工艺类型</th>
+                    <th field="IsEnable" hidden sortable="true" align="left" width="80" editor="text">是否可用</th>
+                    <th field="CreatePerson" hidden sortable="true" align="left" width="80">创建人</th>
+                    <th field="CreateTime" hidden sortable="true" align="left" width="80" formatter="com.formatDate">创建时间</th>
+                    <th field="ModifyPerson" hidden sortable="true" align="left" width="80">更新人</th>
+                    <th field="ModifyTime"  hidden sortable="true" align="left" width="80" formatter="com.formatDate">更新时间</th>
+                </tr>
+            </thead>
+            <div id="gridtb0">
+                <a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-search',plain:true" data-bind="click:readonly()?null:grid0.addRowClick,linkbuttonDisable:readonly">新增</a>
+                <a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-edit',plain:true" data-bind="click:readonly()?null:grid0.onClickRow,linkbuttonDisable:readonly">编辑</a>
+                <a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-remove',plain:true" data-bind="click:readonly()?null:grid0.removeRowClick,linkbuttonDisable:readonly">删除</a>
+            </div>
+        </table>
+
+
+    </div>
+</div>

@@ -1,0 +1,194 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@section head{
+    <style type="text/css">
+        div#navigation {
+            background: white;
+        }
+
+        div#wrapper {
+            float: right;
+            width: 70%;
+        }
+
+        div#navigation {
+            float: left;
+            width: 30%;
+        }
+
+        .tree-title {
+            font-size: 15px !important;
+        }
+
+        .panel-title {
+            font-size: 14px !important;
+        }
+    </style>
+}
+
+
+@section scripts{
+    <script src="/Content/js/viewModel/com.viewModel.edit.js"></script>
+    <script type="text/javascript">
+
+        $().ready(function () {
+            $("#searchTree").click(function () {
+                myself.tree.url = '/api/Mms/PMS_ContractInfo/GetTaskTree?cCode=' + $("#contc").val();
+                myself.tree.queryParams({});
+
+                myself.grid.url = "/api/Mms/PMS_ContractInfo/GetDesignDetailedData?ContractCode=" + $("#contc").val()+"&IsEnable=1";
+                myself.grid.queryParams({});
+            })
+
+        })
+
+        var myself;
+        var viewModel = function(data){
+            var self = this;
+
+            //this.grid={
+            //    method: 'get',
+            //    url: "/api/Mms/PMS_ContractInfo/GetDesignDetailedData",
+            //    queryParams: {
+            //        contractCode: "",
+            //        productID: ""
+            //    }
+            //}
+            this.tree = {
+                method: 'GET',
+                queryParams: ko.observable(),
+                //url: '/api/Mms/PMS_ContractInfo/GetTaskTree?cCode=' + $("#contc").val(),
+                lines: true,
+                animate: true,
+                loadFilter: function (d) {
+                    if (d!=null&&d.length>0) {
+                        var jsonData = eval(d);
+                        return utils.toTreeData(jsonData, 'id', 'pid', "children");
+                    }
+                    else{
+                        return '';
+                    }
+                },
+                onSelect: function (node) {
+                    //self.pageData.form.CarbonCopy(self.pageData.form.CarbonCopy()+node.text+';');
+                    //node.id==
+                    if(node.text.indexOf(node.id) != -1){
+                        //$("#contc").val(node.id);
+                        myself.grid.queryParams({});
+                    }
+                    else{
+                        com.message('success', "请选择合同！");
+                        return;
+                    }
+
+                }
+            };
+
+            com.viewModel.edit.apply(self,arguments);
+            myself=self;
+            this.grid = {
+                //url: "/api/Mms/PMS_ContractInfo/GetDesignDetailedData?ContractCode=" + $("#contc").val(),
+                queryParams: ko.observable(),
+                pagination: false,
+                checkOnSelect: true,
+                selectOnCheck: false,
+                singleSelect: true,
+                width:600,
+                fitColumns:false
+            };
+        }
+
+        var data = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model));
+        ko.bindingViewModel(new viewModel(data));
+        $(document).ready(function(){
+            //$.ajax({
+            //    type: "GET",
+            //    url: '/api/Mms/PMS_ContractInfo/GetDesignDetailedData?contractCode=1&productID=1',
+            //    contentType: 'application/json;charset=utf-8',
+            //    async: false,
+            //    success: function (model) {
+            //        myself.grid('loadData', { 'total': model.length, rows: model });
+            //    }
+            //})
+
+            //$('#DataShow').datagrid('reload',{
+            //    queryParams: {
+            //        contractCode: "",
+            //        pruductID: ""
+            //    }
+            //});
+            //$('#dg').datagrid({
+            //    method: 'get',
+            //    url: "/api/Mms/PMS_ContractInfo/GetDesignDetailedData",
+            //    queryParams: {
+            //        contractCode: "",
+            //        pruductID: ""
+            //    },
+            //    /*
+            //     <th id="ID" sortable="tru
+            //     <th id="TaskType" sortabl
+            //     <th id="TaskDescription"
+            //     <th id="TaskStartDate" so
+            //     <th id="TaskFinishDate" s
+            //     <th id="BillState" sortab
+            //     <th id="IsEnable" sortabl
+            //    */
+            //    columns: [[
+            //        { field: 'ID', title: '工程项目', width: 120 },
+            //        { field: 'TaskType', title: '合同编号', width: 120 },
+            //        { field: 'TaskDescription', title: '型号', width: 100 },
+            //        { field: 'TaskStartDate', title: '规格', width: 100 },
+            //        { field: 'TaskFinishDate', title: '合同数', width: 100 },
+            //        { field: 'BillState', title: '批次生产数量', width: 100 },
+            //        { field: 'IsEnable', title: '完工数量', width: 100 }
+            //    ]]
+            //});
+        })
+
+
+    </script>
+}
+<div id="container">
+    <div style="margin-bottom:20px">
+        <label>合同编号:</label>
+        <input id="contc" type="text" data-bind="value:form.ContractCode" class="z-txt easyui-textbox" />
+        <input type="hidden" id="IsEnable" />
+        <input id="searchTree" type="button" value="查询" />
+    </div>
+    <div id="wrapper">
+
+        <div id="tt" class="easyui-tabs">
+            <div title="设计任务明细表">
+                <table id="dg" data-bind="datagrid:grid">
+                    <thead>
+                        <tr>
+                            <th field="ID" sortable="true" align="left" width="80" hidden="hidden"></th>
+                            @*<th field="TaskType" sortable="true" align="left" width="80">设计任务类型</th>*@
+                            <th field="TaskType" sortable="true" align="left" width="100" data-options="formatter:function(value,row){return com.formatCombobox('TaskType',value);}">设计任务类型</th>
+                            <th field="TaskDescription" sortable="true" align="left" width="200">设计任务描述</th>
+                            <th field="TaskStartDate" sortable="true" align="left" width="80" formatter="com.formatDate">开始时间</th>
+                            <th field="TaskFinishDate" sortable="true" align="left" width="80" formatter="com.formatDate">结束时间</th>
+                            <th field="BillState" sortable="true" align="left" width="80" data-options="formatter:function(value,row){ return (value == 2) ? '已审核':'未审核';}">单据状态</th>
+                            <th field="IsEnable" sortable="true" align="left" width="70" data-options="formatter:function(value,row){ return (value == 1) ? '是':'否';}">
+                                是否可用
+                            </th>
+                        </tr>
+                    </thead>
+
+                </table>
+
+
+            </div>
+
+        </div>
+
+    </div>
+    <div id="navigation">
+
+        <div title="任务查询" style="padding:20px" class="easyui-panel" data-options="title: '任务查询', height: $(window).height() - 4 ">
+            <ul data-bind="easyuiTree:tree" id="mm-tree"></ul>
+        </div>
+    </div>
+</div>

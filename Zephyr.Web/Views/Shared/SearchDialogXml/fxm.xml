@@ -1,0 +1,98 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Root>
+  <searchDialog name='ESB_BD_Timer'>
+    <!--配置datagrid的数据绑定以及查询功能-->
+    <settings defaultOrderBy='ID desc'>
+      <module>Mms</module>
+      <select>
+         [ID]
+        ,[TimerName]
+        ,[TimerType]
+        ,[TimerEnable]
+        ,[FrequencyType]
+        ,[FrequencyValue]
+        ,[IsEndTimer]
+        ,[EndDateTime]
+        ,[BeginDateTime]
+        ,[Remark]
+        ,[LastExcuteDateTime]
+        ,[NextExcuteDateTime]
+      </select>
+      <from>
+        [ESB_BD_Timer]
+      </from>
+      <where defaultForAll='true' defaultCp='equal' defaultIgnoreEmpty='true' >
+        <field name='TimerName' cp='like'></field>
+        <field name='TimerType' cp='like'></field>
+        <field name='TimerEnable' cp='equal'></field>
+        <field name='BeginDateTime' cp='daterange'></field>
+        <field name='EndDateTime' cp='daterange'></field>
+        <field name='NextExcuteDateTime' cp='daterange'></field>
+      </where>
+    </settings>
+    <!--配置datagrid的列属性-->
+    <ColumnList>
+      <column title='定时器编号' field='ID' align='left' sortable='true' width='100' searchType='text'></column>
+      <column title='定时器名称' field='TimerName' align='left' sortable='true' width='100' searchType='text'></column>
+      <!--<column title='定时器类型' field='TimerType' align='left' sortable='true' width='100' searchType='text'></column>-->
+      <column title='可用状态' field='TimerEnable' align='left' sortable='true' width='100' searchType='select' formatter='gridFormat'>
+        <searchBinding type='dictionary'>TimerEnable</searchBinding>
+        <gridFormat><![CDATA[data-options="formatter:function(value,row){return com.formatCombobox('TimerEnable',value);}"]]></gridFormat>
+      </column>
+      <column title='频率类型' field='FrequencyType' align='left' sortable='true' width='100' searchType='select' formatter='gridFormat'>
+        <searchBinding type='dictionary'>FrequencyType</searchBinding>
+        <gridFormat><![CDATA[data-options="formatter:function(value,row){return com.formatCombobox('FrequencyType',value);}"]]></gridFormat>
+      </column>
+      <!--<column title='频次规则' field='FrequencyValue' align='left' sortable='true' width='100' searchType='text'></column>-->
+      <column title='开始时间' field='BeginDateTime' align='left' sortable='true' width='120' searchType='daterange' formatter='com.formatDate'></column>
+      
+    </ColumnList>
+  </searchDialog>
+
+  <searchDialog name='ESB_BN_PlanDetail'>
+    <!--配置datagrid的数据绑定以及查询功能-->
+    <settings defaultOrderBy='ID desc'>
+      <module>Mms</module>
+      <select>
+        A.[ID]
+        ,[PlanID]
+        ,[PlanName]
+        ,[SortId]
+        ,[MethodId]
+        ,[MethodName]
+        ,[ParameterValue]
+        ,A.[PlanStatue]
+        ,A.[Remark]
+      </select>
+      <from>
+        [ESB_BN_PlanDetail] A
+        LEFT JOIN [ESB_BN_PlanInfo] B ON A.PlanId=B.Id
+        LEFT JOIN [ESB_BD_ServiceMainMethods] C ON A.MethodId=C.ID
+      </from>
+      <where defaultForAll='true' defaultCp='equal' defaultIgnoreEmpty='true' >
+        <field name='PlanID' cp='like'></field>
+        <field name='SortId' cp='like'></field>
+        <field name='MethodId' cp='like'></field>
+        <field name='ParameterValue' cp='like'></field>
+        <field name='PlanStatue' cp='like'></field>
+        <field name='Remark' cp='like'></field>
+      </where>
+    </settings>
+    <!--配置datagrid的列属性-->
+    <ColumnList>
+      <column title='计划明细编号' field='ID' align='left' sortable='true' width='100' searchType='text'></column>
+      <column title='计划编号' field='PlanID' align='left' sortable='true' width='100' searchType='text'></column>
+      <column title='计划名称' field='PlanName' align='left' sortable='true' width='100' searchType='text'></column>
+      <column title='排序编号' field='SortId' align='left' sortable='true' width='100' searchType='text'></column>
+      <column title='方法编号' field='MethodId' align='left' sortable='true' width='100' searchType='text'></column>
+      <column title='方法名称' field='MethodName' align='left' sortable='true' width='100' searchType='text'></column>
+      <column title='参数默认值' field='ParameterValue' align='left' sortable='true' width='100' searchType='text'></column>
+      <column title='计划状态' field='PlanStatue' align='left' sortable='true' width='100' searchType='select' formatter='gridFormat'>
+        <searchBinding type='dictionary'>PlanStatue</searchBinding>
+        <gridFormat><![CDATA[data-options="formatter:function(value,row){return com.formatCombobox('PlanStatue',value);}"]]></gridFormat>
+      </column>
+      <column title='备注' field='Remark' align='left' sortable='true' width='120' searchType='text'></column>
+
+    </ColumnList>
+  </searchDialog>
+</Root>

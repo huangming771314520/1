@@ -1,0 +1,165 @@
+﻿@{
+    ViewBag.Title = "Login";
+    Layout = "";
+}
+
+<html lang="en">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>登录</title>
+    <link href="~/Content/layui/layui/css/layui.css" rel="stylesheet" />
+    <link href="~/Content/layui/css/public.css" rel="stylesheet" />
+    <link href="~/Content/layui/login/login.css" rel="stylesheet" />
+</head>
+<body>
+    <div class="login">
+        <div class="login_title">
+            <p><img src="~/Content/layui/login/logo.png" style="width:80px;height:80px;margin-right:30px;">湖北洪城MES系统</p>
+        </div>
+        <div class="login_main">
+            <div class="main_left">
+                <img class="main_left_img" src="~/Content/layui/login/1.jpg" />
+                <img class="main_left_img" src="~/Content/layui/login/2.jpg" />
+                <img class="main_left_img" src="~/Content/layui/login/3.jpg" />
+                <img class="main_left_img" src="~/Content/layui/login/4.jpg" />
+                <div class="arrow">
+                    <span class="arrow-left">&lt;</span>
+                    <span class="arrow-right">&gt;</span>
+                </div>
+            </div>
+            <div class="main_right">
+                <div class="right_title">用户登录</div>
+                <form>
+                    <div class="username">
+                        <img src="~/Content/layui/login/username.png" />
+                        <input id="UserCode" type="text" placeholder="请输入用户名">
+                    </div>
+                    <div class="password">
+                        <img src="~/Content/layui/login/password.png" />
+                        <input id="Password" type="password" placeholder="请输入密码">
+                    </div>
+                    <div class="yes_login"><a>登&nbsp;&nbsp;&nbsp;&nbsp;录</a></div>
+                    <center><p style="margin-top:20px;font-size:12px;color:#FA6F03;">登录遇到问题，请联系管理员</p></center>
+                </form>
+            </div>
+        </div>
+        <div class="login_footer">
+            <p class="name">版权所有：湖北迈士科技有限公司</p>
+            <p>建议浏览器：360、谷歌、Firefox v22</p>
+            <p>技术支持：湖北迈士科技有限公司 &nbsp;&nbsp;联系电话：027-87186881</p>
+        </div>
+    </div>
+</body>
+</html>
+<script src="~/Content/js/jquery/jquery-1.8.1.min.js"></script>
+<script src="~/Content/layui/layui/layui.js"></script>
+<script>
+    $(function () {
+        var count = 0;
+        $(".arrow-right").click(function () {
+            count++;
+            if (count == $(".main_left>img").length) {
+                count = 0;
+            }
+            //让count渐渐的显示，其他兄弟渐渐的隐藏
+            $(".main_left>img").eq(count).fadeIn(1000).siblings("img").fadeOut(1000);
+        });
+
+        $(".arrow-left").click(function () {
+            count--;
+            if (count == -1) {
+                count = $(".main_left>img").length - 1;
+            }
+            //让count渐渐的显示，其他兄弟渐渐的隐藏
+            $(".main_left>img").eq(count).fadeIn(1000).siblings("img").fadeOut(1000);
+        })
+
+        setInterval(function () {
+            $(".arrow-right").trigger("click");
+        }, 4000);
+
+        $(document).keyup(function (event) {
+            if (event.keyCode == 13) {
+                $(".yes_login").trigger("click");
+            }
+        });
+    });
+    layui.use(['form', 'layer', 'jquery'], function () {
+        $(".yes_login").click(function () {
+            var UserCode = $("#UserCode").val();
+            var Password = $("#Password").val();
+            $("#UserCode,#Password").css("border-color", "");
+            if (UserCode.trim() == "") {
+                layui.layer.msg("请输入用户名！", {
+                    time: 1000,
+                    icon: 3,
+                    skin: 'layer-ext-moon'
+                });
+                $("#UserCode").css("border-color", "red");
+                return;
+            }
+            if (Password.trim() == "") {
+                layui.layer.msg("请输入密码！", {
+                    time: 1000,
+                    icon: 3,
+                    skin: 'layer-ext-moon'
+                });
+                $("#Password").css("border-color", "red");
+                return;
+            }
+
+            $.ajax({
+                type: "POST",
+                url: "/login/doAction",
+                data: JSON.stringify({ usercode: UserCode, password: Password }),
+                dataType: "json",
+                contentType: "application/json",
+                success: function (d) {
+                    console.log(d);
+                    if (d.status == 'success') {
+                        window.location.href = '/';
+                    } else {
+                        layui.layer.msg(d.message, {
+                            time: 800,
+                            icon: 2,
+                            skin: 'layer-ext-moon'
+                        })
+                    }
+                },
+                error: function (e) {
+                },
+                beforeSend: function () {
+                },
+                complete: function () {
+                }
+            });
+
+            //$.ajax({
+            //    url: "/Home/LoginDoAction_single",
+            //    type: "post",
+            //    data: JSON.stringify({ UserCode: UserCode, Password: Password }),
+            //    processData: false,
+            //    contentType: "application/json",
+            //    success: function (data) {
+            //        var status = data.status;
+            //        var msg = data.msg;
+            //        if (status == '3') {
+            //            layui.layer.msg(msg, {
+            //                time: 2000,
+            //                icon: 1,
+            //                skin: 'layer-ext-moon'
+            //            })
+            //            window.location.href = "/Home/Index";
+            //        }
+            //        else {
+            //            layui.layer.msg(msg, {
+            //                time: 800,
+            //                icon: 2,
+            //                skin: 'layer-ext-moon'
+            //            })
+            //        }
+            //    }
+            //});
+        });
+    });
+</script>

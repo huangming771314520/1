@@ -1,0 +1,148 @@
+﻿@{
+    ViewBag.Title = "APS_ProjectProduceDetial";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@section head{
+    <link href="~/Content/js/gantt/css/style.css" rel="stylesheet" />
+}
+
+@section scripts{
+    <script src="/Content/js/viewModel/com.viewModel.searchEdit.js"></script>
+    <script src="~/Content/js/gantt/js/jquery.fn.gantt.js" charset="GB2312"></script>
+    <script src="~/Content/js/gantt/js/prettify.min.js"></script>
+    <script type="text/javascript">
+        using(['validatebox', 'combobox','lookup','numberbox','datebox','datetimebox','combogrid','combotree','extend','menu'],easyuifix.datagrid_editor_extend);
+        var myself;
+        var viewModel = function(data){
+            var self = this;
+            com.viewModel.searchEdit.apply(self,arguments);
+            myself=self;
+        }
+        var data = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model));
+        ko.bindingViewModel(new viewModel(data));
+        $().ready(function(){
+            show();
+            $("#gantt_content").css("height",$(window).height()-$(".container_12").height()+'px');
+        })
+
+        window.onresize=function(){
+            $("#gantt_content").css("height",$(window).height()-$(".container_12").height()+'px');
+        }
+
+        function show(){
+            var strArr=$("#PartCode").val();
+            var PlanedStartTime;
+            var PlanedFinishTime;
+            var time = new Date();
+            try{
+                PlanedStartTime=$("#PlanedStartTime").datebox("getValue");
+                PlanedFinishTime=$("#PlanedFinishTime").datebox("getValue");
+            }catch(e){
+                PlanedStartTime=null; //显示系统时间
+                PlanedFinishTime=null;
+            }
+            com.ajax({
+                type: 'GET',
+                url: "/api/mms/APS_ProjectProduceDetial/GetPlanInfo_New",
+                data:{PlanedStartTime:PlanedStartTime,PlanedFinishTime:PlanedFinishTime,ContractCode:myself.form.ContractCode(),ProjectDetailID:myself.form.ProjectDetailID(),PartCode:strArr},
+                success: function (d) {
+                    $(function () {
+                        $(".gantt").gantt({
+                            source:d,
+                        });
+                    });
+                }
+            });
+        }
+    </script>
+}
+<div class="container_12" style="position:relative;">
+    <div class="grid_1 lbl"></div>
+    <div class="grid_1 val">
+    </div>
+    <div class="grid_1 lbl">工程项目</div>
+    <div class="grid_3 val">
+        <input data-bind="combogridValue:form.ContractCode" class="easyui-combogrid" data-options="url:'/Commons/GetCommonSearchList',
+                 queryParams : {
+                     tableName:'[PMS_BN_Project]',
+                         searchField:'[ProjectID],[ContractCode],[ProjectName]',
+                         firstFightField:'[ProjectName]',
+               whereSql:'IsEnable=1',
+                         connName:'Mms'
+                },
+                method: 'GET',
+                panelWidth:400,
+                mode: 'remote',
+                value: 'ContractCode',
+                idField: 'ContractCode',
+                textField: 'ProjectName',
+                columns:[[
+                { field: 'ContractCode',title: '合同编号',width: 150 },
+                { field: 'ProjectName',title:'工程项目',width:250 }
+                    ]],
+                 onSelect: function (rowIndex, rowData) {
+                 $('#dealid').combogrid('grid').datagrid('options').queryParams.whereSql='IsEnable=1 and mainID='+rowData.ProjectID;
+                $('#dealid').combogrid('grid').datagrid('reload');
+               },
+            keyHandler:{
+            query:function(keyword) {
+           var queryParams=$(this).combogrid('grid').datagrid('options').queryParams;
+           queryParams.keyword=keyword;
+           $(this).combogrid('grid').datagrid('options').queryParams=queryParams;
+           $(this).combogrid('grid').datagrid('reload');
+           }}" />
+    </div>
+    <div class="grid_1 lbl">产品</div>
+    <div class="grid_3 val">
+        <input id="dealid" data-bind="combogridValue:form.ProjectDetailID" class="easyui-combogrid" data-options="url:'/Commons/GetCommonSearchList',
+                     queryParams : {
+                            tableName:'[PMS_BN_ProjectDetail]',
+                            searchField:'[ID],[ProductName]',
+                            firstFightField:'[ID]',
+                            whereSql:'IsEnable=1',
+                                     connName:'Mms',
+                            },
+                            method: 'GET',
+                            panelWidth:200,
+                            fit:true,
+                            delay: 1000,
+                            mode: 'remote',
+                            value: 'ID',
+                            idField: 'ID',
+                            textField: 'ProductName',
+                            columns:[[
+                            { field: 'ProductName',title: '产品名称',width: 200 }
+                                ]],
+                    onSelect: function (rowIndex, rowData) {
+
+                },
+                 keyHandler:{
+                   query:function(keyword) {
+                   var queryParams=$(this).combogrid('grid').datagrid('options').queryParams;
+                   queryParams.keyword=keyword;
+                   $(this).combogrid('grid').datagrid('options').queryParams=queryParams;
+                   $(this).combogrid('grid').datagrid('reload');
+                  $(this).combogrid('setValue', keyword);
+                }}" />
+    </div>
+    <div class="clear"></div>
+    <div class="grid_1 lbl"></div>
+    <div class="grid_1 val">
+    </div>
+    <div class="grid_1 lbl">计划开始时间</div>
+    <div class="grid_3 val">
+        <input type="text" id="PlanedStartTime" data-bind="dateboxValue:form.PlanedStartTime" class="z-txt easyui-datebox" />
+        <input hidden id="PartCode" value="@ViewData["PartCode"]" />
+    </div>
+    <div class="grid_1 lbl">计划结束时间</div>
+    <div class="grid_3 val"><input type="text" id="PlanedFinishTime" data-bind="dateboxValue:form.PlanedFinishTime" class="z-txt easyui-datebox" /></div>
+
+    <div class="clear"></div>
+    <div class="prefix_9" style="position:absolute;top:-1px;height:0;">
+        <a id="a_search" href="#" class="buttonHuge button-blue" data-bind="click:searchClick" style="margin:0 15px;" onclick="show()">查询</a>
+        <a id="a_reset" href="#" class="buttonHuge button-blue" data-bind="click:clearClick">清空</a>
+    </div>
+</div>
+<div id="gantt_content" style="width:100%;overflow-y: scroll;float: left;height:300px;">
+    <div class="gantt" style="height: 100%;width:100%;"></div>
+</div>

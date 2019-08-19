@@ -1,0 +1,141 @@
+﻿ <script type="text/javascript">
+    var total;
+    function method() {
+        var array_title = ['消息列表']; javascript: void (0)
+        var array_url = ['/Mms/Andon_Message/index'];
+        var target = parent.$('#CommonSearchDialog').length ? parent.$('#CommonSearchDialog') : parent.$('<div id="CommonSearchDialog"></div>').appendTo('body');
+        utils.clearIframe(target);
+        var opt;
+        opt = { title: '' + array_title[0] + '', width: 1100, height: 550, modal: true, collapsible: false, minimizable: false, maximizable: true, closable: true };
+        opt.content = "<iframe src='" + array_url[0] + "' style='height:100%;width:100%;border:0;' frameborder='0'></iframe>";
+        params = {};
+        opt.paramater = params;
+        opt.onSelect = function (data) {
+        };
+        target.window(opt);
+    }
+    
+    function show() {
+        $.getJSON("/api/Mms/Andon_Message/getMessage", function (data) {
+            if (data > 0) {
+                $("#Count").text(data);
+                $.messager.confirm('消息提示', '您有' + data + ' 条消息未处理！', function (r) {
+                    if (r) {
+                        method();
+                    }
+                });
+            }
+        });
+    }
+    //消息提示给处理人
+    //setInterval("show()", 30000);
+    //function show1() {
+    //    //debugger;
+    //    com.ajax({
+    //        type: 'GET',
+    //        url: "/api/Mms/Andon_Message/GetAllMessage/",
+    //        success: function (data) {
+    //            if (data>0) {
+    //                $.messager.confirm('消息提示', '有' + data + ' 条消息延时未处理！', function (r) {
+    //                    if (r) {
+    //                        method();
+    //                    }
+    //                });
+    //            }
+    //        }
+    //    });
+    //}
+    //消息提示给延时处理人
+    //setInterval("show1()", 60000);
+</script>
+    <style type="text/css">
+
+    </style>
+@if (ViewBag.Settings["navigation"] == "menubutton")
+{
+    <div region="north" class="head-north" split="true" border="false" style="height:66px;">
+        @*<span class="head head-right">
+            <a href="javascript:void(0)" id="show" class="easyui-menubutton " data-options="iconCls:'icon-bell'" onclick="method()"></a>
+              <div style="width:10px;height:10px;position:absolute;top:5px;right:15px;">
+                  <span id="Count">@ViewBag.MessageCount</span>
+              </div>
+        </span>*@
+
+        <span class="head head-right">
+            <a href="javascript:void(0)" class="easyui-menubutton" data-options="menu:'#mm_user',iconCls:'icon-user'">当前用户:@ViewBag.UserName</a>
+            <div id="mm_user" style="width:150px;">
+                <div data-options="iconCls:'icon-rainbow'" class="myconfig">个人设置</div>
+                <div data-options="iconCls:'icon-edit'" class="changepwd">修改密码</div>
+                <div class="menu-sep"></div>
+                <div data-options="iconCls:'icon-user_go'" class="loginOut">安全退出</div>
+            </div>
+        </span>
+
+        <span class="head-left">
+            @ViewBag.Title
+        </span>
+        <a href="" target="_blank" style="color:white"></a>
+
+        <div id="wnav"></div>
+    </div>
+}
+else
+{
+    <div region="north" class="head-north" split="true" border="false">
+        @*<span class="head head-right">
+            <a href="javascript:void(0)" id="show" class="easyui-menubutton " data-options="iconCls:'icon-bell'" onclick="method()"></a>
+            <div style="width:10px;height:10px;position:absolute;top:5px;right:15px;">
+                <span id="Count">@ViewBag.MessageCount</span>
+            </div>
+        </span>*@
+        <div class="head head-right">
+            @*<a href="javascript:void(0)" class="easyui-linkbutton swich_project" plain="true" title="切换项目" data-options="iconCls:'icon-flag_france'"></a>*@
+            <a href="javascript:void(0)" class="easyui-menubutton" data-options="menu:'#mm_user',iconCls:'icon-user'">当前用户:@ViewBag.UserName</a>
+            <div id="mm_user" style="width:150px;">
+                <div data-options="iconCls:'icon-rainbow'" class="myconfig">个人设置</div>
+                <div data-options="iconCls:'icon-edit'" class="changepwd">修改密码</div>
+                <div class="menu-sep"></div>
+                <div data-options="iconCls:'icon-user_go'" class="loginOut">安全退出</div>
+            </div>
+        </div>
+        <span class="head-left">
+            @ViewBag.Title
+        </span>
+
+        <a href="" target="_blank" style="color:white"></a>
+
+    </div>
+
+    <div region="west" split="true" title="导航菜单" style="width:260px;" id="west">
+        <div id="wnav"></div>
+    </div>
+}
+
+<div region="south" split="true" class="head-south">
+    <div class="footer">Copyright &copy; @ViewBag.CurrentDate  湖北迈士科技有限公司</div>
+</div>
+
+<div region="center" id="mainPanle" style="background: #eee; overflow-y:hidden">
+    <div id="tabs" class="easyui-tabs" fit="true" border="false">
+        <div title="我的桌面" style="overflow:hidden;" id="home"></div>
+    </div>
+</div>
+
+<script type="text/html" id="password-template">
+    <div class="container_12" style="width:90%;margin:5%;">
+        <div class="grid_3 lbl">登陆名：</div>
+        <div class="grid_9 val"><input type="text" class="z-txt readonly " name="UserCode" disabled="disabled" value="@ViewBag.UserCode" /></div>
+        <div class="grid_3 lbl">原密码：</div>
+        <div class="grid_9 val"><input class="z-txt readonly" type="password"  /></div>
+        <div class="grid_3 lbl">新密码：</div>
+        <div class="grid_9 val"><input name="p1" type="password" class="z-txt" /></div>
+        <div class="grid_3 lbl">确　认：</div>
+        <div class="grid_9 val"><input name="p2" type="password" class="z-txt" /></div>
+        <div class="clear"></div>
+    </div>
+
+    <div style="text-align:center;" class="z-toolbar-dialog">
+        <a class="easyui-linkbutton" data-options="iconCls:'icon-ok'" href="javascript:void(0)" id="pwd_confirm">确定</a>
+        <a class="easyui-linkbutton" data-options="iconCls:'icon-cancel'" href="javascript:void(0)" id="pwd_close">取消</a>
+    </div>
+</script>

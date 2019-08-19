@@ -1,0 +1,132 @@
+﻿@{
+    ViewBag.Title = "CommonDialogGrid";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    string xmlName = ViewBag.xmlName;
+}
+@section head{
+    <style type="text/css">
+        .z-toolbar {
+            border-width: 0;
+            margin: 0;
+        }
+
+        .lbl {
+            text-align: right;
+            line-height: 25px;
+        }
+
+        .panel-body {
+            border-width: 0 !important;
+        }
+
+        body {
+            padding: 0 !important;
+        }
+    </style>
+}
+
+@section scripts{
+    <script type="text/javascript">
+        using(['validatebox', 'combobox', 'lookup', 'datebox', 'datetimebox', 'combogrid', 'combotree', 'extend', 'menu'], easyuifix.datagrid_editor_extend);
+        var data = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model));
+        var vmodel = function () {
+            var self = this;
+            this.xmlName = data.xmlName;
+            this.form = ko.mapping.fromJS(data.form);
+            delete this.form.__ko_mapping__;
+            this.gridSetting =  {
+                size: { w: '100%', h: $('.container_16').height()+50 },
+                url: '/plugins/GetCommonDialogData',
+                queryParams: ko.observable(),
+                pagination: true,
+                //singleSelect: false,
+                cache: false,
+                checkOnSelect: true,
+                selectOnCheck: false,
+                singleSelect: true
+            }
+            var param=$.extend({ xmlName: self.xmlName },ko.toJS(this.form));
+            this.gridSetting.queryParams(param);
+
+            this.searchClick = function () {
+                var param=$.extend({ xmlName: self.xmlName },ko.toJS(this.form));
+                this.gridSetting.queryParams(param);
+            }
+            this.clearClick = function () {
+                var jsonData = ko.toJS(this.form);
+                for (var key in jsonData) {
+                    jsonData[key] = '';
+                }
+                ko.mapping.fromJS(jsonData, {}, self.form);
+                jsonData=$.extend({xmlName:self.xmlName},jsonData);
+                this.gridSetting.queryParams(jsonData);
+            }
+            var iframe = getThisIframe();
+            var thiswin = parent.$(iframe).parent();
+            var options = thiswin.window("options");
+            var params = options.paramater;
+
+            //this.gridEdit = new com.editGridViewModel(this.gridSetting);
+
+            this.gridSetting.onDblClickRow = function(index, row){
+                //self.gridEdit.ended();
+                var allRows =self.gridSetting.datagrid('getSelections');
+                //console.log(allRows.length);
+                if(allRows.length>0){
+                    //self.gridEdit.end();
+                    options.onSelect(allRows);
+                    destroyIframe(iframe);
+                    thiswin.window('destroy');
+                }
+            }
+
+            //this.gridSetting.onClickRow = function(index, row){
+            //    self.gridEdit.begin(index, row);
+            //}
+
+            this.confirmClick=function(){
+                var selectRow = self.gridSetting.datagrid('getChecked');
+                if (selectRow.length == 0) { selectRow = self.gridSetting.datagrid('getSelections');}
+                if (selectRow.length > 0) {
+                    //self.gridEdit.ended();
+                    options.onSelect(selectRow);
+                    destroyIframe(iframe);
+                    thiswin.window('destroy');
+                }
+            }
+            this.cancelClick=function(){
+                destroyIframe(iframe);
+                thiswin.window('destroy');
+            }
+        }
+        ko.bindingViewModel(new vmodel());
+
+        //获取本页面所在的iframe
+        function getThisIframe() {
+            if (!parent) return null;
+            var iframes = parent.document.getElementsByTagName('iframe');
+            if (iframes.length == 0) return null;
+            for (var i = 0; i < iframes.length; ++i) {
+                var iframe = iframes[i];
+                if (iframe.contentWindow === self) { //self 指的是当前窗口
+                    return iframe;
+                }
+            }
+        }
+        function destroyIframe(iframeEl) {
+            if (!iframeEl) return;
+            iframeEl.parentNode.removeChild(iframeEl);
+            iframeEl = null;
+        };
+    </script>
+}
+
+@Html.GetSearchToolbar(xmlName)
+
+@Html.GetDataGridColumns(xmlName)
+
+
+<div style="text-align:center;margin-top:10px;">
+    <a class="easyui-linkbutton" data-options="iconCls:'icon-ok'" data-bind="click:confirmClick" href="javascript:void(0)">确定</a>
+    <a class="easyui-linkbutton" data-options="iconCls:'icon-cancel'" data-bind="click:cancelClick" href="javascript:void(0)">取消</a>
+</div>

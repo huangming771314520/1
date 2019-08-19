@@ -1,0 +1,16 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<settings lookupType="acceptPlace" defaultOrderBy='WH_Code'>
+  <module>Mms</module>
+  <select>
+   
+    WH_Code,WH_Name
+  </select>
+  <from>
+   [QHD_Mes].dbo.W_BD_Depot 
+  </from>
+  <where defaultForAll='true' defaultCp='equal' defaultIgnoreEmpty='true' >
+    <field name='WH_Code'         cp='like'  ></field>
+    <field name='WH_Name'         cp='like'       ></field>
+   <field name='WH_LEVEL'         cp='equal'       ></field>
+  </where>
+</settings>

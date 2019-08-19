@@ -1,0 +1,90 @@
+﻿@{
+    ViewBag.Title = "V_ProcessRouteWorkSteps";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@section scripts{
+    <script src="/Content/js/viewModel/com.viewModel.searchEdit.js"></script>
+    <script type="text/javascript">
+        using(['validatebox', 'combobox', 'lookup', 'numberspinner', 'datebox', 'numberbox', 'datetimebox', 'combogrid', 'combotree', 'extend', 'menu'], easyuifix.datagrid_editor_extend);
+        var viewModel = function(data){
+            var self = this;
+            com.viewModel.searchEdit.apply(self,arguments);
+            this.grid.nowrap=false;
+            this.grid.OnAfterCreateEditor = function (editors) {
+                 if (editors['ID']) com.readOnlyHandler('input')(editors['ID'].target, true);
+            };
+            this.saveClick = function () {
+                self.gridEdit.ended(); //结束grid编辑状态
+                var post = {};
+                post.list = self.gridEdit.getChanges(self.setting.postListFields);
+                if (self.gridEdit.ended() && post.list._changed) {
+                    com.ajax({
+                        url: self.urls.edit,
+                        data: ko.toJSON(post),
+                        success: function (d) {
+                            com.message('success', self.resx.editSuccess);
+                            self.searchClick();
+                        }
+                    });
+                }
+            };
+           
+        }
+        var data = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model));
+        ko.bindingViewModel(new viewModel(data));
+    </script>
+}
+<div class="z-toolbar">
+    <a href="#" plain="true" class="easyui-linkbutton" icon="icon-arrow_refresh" title="刷新" data-bind="click:refreshClick">刷新</a>
+
+    <a href="#" plain="true" class="easyui-linkbutton" icon="icon-save" title="保存" data-bind="click:saveClick">保存</a>
+</div>
+
+<div class="container_12" style="position:relative;margin-bottom:20px;">
+    <div class="grid_1 lbl">合同编码</div>
+    <div class="grid_2 val"><input type="text" data-bind="value:form.ContractCode" class="z-txt " /></div>
+
+    <div style="display:none">
+        <div class="grid_1 lbl">项目名称</div>
+        <div class="grid_2 val"><input type="text" data-bind="value:form.ProjectName" class="z-txt " /></div>
+    </div>
+
+    <div class="grid_1 lbl">零件图号</div>
+    <div class="grid_2 val"><input type="text" data-bind="value:form.FigureCode" class="z-txt " /></div>
+
+    <div class="grid_1 lbl">状态</div>
+    <div class="grid_2 val"><input type="text" data-bind="comboboxValue:form.ManHours,datasource:[{value:'',text:'全部'},{value:'null',text:'未处理'},{value:'not null',text:'已处理'}]" class="z-txt easyui-combobox" /></div>
+
+    <div class="clear"></div>
+
+    <div class="prefix_9" style="position:absolute;top:5px;height:0;">
+        <a id="a_search" href="#" class="buttonHuge button-blue" data-bind="click:searchClick" style="margin:0 15px;">查询</a>
+        <a id="a_reset" href="#" class="buttonHuge button-blue" data-bind="click:clearClick">清空</a>
+    </div>
+</div>
+
+<table data-bind="datagrid:grid" style="display:none;">
+    <thead>
+        <tr>
+            <th field="ID" sortable="true" align="left" width="80" hidden></th>
+            <th field="mID" sortable="true" align="left" width="80" hidden></th>
+            <th field="FigureCode" sortable="true" align="left" width="120">零件图号</th>
+            <th field="WorkStepsLineCode" sortable="true" align="left" width="80">工步行号</th>
+            <th field="WorkStepsName" sortable="true" align="left" width="80">工步名称</th>
+            <th field="ManHours" sortable="true" align="left" width="80" editor="text">工步工时定额</th>
+            <th field="WorkStepsContent" sortable="true" align="left" width="200">工步描述</th>
+            <th field="ContractCode" sortable="true" align="left" width="80">合同编码</th>
+            <th field="ProjectName" sortable="true" align="left" width="180">项目名称</th>
+
+            <th field="PartCode" sortable="true" align="left" hidden width="120">零件编码</th>
+            <th field="ProcessCode" sortable="true" align="left" width="80">工序编码</th>
+            <th field="ProcessName" sortable="true" align="left" width="80">工序名称</th>
+            <th field="ManHour" sortable="true" align="left" width="80">工序工时定额</th>
+            <th field="Unit" sortable="true" align="left" width="80">单位</th>
+            @*<th field="Unit" sortable="true" align="left" width="80">单位</th>*@
+        </tr>
+    </thead>
+</table>
+
+

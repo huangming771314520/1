@@ -1,0 +1,276 @@
+﻿* {
+    padding: 0;
+    margin: 0;
+    /*background: #304a70;*/
+}
+
+html, body {
+    height: 100%;
+    overflow: hidden;
+}
+
+#all {
+    width: 100%;
+    height: 100%;
+    background: #304a70;
+}
+
+#all_top {
+    width: 100%;
+    height: 60px;
+    margin: 0 auto;
+    margin-bottom: 10px;
+}
+
+.top_left {
+    float: left;
+    width: 100%;
+    height: 30px;
+    background: #d8d5d5;
+    background: -webkit-linear-gradient(left, #297d9f, #27334d);
+    /*background-image: -webkit-linear-gradient(left, #730cc9, #ff6ed7);
+            background-image: -o-linear-gradient(left, #730cc9, #ff6ed7);
+            background-image: linear-gradient(left, #730cc9, #ff6ed7);*/
+}
+
+.top_center {
+    border-left: 150px solid transparent;
+    border-right: 150px solid transparent;
+    width: 300px;
+    margin: 0 auto;
+    border-top: 60px solid #297d9f;
+    text-align: center;
+    position: relative;
+}
+
+    .top_center > p {
+        position: absolute;
+        left: 70px;
+        top: -50px;
+        font-size: 28px;
+        font-weight: bold;
+        color: #ffffff;
+    }
+
+.all_upperpart {
+    width: 99%;
+    height: 200px;
+    /*background: #000000;*/
+    margin: 0 auto;
+}
+/*人员管理样式*/
+.all_personnel {
+    /*width: 55%;*/
+    height: 200px;
+    /*background: #4cff00;*/
+    float: left;
+    margin-bottom: 10px;
+    width: calc(55% - 10px);
+    margin-right: 10px;
+}
+
+.personnel_left {
+    /*width: 30%;*/
+    height: 200px;
+    /*background: #00ffff;*/
+    float: left;
+    margin-right: 10px;
+    width: calc(30% - 10px);
+}
+
+.personnel_right {
+    width: 70%;
+    height: 200px;
+    background: #082246;
+    /*border: 1px solid #1f1068;*/
+    float: left;
+}
+
+.left_top {
+    width: 100%;
+    height: 100px;
+    background: #082246;
+    /*border: 1px solid #1f1068;*/
+}
+
+.left_button {
+    width: 100%;
+    height: 80px;
+    background: #082246;
+    margin-top: 10px;
+    padding-top: 10px;
+    /*border: 1px solid #1f1068;*/
+}
+
+.right_top {
+    width: calc(100% - 2px);
+    height: 72px;
+    /*background: #b304ef;*/
+    border: 1px solid #1f1068;
+}
+
+.right_button {
+    width: calc(100% - 2px);
+    height: 80px;
+    /*background: #d8d5d5;*/
+    margin-top: 10px;
+    border: 1px solid #1f1068;
+}
+
+.right_top_size {
+    /*width: 19%;*/
+    height: 72px;
+    /*border: 1px solid #d8d5d5;*/
+    float: left;
+    margin-left: 5px;
+    width: calc(20% - 8px);
+    text-align: center;
+    line-height: 36px;
+    color: #ffffff;
+}
+
+.right_button_img {
+    height: 72px;
+    /*border: 1px solid #b304ef;*/
+    float: left;
+    margin-left: 5px;
+    width: calc(20% - 8px);
+    text-align: center;
+    line-height: 20px;
+    /*margin-top:1px;*/
+}
+
+    .right_button_img > img {
+        margin: 10px auto;
+    }
+
+    .right_button_img > p {
+        color: #ffffff;
+    }
+/*本周产线完工情况样式*/
+.all_completed {
+    width: 45%;
+    height: 200px;
+    /*background: #4cff00;*/
+    float: right;
+    margin-bottom: 10px;
+    /*border: 1px solid #1f1068;*/
+}
+/*下半部分内容*/
+.all_below {
+    width: 99%;
+    height: 370px;
+    /*background: #ffd800;*/
+    /*margin-top: 180px;*/
+    margin: 0 auto;
+}
+/*下半部分左边样式*/
+.below_left {
+    /*width: 30%;*/
+    height: 370px;
+    /*background: #d8d5d5;*/
+    float: left;
+    width: calc(30% - 0px);
+}
+/*温湿度曲线图样式*/
+.left_temperature {
+    width: 100%;
+    height: 50%;
+    /*background: #1f1068;*/
+    margin-bottom: 5px;
+    /*border: 1px solid #1f1068;*/
+}
+/*能耗*/
+.left_energy {
+    width: 100%;
+    height: 50%;
+    /*background: #b304ef;*/
+    /*border: 1px solid #1f1068;*/
+}
+/*产线*/
+.below_center {
+    /*width: 32%;*/
+    height: 370px;
+    /*background: #d8d5d5;*/
+    float: left;
+    margin-left: 10px;
+    width: calc(32% - 10px);
+}
+/*产品生产*/
+.center_line {
+    width: 100%;
+    height: 50%;
+    background: #082246;
+    /*border: 1px solid #1f1068;*/
+    margin-bottom: 5px;
+}
+
+.center_line_left {
+    width: 50%;
+    height: 80%;
+    /*background:#41769e;*/
+    float: left;
+}
+
+.line_left_left {
+    margin: 0 auto;
+    margin-bottom: 5px;
+    margin-left: 5px;
+    color: #ffffff;
+    line-height:1.5
+}
+
+.center_line_right {
+    width: 50%;
+    height: 80%;
+    /*background: #4cff00;*/
+    float: right;
+    color: #ffffff;
+}
+
+.line_right_right {
+    margin: 0 auto;
+    /*width: 65%;*/
+    line-height:1.5;
+    margin-bottom: 5px;
+    margin-left: 5px;
+}
+/*产线进度条*/
+.center_progress {
+    width: 100%;
+    height: 50%;
+    background: #082246;
+    /*border: 1px solid #1f1068;*/
+}
+/*不良原因*/
+.below_right {
+    /*width: 38%;*/
+    height: 370px;
+    /*background: #d8d5d5;*/
+    float: right;
+    margin-left: 10px;
+    width: calc(38% - 10px);
+}
+/*本周合格率*/
+.right_passrate {
+    width: 100%;
+    height: 50%;
+    background: #1f1068;
+    margin-bottom: 5px;
+    /*border: 1px solid #1f1068;*/
+}
+/*5大不良原因*/
+.right_bad {
+    width: 100%;
+    height: 50%;
+    /*background: #b304ef;*/
+    /*border: 1px solid #1f1068;*/ 0;
+}
+/*标题渐变*/
+.jb {
+    height: 30px;
+    width: 100%;
+    line-height: 30px;
+    background: -webkit-linear-gradient(left, #297d9f, #27334d);
+    text-indent: 10px;
+}

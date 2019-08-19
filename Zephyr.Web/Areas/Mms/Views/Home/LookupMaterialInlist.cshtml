@@ -1,0 +1,83 @@
+﻿@{
+    ViewBag.Title = "LookupMaterialInlist";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@section head{
+    <style type="text/css">
+        .z-toolbar {
+            border-width: 0;
+            margin: 0;
+        }
+
+        #form_div {
+            padding: 0 !important;
+            height: 100%;
+            width: 100%;
+        }
+
+        .lbl {
+            text-align: right;
+            line-height: 25px;
+        }
+
+        .datagrid .panel-body {
+            border-width: 0 !important;
+        }
+
+        body {
+            padding: 0 !important;
+        }
+    </style>
+}
+
+@section scripts{
+    <script src="~/Areas/Mms/ViewModels/mms.outManager.js"></script>
+    <script src="~/Areas/Mms/ViewModels/mms.lookupMaterialInlist.js"></script>
+}
+
+<div id="layoutbox">
+    <div region="west" title="材料类别" style="width: 180px;">
+        <ul id="typetree"></ul>
+    </div>
+
+    <div region="center" split="true">
+        <div id="right" class="easyui-layout" fit="true">
+            <div region="north" style="height:480px" border="false" split="true">
+
+                <div id="master" class="container_16" style="background-color:#E0ECFF">
+
+                    <div class="grid_2 lbl" id="valueTitle">物料编码</div>
+                    <div class="grid_4 val">
+                        <input type="text" id="id" name="MaterialCode" class="z-txt" data-cp="like" />
+                    </div>
+                    <div class="grid_2 lbl" id="textTitle">物料名称</div>
+                    <div class="grid_4 val">
+                        <input type="text" id="text" name="MaterialName" class="z-txt" data-cp="like" />
+                    </div>
+                    <div class="clear"></div>
+                    <div class="grid_2 lbl" id="valueTitle1">物料图号</div>
+                    <div class="grid_4 val">
+                        <input type="text" id="id1" name="Material_Tu" class="z-txt" data-cp="like" />
+                    </div>
+                    <div class="grid_2 lbl" id="textTitle1">规格型号</div>
+                    <div class="grid_4 val">
+                        <input type="text" id="text1" name="Model" class="z-txt" data-cp="like" />
+                    </div>
+                    <div class="grid_4 val" style="margin-top: 0px;"><a id="btnSearch" href="#" plain="true" class="easyui-linkbutton" icon="icon-search" title="过滤">过滤</a> <a id="btnClear" href="#" plain="true" class="easyui-linkbutton" icon="icon-clear" title="清空">清空</a></div>
+                    <div class="clear"></div>
+                </div>
+
+                <div id="list"></div>
+            </div>
+
+            <div id="footerDiv" region="center" border="false" split="true" style="height: 50px">
+                <div id="selectlist" class="hide"></div>
+                <div class="z-toolbar" style="text-align: center; padding: 4px 0; border-top-width: 1px; position: relative;">
+                    <button id="btnConfirm" class="sexybutton"><span><span><span class="ok" style="right:5px">确定</span></span></span></button>&nbsp;
+                    <button id="btnCancel" class="sexybutton"><span><span><span class="cancel">取消</span></span></span></button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,16 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<settings lookupType="lineNo" defaultOrderBy='Line_No'>
+  <module>Mms</module>
+  <select>
+
+    [Line_No] ,[Line_Name] ,[Line_No] as line_code,[Line_Name] as LineName
+  </select>
+  <from>
+   [QHD_Mes].[dbo].[Work_Line]
+  </from>
+  <where defaultForAll='true' defaultCp='equal' defaultIgnoreEmpty='true' >
+    <field name='Line_No'         cp='like'  ></field>
+    <field name='Line_Name'         cp='like'       ></field>
+    
+  </where>
+</settings>

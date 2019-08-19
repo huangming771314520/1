@@ -1,0 +1,149 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<activityRootModel xmlns:dm0="http://schemas.microsoft.com/VisualStudio/2008/DslTools/Core" xmlns:dm1="http://schemas.microsoft.com/dsltools/Kernel" xmlns:dm2="http://schemas.microsoft.com/dsltools/Component" xmlns:dm3="http://schemas.microsoft.com/dsltools/UseCase" xmlns:dm4="http://schemas.microsoft.com/dsltools/Activity" xmlns:dm5="http://schemas.microsoft.com/dsltools/Interaction" xmlns:dm6="http://schemas.microsoft.com/dsltools/UmlModelLibrary" xmlns:dm7="http://schemas.microsoft.com/dsltools/UmlDiagrams" xmlns:dm8="http://schemas.microsoft.com/dsltools/ModelStore" xmlns:dm9="http://schemas.microsoft.com/dsltools/SimpleShapesModel" dslVersion="1.0.0.0" Id="a2b8af54-6bb0-4353-8788-176285008318" name="0301生产配套" linkedPackageId="86fbcdf6-ef2c-4c9f-8ba6-5d2ffb2a21f9" xmlns="http://schemas.microsoft.com/VisualStudio/TeamArchitect/ActivityDesigner">
+  <ownedCommentsInternal>
+    <comment Id="68800e64-17d3-4ff7-8df0-d76a76dd2a84">
+      <elementDefinition Id="8700e908-fddc-4364-a70b-8ea55afb167b" />
+      <body>SELECT --合同编号
+    a.ContractCode,
+    --工程项目
+    a.ProjectName,
+    --产品名称
+    B.ProductName,
+    --产品类型
+    C.Text ProductType,
+    --型号
+    B.Model,
+    --规格
+    B.Specifications,
+    --零件图号
+    F.PartFigureCode,
+    --零件名称
+    F.PartName,
+    --批产数量
+    J.ProductQuantity,
+    --交货日期
+    J.PlanFinishDate
+FROM dbo.PMS_BN_Project a
+    INNER JOIN [dbo].[PMS_BN_ProjectDetail] B
+        ON a.ProjectID = B.MainID
+           AND B.IsEnable = '1'
+    INNER JOIN [HBHC_Sys].[dbo].[sys_code] C
+        ON C.CodeType = 'ProductType'
+           AND B.ProductType = C.Value
+           AND C.IsEnable = '1'
+    INNER JOIN [dbo].[PMS_ProductTask] H
+        ON B.ID = H.ProductID
+           AND H.TaskType = '3'
+           AND H.IsEnable = '1'
+    INNER JOIN [dbo].[PMS_ProductPlanDetail] J
+        ON H.ID = J.MainID
+           AND J.IsEnable = '1'
+    INNER JOIN [dbo].[PMS_ProductTask] D
+        ON D.ProductID = B.ID
+           AND D.TaskType = '1'
+           AND D.IsEnable = '1'
+    INNER JOIN [dbo].[PMS_DesignTaskDetail] E
+        ON D.ID = E.MainID
+           AND E.IsEnable = '1'
+    INNER JOIN  [dbo].[PRS_Process_BOM] F
+        ON E.PartCode = F.PartCode 
+           AND F.IsEnable = '1'
+WHERE a.IsEnable = '1'
+      AND a.ContractCode = '';</body>
+      <annotatedElements>
+        <opaqueActionMoniker Id="880dffdc-fd80-44f2-91b9-8abe62dfab87" LastKnownName="查询合同、产品、零件" />
+      </annotatedElements>
+    </comment>
+    <comment Id="ea295243-9f4d-4724-89e6-ca269a13060a">
+      <elementDefinition Id="44a58ddd-8f91-4f7e-8924-c167dc31ff92" />
+      <body>1、工艺BOM中自制件默认为“自制件”；
+2、工艺BOM中外购件默认为“采购供应”；</body>
+      <annotatedElements>
+        <opaqueActionMoniker Id="2261be4b-5bb0-45c8-b9af-431639f00aa4" LastKnownName="查询工艺BOM" />
+      </annotatedElements>
+    </comment>
+    <comment Id="b29c64cc-ace9-4f75-83ee-790e99df5f25">
+      <elementDefinition Id="49b364e2-6340-4622-84c9-0ef4d95375b6" />
+      <body>1、可以根据零件图号排序；
+2、可以多选零件后更改配套类型；
+3、是否包料默认为“是”；采购供应可修改未否；</body>
+      <annotatedElements>
+        <opaqueActionMoniker Id="cd306fb5-d22f-4190-a4fc-f6d0b98af45f" LastKnownName="更改配套类型" />
+      </annotatedElements>
+    </comment>
+  </ownedCommentsInternal>
+  <packagedElements>
+    <activityRootModelHasActivity>
+      <activity Id="dda9a2d7-f166-46db-a0dd-d878466dfa9b" name="0301生产配套" isAbstract="false" isLeaf="false" isActiveClass="false" isReentrant="false" isReadOnly="false" isSingleExecution="false">
+        <elementDefinition Id="116eac44-bcb3-4102-88f6-9df7172dd03c" />
+        <nodes>
+          <initialNode Id="107e7f7d-67ed-4b25-b520-fe81fa0f8092" name="Initial1" isLeaf="false">
+            <elementDefinition Id="5243ed75-61d2-4b23-b056-8c6a8ab958e8" />
+            <flowNodeTargets>
+              <controlFlow Id="ea98a4ac-1418-4ab7-abd2-333e35496e5b" isLeaf="false">
+                <opaqueActionMoniker Id="880dffdc-fd80-44f2-91b9-8abe62dfab87" LastKnownName="查询合同、产品、零件" />
+                <elementDefinition Id="7651250d-f27b-4eb7-be74-5d24b84225b8" />
+              </controlFlow>
+            </flowNodeTargets>
+          </initialNode>
+          <opaqueAction Id="880dffdc-fd80-44f2-91b9-8abe62dfab87" name="查询合同、产品、零件" isLeaf="false">
+            <elementDefinition Id="42d69710-13d4-47ee-bbf7-68e2a4a87014" />
+            <flowNodeTargets>
+              <controlFlow Id="de95af8c-605e-4163-93e7-f271f44673aa" isLeaf="false">
+                <opaqueActionMoniker Id="2261be4b-5bb0-45c8-b9af-431639f00aa4" LastKnownName="查询工艺BOM" />
+                <elementDefinition Id="a2b1d6ee-2c46-4c88-9b69-33f2baf12e2b" />
+              </controlFlow>
+            </flowNodeTargets>
+          </opaqueAction>
+          <opaqueAction Id="2261be4b-5bb0-45c8-b9af-431639f00aa4" name="查询工艺BOM" isLeaf="false">
+            <elementDefinition Id="ed1e62db-0484-4d81-8881-a955632222f7" />
+            <flowNodeTargets>
+              <controlFlow Id="c59760a6-0607-4069-ae46-44cf0a58bb47" isLeaf="false">
+                <opaqueActionMoniker Id="cd306fb5-d22f-4190-a4fc-f6d0b98af45f" LastKnownName="更改配套类型" />
+                <elementDefinition Id="e976f0f2-f3f3-4330-8f22-62d8e10522b7" />
+              </controlFlow>
+            </flowNodeTargets>
+          </opaqueAction>
+          <opaqueAction Id="cd306fb5-d22f-4190-a4fc-f6d0b98af45f" name="更改配套类型" isLeaf="false">
+            <elementDefinition Id="f43031e7-49e4-4159-a0d0-7e3ec1c2fef5" />
+            <flowNodeTargets>
+              <controlFlow Id="c3505a11-3206-40f4-b044-c4529573bf23" isLeaf="false">
+                <opaqueActionMoniker Id="691e1908-5782-4b53-9655-e48a0d709bad" LastKnownName="审核配套表" />
+                <elementDefinition Id="7727c8f5-561e-4711-b7a2-153947ba4a43" />
+              </controlFlow>
+            </flowNodeTargets>
+          </opaqueAction>
+          <opaqueAction Id="691e1908-5782-4b53-9655-e48a0d709bad" name="审核配套表" isLeaf="false">
+            <elementDefinition Id="2cb6757f-cd5c-4112-b005-e067d3d58924" />
+            <flowNodeTargets>
+              <controlFlow Id="620b9484-c2e0-4426-9846-0afcf1f7932c" isLeaf="false">
+                <activityFinalNodeMoniker Id="55a58dfe-444d-4659-8fd9-d95970ccfebb" LastKnownName="ActivityFinal1" />
+                <elementDefinition Id="859fe44f-dc23-4e95-8785-182a44b61b8c" />
+              </controlFlow>
+            </flowNodeTargets>
+          </opaqueAction>
+          <activityFinalNode Id="55a58dfe-444d-4659-8fd9-d95970ccfebb" name="ActivityFinal1" isLeaf="false">
+            <elementDefinition Id="d96c9f42-25fc-4584-8da2-6467f4b2dd82" />
+          </activityFinalNode>
+        </nodes>
+      </activity>
+    </activityRootModelHasActivity>
+  </packagedElements>
+  <package Id="86fbcdf6-ef2c-4c9f-8ba6-5d2ffb2a21f9" name="HCJXUML">
+    <elementDefinition Id="6348ac1d-75ba-4a39-8ebf-237333c18d4f" />
+    <profileInstances>
+      <packageHasProfileInstances Id="38d5921e-53bb-4dc6-b7a1-50fc07018087">
+        <profileInstance Id="4a968eef-7910-4c1e-9f2d-048f59b76581" name="StandardProfileL2">
+          <elementDefinition Id="e34d544e-0fea-4ed6-ac5e-1b74119ac791" />
+        </profileInstance>
+        <elementDefinition Id="0caec977-1f8c-4ba3-a7db-8cc9ad9cc73b" />
+      </packageHasProfileInstances>
+      <packageHasProfileInstances Id="b7572fe5-3d37-4474-827e-7c070f913ba8">
+        <profileInstance Id="40383ca7-c3c2-4f0b-acf9-24863912d2a0" name="StandardProfileL3">
+          <elementDefinition Id="532ea607-fb19-44b8-8502-3351b05452be" />
+        </profileInstance>
+        <elementDefinition Id="29349502-908c-4fda-9054-c48619c59ed0" />
+      </packageHasProfileInstances>
+    </profileInstances>
+  </package>
+</activityRootModel>

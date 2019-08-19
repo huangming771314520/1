@@ -1,0 +1,80 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<activityRootModel xmlns:dm0="http://schemas.microsoft.com/VisualStudio/2008/DslTools/Core" xmlns:dm1="http://schemas.microsoft.com/dsltools/Kernel" xmlns:dm2="http://schemas.microsoft.com/dsltools/Component" xmlns:dm3="http://schemas.microsoft.com/dsltools/UseCase" xmlns:dm4="http://schemas.microsoft.com/dsltools/Activity" xmlns:dm5="http://schemas.microsoft.com/dsltools/Interaction" xmlns:dm6="http://schemas.microsoft.com/dsltools/UmlModelLibrary" xmlns:dm7="http://schemas.microsoft.com/dsltools/UmlDiagrams" xmlns:dm8="http://schemas.microsoft.com/dsltools/ModelStore" xmlns:dm9="http://schemas.microsoft.com/dsltools/SimpleShapesModel" dslVersion="1.0.0.0" Id="741fecc3-2f9f-4f74-a617-a1b0d54b240a" name="0104查询应交工程明细" linkedPackageId="fa1b9257-f9dd-4239-844c-b6d689398413" xmlns="http://schemas.microsoft.com/VisualStudio/TeamArchitect/ActivityDesigner">
+  <ownedCommentsInternal>
+    <comment Id="d27ed993-38d3-4d5f-99ca-51a403b3ee27">
+      <elementDefinition Id="f13e9a38-8b6d-4860-9073-0b2abc12b4b5" />
+      <body>SELECT A.ContractCode,
+       A.ProjectName,
+       B.ProductName,
+       D.ProductQuantity,
+       D.PlanFinishDate
+FROM [dbo].[PMS_BN_Project] A
+    INNER JOIN [dbo].[PMS_BN_ProjectDetail] B
+        ON A.ProjectID = B.MainID
+           AND B.IsEnable = '1'
+    INNER JOIN [dbo].[PMS_ProductTask] C
+        ON B.ID = C.ProductID
+           AND C.TaskType = '3'
+           AND C.IsEnable = '1'
+    INNER JOIN [dbo].[PMS_ProductPlanDetail] D
+        ON C.ID = D.MainID
+           AND D.IsEnable = '1'
+WHERE D.PlanFinishDate &lt;= DATEADD(DAY, -1, DATEADD(MM, DATEDIFF(MM, 0, '') + 1, 0))
+      OR
+      (
+          D.CompleteQuantity &lt; D.ProductQuantity
+          AND D.PlanFinishDate &lt; DATEADD(MM, DATEDIFF(MM, 0,''), 0)
+      );</body>
+      <annotatedElements>
+        <opaqueActionMoniker Id="92d47648-64cb-4200-aa9f-c11d549a19fd" LastKnownName="查询应交工程明细" />
+      </annotatedElements>
+    </comment>
+  </ownedCommentsInternal>
+  <packagedElements>
+    <activityRootModelHasActivity>
+      <activity Id="dc3e9154-f749-4cbd-8f67-3d6e12d4b682" name="0104查询应交工程明细" isAbstract="false" isLeaf="false" isActiveClass="false" isReentrant="false" isReadOnly="false" isSingleExecution="false">
+        <elementDefinition Id="48518817-45aa-4279-8540-371e617b870f" />
+        <nodes>
+          <initialNode Id="918a100e-e842-4d99-af20-758c6dbcd4ca" name="Initial1" isLeaf="false">
+            <elementDefinition Id="b70a6cc5-b5ad-47f5-853f-7115808e8502" />
+            <flowNodeTargets>
+              <controlFlow Id="a25a0398-d94b-46b5-8a98-7304dcf50c88" isLeaf="false">
+                <opaqueActionMoniker Id="92d47648-64cb-4200-aa9f-c11d549a19fd" LastKnownName="查询应交工程明细" />
+                <elementDefinition Id="0be13809-7804-4d4d-a169-82a541de8d4c" />
+              </controlFlow>
+            </flowNodeTargets>
+          </initialNode>
+          <opaqueAction Id="92d47648-64cb-4200-aa9f-c11d549a19fd" name="查询应交工程明细" isLeaf="false">
+            <elementDefinition Id="9a244220-c19b-4d9e-bb1c-062219f9edbd" />
+            <flowNodeTargets>
+              <controlFlow Id="4faab6ba-76ca-4653-ba57-eea82b946ee5" isLeaf="false">
+                <activityFinalNodeMoniker Id="3a78f7eb-4818-4040-90bc-9feab9a8402b" LastKnownName="ActivityFinal1" />
+                <elementDefinition Id="7b56b668-9ef8-4b4a-ba07-4fbf0384a50e" />
+              </controlFlow>
+            </flowNodeTargets>
+          </opaqueAction>
+          <activityFinalNode Id="3a78f7eb-4818-4040-90bc-9feab9a8402b" name="ActivityFinal1" isLeaf="false">
+            <elementDefinition Id="c608be59-330b-4ba7-a211-e47b90514c89" />
+          </activityFinalNode>
+        </nodes>
+      </activity>
+    </activityRootModelHasActivity>
+  </packagedElements>
+  <package Id="fa1b9257-f9dd-4239-844c-b6d689398413" name="HCJXUML">
+    <elementDefinition Id="6348ac1d-75ba-4a39-8ebf-237333c18d4f" />
+    <profileInstances>
+      <packageHasProfileInstances Id="e84857d9-6ce8-4478-8723-4157fd4187db">
+        <profileInstance Id="88237178-af88-4dda-a0d5-e2fa8668fed9" name="StandardProfileL2">
+          <elementDefinition Id="e34d544e-0fea-4ed6-ac5e-1b74119ac791" />
+        </profileInstance>
+        <elementDefinition Id="0caec977-1f8c-4ba3-a7db-8cc9ad9cc73b" />
+      </packageHasProfileInstances>
+      <packageHasProfileInstances Id="b6552fe3-4604-489e-a0a5-86816c2235a3">
+        <profileInstance Id="cb561565-2a3d-47d3-a73b-298247e69f1a" name="StandardProfileL3">
+          <elementDefinition Id="532ea607-fb19-44b8-8502-3351b05452be" />
+        </profileInstance>
+        <elementDefinition Id="29349502-908c-4fda-9054-c48619c59ed0" />
+      </packageHasProfileInstances>
+    </profileInstances>
+  </package>
+</activityRootModel>

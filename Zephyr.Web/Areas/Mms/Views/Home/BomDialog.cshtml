@@ -1,0 +1,212 @@
+﻿@{
+    ViewBag.Title = "MES_BD_Bom";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@section scripts{
+    <script src="/Content/js/viewModel/com.viewModel.searchEdit.js"></script>
+    <script type="text/javascript">
+        var myself;
+        using(['datebox','validatebox', 'combobox','lookup','datebox','datetimebox','combogrid','combotree','extend','menu','numberspinner']);
+        var viewModel = function(data){
+            var self = this;
+            com.viewModel.searchEdit.apply(this,arguments);
+            this.grid.pagination=false;
+            myself=self;
+            var iframe = getThisIframe();
+            var thiswin = parent.$(iframe).parent();
+            this.SaveNewVerionClick=function(){
+                if (!self.form.ProductVerison()) {
+                    alert("请选择一个Bom版本！");
+                    return;
+                }
+                self.gridEdit.ended(); //结束grid编辑状态
+                var post = {
+                    oldVerison:self.form.ProductVerison(),
+                    list:self.gridEdit.getChanges(self.setting.postListFields),
+                    ParentNo:self.form.ParentNo()
+                };
+                if (self.gridEdit.ended() && post.list._changed) {
+                    com.ajax({
+                        url:'/api/Mms/MES_BN_ProductPlan/PostSaveNewVerion',
+                        data: ko.toJSON(post),
+                        success: function (d) {
+                            com.message('success', self.resx.editSuccess);
+                            self.gridEdit.accept();
+                            window.location.reload();
+                        }
+                    });
+                }else
+                {
+                    com.message('success', "没有修改！");
+                }
+
+                //if (self.gridEdit.isChangedAndValid()) {
+                //    var list = that.gridEdit.getChanges(['ID', 'PlanCode', 'DrugDose', 'SumDrugDose', 'BatchCode', 'DrugType']);
+                //    com.ajax({
+                //        url: '/api/Mms/MES_BN_ProductPlan/EditDrugBatch',
+                //        data: ko.toJSON({ list: list }),
+                //        success: function (d) {
+                //            if(d=="0"){
+                //                alert('计划编码与批次编码已存在！');
+                //            }
+                //            if(d=="1"){
+                //                that.closeClick();
+                //                alert('保存成功！');
+                //            }
+                //            if(d=="2"){
+                //                that.closeClick();
+                //                alert('修改成功！');
+                //            }
+                //        }
+                //    });
+                //}
+                //if (!self.form.ProductVerison()) {
+                //    alert("请选择一个Bom版本！");
+                //    return;
+                //}
+                //var post = {
+                //    oldVerison:self.form.ProductVerison(),
+                //    ParentNo:self.form.ParentNo()
+                //};
+
+                //com.ajax({
+                //    type:'POST',
+                //    url:"/api/Mms/MES_BN_ProductPlan/PostSaveNewVerion",
+                //    data:JSON.stringify(post),
+                //    success:function(d){
+                //        com.message('success',d);
+                //        window.location.reload();
+                //    }
+                //});
+            }
+            this.SetNewVerionClick=function(){
+                var  verison=self.form.ProductVerison();
+                if (!verison) {
+                    alert("请选择一个Bom版本！");
+                    return;
+                }
+                com.ajax({
+                    type:'POST',
+                    url:self.urls.choose+"&verison="+verison,
+                    success:function(d){
+                        com.message('success',d);
+                        window.close();
+                    }
+                });
+            }
+
+        }
+
+        var data = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model));
+        ko.bindingViewModel(new viewModel(data));
+
+        //function destroyIframe(iframeEl) {
+        //    if (!iframeEl) return;
+        //    iframeEl.parentNode.removeChild(iframeEl);
+        //    iframeEl = null;
+        //};
+        ////获取本页面所在的iframe
+        //function getThisIframe() {
+        //    if (!parent) return null;
+        //    var iframes = parent.document.getElementsByTagName('iframe');
+        //    if (iframes.length == 0) return null;
+        //    for (var i = 0; i < iframes.length; ++i) {
+        //        var iframe = iframes[i];
+        //        if (iframe.contentWindow === self) { //self 指的是当前窗口
+        //            return iframe;
+        //        }
+        //    }
+        //}
+        //function destroyIframe(iframeEl) {
+        //    if (!iframeEl) return;
+        //    iframeEl.parentNode.removeChild(iframeEl);
+        //    iframeEl = null;
+        //};
+    </script>
+}
+
+<div id="container">
+    <div id="wrapper">
+        <div id="content">
+            <div class="z-toolbar">
+                <a href="#" plain="true" class="easyui-linkbutton" icon="icon-arrow_refresh" title="刷新" data-bind="click:refreshClick">刷新</a>
+                <a href="#" plain="true" class="easyui-linkbutton" icon="icon-add" title="新增" data-bind="click:addClick">新增</a>
+                <a href="#" plain="true" class="easyui-linkbutton" icon="icon-edit" title="编辑" data-bind="click:editClick">编辑</a>
+                <a href="#" plain="true" class="easyui-linkbutton" icon="icon-cross" title="删除" data-bind="click:deleteClick">删除</a>
+                <a href="#" plain="true" class="easyui-linkbutton" icon="icon-save" title="保存" data-bind="click:saveClick">保存</a>
+                <a href="#" plain="true" class="easyui-linkbutton" icon="icon-save" title="保存" data-bind="click:SaveNewVerionClick">保存新版本</a>
+                <a href="#" plain="true" class="easyui-linkbutton" icon="icon-save" title="保存" data-bind="click:SetNewVerionClick">设置版本</a>
+
+            </div>
+
+
+
+            <div class="container_12" style="position:relative;">
+                <div class="grid_2 lbl">Bom版本</div>
+                <div class="grid_2 val">
+                    <input onabort="false" type="text" data-bind="combogridValue:form.ProductVerison" class="z-txt easyui-combogrid "
+                           data-options="url:'/Commons/GetCommonSearchList',
+                queryParams : {
+                         tableName:'[MES_BD_Bom]',
+                         searchField:'distinct [ProductVerison]',
+                         firstFightField:'[ProductVerison]',
+                         whereSql:'ParentNo=\''+myself.form.ParentNo()+'\'',
+                         CacheKey:'MES_BD_Bom',
+                         CacheTime:'480',
+                         connName:'Mms'
+                },
+                method: 'GET',
+                panelWidth:400,
+                fit:true,
+                delay: 1000,
+                mode: 'remote',
+                value: 'ProductVerison',
+                idField: 'ProductVerison',
+                textField: 'ProductVerison',
+                columns:[[
+                           { field: 'ProductVerison',title:'Bom版本',width:250 }
+                    ]],
+                           onSelect: function (rowIndex, rowData) {
+                         myself.form.ProductVerison(rowData['ProductVerison']);
+                           $('#a_search').click();
+                        },
+            keyHandler:{
+            query:function(keyword) {
+           var queryParams=$(this).combogrid('grid').datagrid('options').queryParams;
+           queryParams.keyword=keyword;
+           $(this).combogrid('grid').datagrid('options').queryParams=queryParams;
+           $(this).combogrid('grid').datagrid('reload');
+           }}" />
+                </div>
+                <div class="clear"></div>
+                <div class="prefix_9" style="position:absolute;top:5px;height:0;">
+                    <a id="a_search" href="#" class="buttonHuge button-blue" data-bind="click:searchClick" style="margin:0 15px;display:none">查询</a>
+                </div>
+            </div>
+
+            <table data-bind="datagrid:grid" style="display:none;width:100px;height:100px;">
+                <thead>
+                    <tr>
+                        <th field="ID" hidden="true" sortable="true" align="left" width="80" editor="text">主键ID</th>
+                        <th field="MateCode" sortable="true" align="left" width="150" editor="{type:'validatebox',options:{required:true}}">零件编号</th>
+                        <th field="MateName" sortable="true" align="left" width="250" editor="{type:'validatebox',options:{required:true}}">零件名称</th>
+                        <th field="ParentNo" sortable="true" align="left" width="150" editor="{type:'combotree',options:{url:'/Commons/GetCommonComboTreeList?tableName=MES_BD_Bom&IdField=MateCode&TextField=MateName&ParentIdField=ParentNo',method: 'GET',panelWidth:300,panelHeight: 300,valueField: 'id',textField: 'text'}}">父级编码</th>
+                        <th field="MateNum" sortable="true" align="left" width="100" editor="{type: 'numberbox',options:{min: 0}}">物料数量</th>
+                        <th field="ProductVerison" sortable="true" align="left" width="80" editor="text">Bom版本</th>
+                        <th field="MateVersion" sortable="true" align="left" width="80" editor="text">物料版本</th>
+
+
+                    </tr>
+                </thead>
+            </table>
+
+        </div>
+    </div>
+
+    @*<div style="text-align:center;margin-top:10px;">
+            <a class="easyui-linkbutton" data-options="iconCls:'icon-ok'" data-bind="click:confirmClick" href="javascript:void(0)">确定</a>
+            <a class="easyui-linkbutton" data-options="iconCls:'icon-cancel'" data-bind="click:cancelClick" href="javascript:void(0)">取消</a>
+        </div>*@
+
+</div>

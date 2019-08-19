@@ -1,0 +1,79 @@
+﻿
+@{
+    ViewBag.Title = "QMS_BN_Qualification";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@section scripts{
+<script src="/Content/js/viewModel/com.viewModel.searchEdit.js"></script>
+<script type="text/javascript">
+    using(['validatebox', 'combotree', 'numberspinner', 'combobox', 'lookup', 'datebox', 'datetimebox', 'combogrid'], easyuifix.datagrid_editor_extend);
+    var viewModel = function(data){ 
+        var self = this;
+        com.viewModel.searchEdit.apply(self,arguments);
+    } 
+    var data = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model));
+    ko.bindingViewModel(new viewModel(data));
+</script>
+}
+<div class="z-toolbar">
+    <a href="#" plain="true" class="easyui-linkbutton" icon="icon-arrow_refresh" title="刷新" data-bind="click:refreshClick">刷新</a>
+    <a href="#" plain="true" class="easyui-linkbutton" icon="icon-add" title="新增" data-bind="click:addClick">新增</a>
+    <a href="#" plain="true" class="easyui-linkbutton" icon="icon-edit" title="编辑" data-bind="click:editClick">编辑</a>
+    @*<a href="#" plain="true" class="easyui-linkbutton" icon="icon-cross" title="删除" data-bind="click:deleteClick">删除</a>*@
+    <a href="#" plain="true" class="easyui-linkbutton" icon="icon-save" title="保存" data-bind="click:saveClick">保存</a>
+    <a href="#" plain="true" class="easyui-splitbutton" data-options="menu:'#dropdown',iconCls:'icon-download'">导出</a>
+</div>
+
+<div id="dropdown" style="width:100px; display:none;">
+    <div data-options="iconCls:'icon-ext-xls'" suffix="xls" data-bind="click:downloadClick">Excel2003   </div>
+    <div data-options="iconCls:'icon-page_excel'" suffix="xlsx" data-bind="click:downloadClick">Excel2007   </div>
+    <div data-options="iconCls:'icon-ext-doc'" suffix="doc" data-bind="click:downloadClick">Word2003    </div>
+</div>
+
+<div class="container_12" style="position:relative;">
+        <div class="grid_1 lbl">资质名称</div>
+        <div class="grid_2 val"><input type="text" data-bind="value:form.QualificationName" class="z-txt "  /></div>
+        <div class="grid_1 lbl">资质类型</div>
+        @*<div class="grid_2 val"><input type="text" data-bind="comboboxValue:form.QualificationState" class="z-txt easyui-combobox"  /></div>*@
+        <div class="grid_2 val">
+            <input type="text" data-bind="comboboxValue:form.QualificationState" data-options="url:'/Commons/GetComboboxList?CodeType=QualificationState',valueField:'value',textField:'text'" class="z-txt easyui-combobox" />
+        </div>
+
+        <div class="grid_1 lbl">是否有效</div>
+        @*<div class="grid_2 val"><input type="text" data-bind="comboboxValue:form.IsEnable" class="z-txt easyui-combobox"  /></div>*@
+        <div class="grid_2 val"><input type="text" data-bind="comboboxValue:form.IsEnable" data-options="data:[{value:'',text:'所有'},
+                                       {value:1,text:'是'},{value:0,text:'否'}],valueField: 'value',textField: 'text'" class="z-txt easyui-combobox" /></div>
+
+        <div class="clear"></div>
+        <div class="grid_1 lbl">&nbsp;</div>
+        <div class="grid_2 val">&nbsp;</div>
+    <div class="clear"></div>
+
+    <div class="prefix_9" style="position:absolute;top:5px;height:0;">
+        <a id="a_search" href="#" class="buttonHuge button-blue" data-bind="click:searchClick" style="margin:0 15px;">查询</a>
+        <a id="a_reset" href="#" class="buttonHuge button-blue" data-bind="click:clearClick">清空</a>
+    </div>
+</div>
+
+<table data-bind="datagrid:grid" style="display:none">
+    <thead>
+        <tr>
+            <th field="ID" hidden="true" sortable="true" align="left" width="80" editor="text">检验资质ID</th>
+            <th field="QualificationCode" sortable="true" align="left" width="80" editor="text">资质编码</th>
+            <th field="QualificationName" sortable="true" align="left" width="80" editor="text">资质名称</th>
+            <th field="InspectionBeginDate" sortable="true" align="left" width="160" editor="datebox">资质开始日期</th>
+            <th field="InspectionFinishDate" sortable="true" align="left" width="160" editor="datebox">资质结束日期</th>
+            <th field="IdentificationCycle" hidden="true" sortable="true" align="left" width="120" editor="text">检定周期 单位：天</th>
+            @*<th field="QualificationState" 	  	 sortable="true" 	 align="left" 	 width="80" editor="{type:'combobox',options:{}}" >资质类型</th>*@
+            <th field="QualificationState" sortable="true" align="left" width="100" data-options="formatter:function(value,row){return com.formatCombobox('QualificationState',value);}"
+                editor="{type:'combobox',options:{required:true,url:'/Commons/GetComboboxList?CodeType=QualificationState',method:'GET',panelWidth:100,panelHeight:100,valueField:'value',textField:'text'}}">资质类型</th>
+            @*<th field="IsEnable" 	  	 sortable="true" 	 align="left" 	 width="80" editor="{type:'combobox',options:{}}" formatter="com.formatCheckbox">是否有效</th>*@
+
+            <th field="IsEnable" sortable="true" align="left" width="70" data-options="formatter:function(value,row){ return (value == true || value == 'true') ? '是':'否';}" editor="{type:'combobox',
+            options:{data:[{value:true,text:'是'},{value:false,text:'否'}],panelWidth:100,panelHeight: 100,valueField: 'value',textField: 'text'}}">
+                是否可用
+            </th>
+        </tr>
+    </thead>
+</table> 

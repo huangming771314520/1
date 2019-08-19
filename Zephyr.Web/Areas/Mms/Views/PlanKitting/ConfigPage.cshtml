@@ -1,0 +1,182 @@
+﻿<link href="~/Content/js/jquery-easyui-1.7.0/themes/icon.css" rel="stylesheet" />
+<link href="~/Content/js/jquery-easyui-1.7.0/themes/default/easyui.css" rel="stylesheet" />
+
+<style type="text/css">
+
+    body {
+        margin: 2px;
+    }
+</style>
+
+<div id="z-toolbar">
+    <a class="easyui-linkbutton" plain="true" onclick="SearchDialog()" icon="icon-search">选择项目零件</a>
+</div>
+<table id="tt" style="height: 92%;"></table>
+
+<script src="~/Content/js/jquery-easyui-1.7.0/jquery.min.js"></script>
+<script src="~/Content/js/jquery-easyui-1.7.0/jquery.easyui.min.js"></script>
+<script src="~/Content/js/core/utils.js"></script>
+<script src="~/Content/js/core/common.js"></script>
+
+<script type="text/javascript">
+    $().ready(function () {
+
+        $('#tt').treegrid({
+            queryParams: { PartCode: '0', VersionCode: '1' },
+            //url: '/api/Mms/PlanKitting/GetConfigPageBomTreeGrid?PartCode=3030JA000000000493&VersionCode=1',
+            url: '/api/Mms/PlanKitting/GetConfigPageBomTreeGrid',
+            method: 'get',
+            toolbar: '#z-toolbar',
+            animate: true,
+            rownumbers: true,
+            striped: true,
+            singleSelect: true,
+            idField: 'PartCode',
+            treeField: 'PartFigureCode',
+            columns: [[
+                { title: '图号', field: 'PartFigureCode', width: 400 },
+                { title: 'ID', field: 'ID', hidden: 'true', width: 60 },
+                { title: '零件名称', field: 'PartName', width: 210 },
+                {
+                    title: '备料', field: 'Blanking', width: 80, align: 'center', styler: function (value, row, index) { return setColumnBackColor(value, row, index, 1) }, formatter: function (value, row) { return setColumnCheckBox(value, row, 'Blanking') }
+                },
+                {
+                    title: '焊接', field: 'Welding', width: 80, align: 'center', styler: function (value, row, index) { return setColumnBackColor(value, row, index, 2) }, formatter: function (value, row) { return setColumnCheckBox(value, row, 'Welding') }
+                },
+                {
+                    title: '机加', field: 'Machining', width: 80, align: 'center', styler: function (value, row, index) { return setColumnBackColor(value, row, index, 3) }, formatter: function (value, row) { return setColumnCheckBox(value, row, 'Machining') }
+                },
+                {
+                    title: '装配', field: 'Assembling', width: 80, align: 'center', styler: function (value, row, index) { return setColumnBackColor(value, row, index, 4) }, formatter: function (value, row) { return setColumnCheckBox(value, row, 'Assembling') }
+                }
+            ]],
+            onLoadSuccess: function () {
+
+                $("#tt").treegrid('getPanel').find("td[field]").find("img").hover(function () {
+                    $(this).css("cursor", "pointer");
+                }, function () {
+                    $(this).css("cursor", "default");
+                })
+
+                $("#tt").treegrid('getPanel').find("td[field]").find("img").parent().click(function () {
+                    //var imgDocument = $(this);
+                    //var img = $(this).attr('src');
+                    //var isEdit = $(this).attr('isedit');
+                    //if (isEdit == "true" || isEdit == true) {
+                    //    var value = img == '/Content/images/checknomark.gif' ? 0 : -1;
+                    //    $.ajax({
+                    //        type: "GET",
+                    //        url: '/api/Mms/PlanKitting/GetUpdatePlanKittingConfig?id=' + $(this).attr("id") + "&name=" + $(this).attr("typeName") + "&value=" + value,
+                    //        async: false,
+                    //        success: function (result) {
+                    //            com.message(result.Result ? "success" : "warning", result.Msg);
+                    //            $(imgDocument).attr('src', value == 0 ? '/Content/images/checkmark.gif' : '/Content/images/checknomark.gif');
+                    //        }
+                    //    });
+                    //} else {
+                    //    com.message("warning", "此操作将会清空工步工序信息！");
+                    //}
+
+                    var imgDocument = $(this).find("img");
+                    var img = $(imgDocument).attr('src');
+                    var isEdit = $(imgDocument).attr('isedit');
+                    if (isEdit == "true" || isEdit == true) {
+                        var value = img == '/Content/images/checknomark.gif' ? 0 : -1;
+                        $.ajax({
+                            type: "GET",
+                            url: '/api/Mms/PlanKitting/GetUpdatePlanKittingConfig?id=' + $(imgDocument).attr("id") + "&name=" + $(imgDocument).attr("typeName") + "&value=" + value,
+                            async: false,
+                            success: function (result) {
+                                com.message(result.Result ? "success" : "warning", result.Msg);
+                                $(imgDocument).attr('src', value == 0 ? '/Content/images/checkmark.gif' : '/Content/images/checknomark.gif');
+                            }
+                        });
+                    } else {
+                        com.message("warning", "此操作将会清空工步工序信息！");
+                    }
+                });
+            },
+            loadFilter: function (d) {
+                if (d != null && d.length > 0) {
+                    var jsonData = eval(d);
+                    return utils.toTreeData(jsonData, 'PartCode', 'ParentCode', "children");
+                }
+                else {
+                    return '';
+                }
+            }
+        });
+
+        function setColumnBackColor(value, row, index, type) {
+            if (value > 0) {
+                console.log(row)
+                switch (type) {
+                    case 1:
+                        if (row.Blanking_ApproveState == "1" || row.Blanking_ApproveState == 1) {
+                            return 'background-color: green;';
+                        }
+                        else {
+                            return 'background-color: red;';
+                        }
+                        break;
+                    case 2:
+                        if (row.Welding_ApproveState == "1" || row.Welding_ApproveState == 1) {
+                            return 'background-color: green;';
+                        }
+                        else {
+                            return 'background-color: red;';
+                        }
+                        break;
+                    case 3:
+                        if (row.Machining_ApproveState == "1" || row.Machining_ApproveState == 1) {
+                            return 'background-color: green;';
+                        }
+                        else {
+                            return 'background-color: red;';
+                        }
+                        break;
+                    case 4:
+                        if (row.Assembling_ApproveState == "1" || row.Assembling_ApproveState == 1) {
+                            return 'background-color: green;';
+                        }
+                        else {
+                            return 'background-color: red;';
+                        }
+                        break;
+                    default: break;
+                }
+            }
+        }
+
+        function setColumnCheckBox(value, row, typeName) {
+            return '<img class="ckb" isEdit=' + (value > 0 ? false : true) + ' id=' + row.ID + ' typeName="' + typeName + '" src="/Content/images/' + (value == -1 ? "checknomark" : "checkmark") + '.gif"/>';
+        }
+
+    })
+
+    //查询工艺bom树
+    function SearchDialog() {
+        var target = parent.$('#CommonSearchDialog').length ? parent.$('#CommonSearchDialog') : parent.$('<div id="CommonSearchDialog"></div>').appendTo('body');
+        utils.clearIframe(target);
+        var opt;
+        opt = { title: '列表', width: 800, height: 650, modal: true, collapsible: false, minimizable: false, maximizable: true, closable: true };
+        opt.content = "<iframe src='/mms/home/CommonDialog?xmlName=ChooseProjectPart' style='height:100%;width:100%;border:0;' frameborder='0'></iframe>";  //frameborder="0" for ie7
+        params = { xmlName: 'ChooseProjectPart' };
+        opt.paramater = params;
+        opt.onSelect = function (data) {
+            //console.log(data);
+            var params = {
+                PartCode: data[0].PartCode,
+                VersionCode: data[0].VersionCode
+            };
+            $('#tt').treegrid("options").queryParams = params;
+            $('#tt').treegrid('reload');//重新加载树
+            $('#tt').treegrid('collapseAll');//默认折叠所有节点
+        };
+        target.window(opt);
+    };
+
+
+
+
+</script>

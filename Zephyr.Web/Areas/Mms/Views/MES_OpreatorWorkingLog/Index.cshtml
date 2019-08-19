@@ -1,0 +1,193 @@
+﻿<link href="~/Content/js/jquery-easyui-1.7.0/themes/icon.css" rel="stylesheet" />
+<link href="~/Content/js/jquery-easyui-1.7.0/themes/default/easyui.css" rel="stylesheet" />
+<style type="text/css">
+    * {
+        font-family: "微软雅黑";
+    }
+
+    body {
+        margin: 2px;
+    }
+</style>
+
+<div style="display:flex;flex-direction:column;height:98%;">
+    <div style="height:auto;padding:10px 6px;">
+        <select id="workGroup" label="班组：" class="easyui-combobox" style="width:300px;" labelAlign="right">
+            <option value="-1">全部</option>
+            @{
+                foreach (var item in ViewBag.WorkGroupData)
+                {
+                    <option value="@item.TeamCode">@item.TeamName</option>
+                }
+            }
+        </select>
+
+        <!--
+        <input id="beginDate" class="easyui-datebox" style="width:300px;" label="开始日期：" labelWidth="120" labelAlign="right">
+        <input id="finishDate" class="easyui-datebox" style="width:300px;" label="结束日期：" labelWidth="120" labelAlign="right">
+        -->
+
+        <label style="margin-left:20px;">报工日期：</label>
+        <input id="beginDate" class="easyui-datebox" style="width:180px;">
+        <label style="margin:auto 5px;">至</label>
+        <input id="finishDate" class="easyui-datebox" style="width:180px;">
+
+        <a id="btnSearch" class="easyui-linkbutton" icon="icon-search" style="margin-left:20px;">查找</a>
+    </div>
+    <div style="flex:auto">
+        <div id="z-toolbar">
+            <!--<input id="u_UserName" class="easyui-textbox" label="用户名:" style="width:300px">-->
+            <!--<a id="search" class="easyui-linkbutton" icon="icon-search" style="width:80px">查询</a>-->
+            <!--<a id="clear" class="easyui-linkbutton" icon="icon-clear" style="width:80px">清空</a>-->
+            <!--<a id="mir" class="easyui-linkbutton" icon="icon-filter" style="width:80px">报检</a>-->
+            <a id="save" class="easyui-linkbutton" icon="icon-save" plain="true">审核</a>
+        </div>
+        <table id="logList" class="easyui-datagrid" style="width:calc(100% - 4px);height:100%;"></table>
+    </div>
+</div>
+
+<script src="~/Content/js/jquery-easyui-1.7.0/jquery.min.js"></script>
+<script src="~/Content/js/jquery-easyui-1.7.0/jquery.easyui.min.js"></script>
+<script src="~/Content/js/jquery-easyui-1.7.0/locale/easyui-lang-zh_CN.js"></script>
+<script src="~/Content/js/core/utils.js"></script>
+<script src="~/Content/js/core/common.js"></script>
+
+<script type="text/javascript">
+    $().ready(function () {
+
+        LoadLogTableData();
+
+        $("#btnSearch").click(function () {
+            var workGroup = $("#workGroup").combobox("getValue");
+            var beginDate = $("#beginDate").datebox("getValue");
+            var finishDate = $("#finishDate").datebox("getValue");
+
+            $('#logList').datagrid("options").queryParams = {
+                workGroup: workGroup,
+                beginDate: beginDate,
+                finishDate: finishDate
+            };
+            $('#logList').datagrid("reload");
+        })
+
+        $("#search").click(function () {
+            LoadLogTableData();
+        })
+
+        $("#clear").click(function () {
+            LoadLogTableData();
+        })
+
+        $("#save").click(function () {
+            var rows = $('#logList').datagrid('getSelections');
+
+            //var eaRows = grid.datagrid('getRows');
+            $(rows).each(function (index, item) {
+                $('#logList').datagrid('endEdit', index);
+            });
+
+            if (rows.length <= 0) {
+                com.message("success", "请选择要报检的数据！");
+                return;
+            }
+
+            var errRowIndex = [];
+            var data = [];
+            for (var i = 0; i < rows.length; i++) {
+                var auditNum = parseInt(rows[i].AuditQuantity);
+                if (auditNum < 0 || auditNum > rows[i].FinishQuantity) {
+                    errRowIndex.push(i);
+                }
+                data.push(rows[i].APSCode + "|" + rows[i].AuditQuantity);
+            }
+
+            $.ajax({
+                url: "/api/Mms/MES_OpreatorWorkingLog/PostInspectionReport",
+                type: "post",
+                data: { arrPar: data.join(',') },
+                async: false,
+                success: function (result) {
+                    if (result.Result) {
+                        com.message("success", "生成报检单成功！");
+                    }
+                    else {
+                        com.message("success", result.Msg);
+                    }
+                    LoadLogTableData();
+                }
+            })
+        })
+
+    })
+
+    function LoadLogTableData() {
+        //var bomCode = $("#bomCode").textbox("getValue");
+        var editRow = undefined;
+
+        $('#logList').datagrid({
+            method: 'get',
+            toolbar: '#z-toolbar',
+            url: "/api/Mms/MES_OpreatorWorkingLog/GetLogsByKeyword",
+            queryParams: {
+                workGroup: "",
+                beginDate: "",
+                finishDate: ""
+            },
+            striped: true,
+            //singleSelect: true,
+            rownumbers: true,
+            columns: [[
+                { field: '', title: '', checkbox: true },
+                { field: 'ID', title: 'ID', width: 45, hidden: true },
+                { field: 'APSCode', title: '工票编码', width: 140 },
+                { field: 'BegainTime', title: '加工开始时间', width: 150, formatter: com.formatTime },
+                { field: 'FinishTime', title: '加工结束时间', width: 150, formatter: com.formatTime },
+                { field: 'WorkingHour', title: '加工时间', width: 70 },
+                { field: 'OpreateCode', title: '操作工编码', width: 80, hidden: true },
+                { field: 'OperatePerson', title: '操作工姓名', width: 80 },
+                { field: 'CreatePerson', title: '创建人', width: 60, hidden: true },
+                { field: 'CreateTime', title: '创建时间', width: 150, hidden: true },
+                { field: 'ModifyPerson', title: '更新人', width: 60, hidden: true },
+                { field: 'ModifyTime', title: '更新时间', width: 150, hidden: true },
+                {
+                    field: 'PauseType', title: '类型', width: 50, hidden: true, formatter: function (value) { return value == 1 ? '暂停' : "完工" }
+                },
+                { field: 'FinishQuantity', title: '完工数量', width: 80 },
+                {
+                    field: 'AuditQuantity', title: '审核数量', width: 80, editor: 'text', formatter: function (value, row, index) {
+                        if (value <= row.FinishQuantity && value >= 0) {
+                        } else {
+                            com.message("success", "请输入正确的数量！");
+                        }
+                        return value;
+                    }
+                },
+                {
+                    field: 'AuditState', title: '审核状态', width: 80, formatter: function (value) { return value == 0 ? '未审核' : "已审核" }
+                },
+                {
+                    field: 'IsInspectionReport', title: '是否需要报检', width: 100, formatter: function (value) { return value == -1 ? "未知" : value == 1 ? '否' : "是" }
+                },
+                {
+                    field: 'IsEnable', title: '是否有效', width: 100, hidden: true, formatter: function (value) { return value == 1 ? '有效' : "无效" }
+                }
+            ]],
+            onAfterEdit: function (rowIndex, rowData, changes) {
+                editRow = undefined;
+            },
+            onDblClickCell: function (rowIndex, rowData) {
+                if (editRow != undefined) {
+                    $('#logList').datagrid("endEdit", editRow);
+                }
+                if (editRow == undefined) {
+                    $('#logList').datagrid("beginEdit", rowIndex);
+                    editRow = rowIndex;
+                }
+            },
+            onClickCell: function (rowIndex, rowData) {
+                $('#logList').datagrid("endEdit", editRow);
+                editRow = undefined;
+            }
+        });
+    }
+</script>

@@ -1,0 +1,203 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<activityRootModel xmlns:dm0="http://schemas.microsoft.com/VisualStudio/2008/DslTools/Core" xmlns:dm1="http://schemas.microsoft.com/dsltools/Kernel" xmlns:dm2="http://schemas.microsoft.com/dsltools/Component" xmlns:dm3="http://schemas.microsoft.com/dsltools/UseCase" xmlns:dm4="http://schemas.microsoft.com/dsltools/Activity" xmlns:dm5="http://schemas.microsoft.com/dsltools/Interaction" xmlns:dm6="http://schemas.microsoft.com/dsltools/UmlModelLibrary" xmlns:dm7="http://schemas.microsoft.com/dsltools/UmlDiagrams" xmlns:dm8="http://schemas.microsoft.com/dsltools/ModelStore" xmlns:dm9="http://schemas.microsoft.com/dsltools/SimpleShapesModel" dslVersion="1.0.0.0" Id="7aaf0959-cce6-4a32-b8c0-92910fa1c2f5" name="0401班组管理" linkedPackageId="30fe514c-ce09-4f47-8e40-1f08453885e8" xmlns="http://schemas.microsoft.com/VisualStudio/TeamArchitect/ActivityDesigner">
+  <ownedCommentsInternal>
+    <comment Id="004d4256-2997-4c4e-882f-1979c134e718">
+      <elementDefinition Id="501e9716-73e5-49f6-bc3e-e534e90acbe2" />
+      <body>SELECT
+    --主键
+    A.ID,
+    --班组编码
+    A.TeamCode,
+    --班组名称
+    A.TeamName,
+    --车间编码
+    A.DepartID,
+    --车间名称
+    A.DepartName,
+    --是否有效
+    A.IsEnable
+FROM [dbo].[SYS_WorkGroup] A;</body>
+      <annotatedElements>
+        <opaqueActionMoniker Id="cb98871c-44a0-45a0-8184-e4112159ffc8" LastKnownName="查询班组" />
+      </annotatedElements>
+    </comment>
+    <comment Id="3aef8d6f-5c77-4765-80da-8b75ff685224">
+      <elementDefinition Id="85aaab56-fb76-43b5-9fcf-7420bc61c343" />
+      <body>SELECT --主键
+    B.ID,
+    --车间编码
+    A.DepartID,
+    --车间名称
+    A.DepartName,
+    --班组编码
+    A.TeamCode,
+    --班组名称
+    A.TeamName,
+    --员工编码
+    B.UserCode,
+    --员工名称
+    B.UserName
+FROM [dbo].[SYS_WorkGroup] A
+    INNER JOIN [dbo].[SYS_WorkGroupDetail] B
+        ON A.ID = B.MainID
+           AND B.IsEnable = '1'
+WHERE A.IsEnable = '1'
+      AND A.DepartID = '0209';</body>
+      <annotatedElements>
+        <opaqueActionMoniker Id="fabbb936-6069-4e89-94bc-b931ee8f92ff" LastKnownName="查询班组人员" />
+      </annotatedElements>
+    </comment>
+    <comment Id="99ce5ccc-5e15-4c27-9b00-2b6694cdd5e6">
+      <elementDefinition Id="b2dc761d-91f4-47de-b92c-620a6f1d036f" />
+      <body>1、此功能只能车间主任使用；
+2、车间主任只能新增自己负责的车间的班组；
+3、获取车间编码
+SELECT
+    --车间编码
+    B.DepartmentCode
+FROM [dbo].[SYS_BN_User] B
+WHERE B.IsEnable = '1'
+      AND B.UserCode = '050328';
+4、班组编码=车间编码+两位流水号
+例如：大阀中心车间一组，班组编码“020901”=大阀车间编码“0209”+两位流水号“01”；</body>
+      <annotatedElements>
+        <opaqueActionMoniker Id="4c8e6c7d-b4f3-42ba-8e34-2cb471e37de6" LastKnownName="新增班组" />
+      </annotatedElements>
+    </comment>
+    <comment Id="ecf1017a-bcd5-421a-b668-bba7e1ad3c10">
+      <elementDefinition Id="3d36149f-a75c-424f-894e-6b450cea3fe9" />
+      <body>新增，添加员工，一个员工只能在一个班组中
+SELECT --主键
+    A.ID,
+    --员工编码
+    A.UserCode,
+    --员工名称
+    A.UserName
+FROM [dbo].[SYS_BN_User] A
+WHERE A.IsEnable = '1'
+      AND A.DepartmentCode ='0209'
+EXCEPT
+SELECT D.ID,
+       D.UserCode,
+       D.UserName
+FROM [dbo].[SYS_WorkGroupDetail] C
+    INNER JOIN [dbo].[SYS_BN_User] D
+        ON C.UserCode = D.UserCode
+           AND C.IsEnable = '1';</body>
+      <annotatedElements>
+        <opaqueActionMoniker Id="db742221-33c7-4db9-9fea-16b07f3a845e" LastKnownName="新增班组人员" />
+      </annotatedElements>
+    </comment>
+    <comment Id="3f7e2e64-677a-44ce-acfe-8d4470346480">
+      <elementDefinition Id="89e4bd3d-8177-407c-9e4e-4943d15ee112" />
+      <body>1、可以修改班组名称，是否有效；
+2、删除班组，将是否有效改为否即可；将班组置为无效的同时，将班组下面的人员置为无效；
+UPDATE B
+SET B.IsEnable='0'
+FROM [dbo].[SYS_WorkGroupDetail] B
+WHERE B.MainID=''</body>
+      <annotatedElements>
+        <opaqueActionMoniker Id="7d3f3f11-0e76-4647-a821-d116e82b408e" LastKnownName="修改/删除班组" />
+      </annotatedElements>
+    </comment>
+    <comment Id="afc5631a-3d4a-4a45-aa2e-67255e0e20bc">
+      <elementDefinition Id="5379122d-04b0-40fc-97d1-69be03c46954" />
+      <body>班组人员只能新增、删除，不能修改</body>
+      <annotatedElements>
+        <opaqueActionMoniker Id="2cbb3ff5-5d66-424d-a330-c675a047bcc8" LastKnownName="修改/删除班组人员" />
+      </annotatedElements>
+    </comment>
+  </ownedCommentsInternal>
+  <packagedElements>
+    <activityRootModelHasActivity>
+      <activity Id="cdb8338b-04d2-4468-a8b1-01f9d7ff00dd" name="0401班组管理" isAbstract="false" isLeaf="false" isActiveClass="false" isReentrant="false" isReadOnly="false" isSingleExecution="false">
+        <elementDefinition Id="3fed2ef0-f840-406e-9cab-77fd5cf6a2b9" />
+        <nodes>
+          <initialNode Id="fa74b2f7-349c-4c58-bb7c-518644957a36" name="Initial1" isLeaf="false">
+            <elementDefinition Id="eb1c7b9d-d5ad-495d-8f9f-61ae14cd0f8e" />
+            <flowNodeTargets>
+              <controlFlow Id="aefb1f47-c367-4889-bdef-8b7ed8f571b5" isLeaf="false">
+                <opaqueActionMoniker Id="4c8e6c7d-b4f3-42ba-8e34-2cb471e37de6" LastKnownName="新增班组" />
+                <elementDefinition Id="7c6d2935-0b40-4b66-8497-3f158609564e" />
+              </controlFlow>
+            </flowNodeTargets>
+          </initialNode>
+          <opaqueAction Id="4c8e6c7d-b4f3-42ba-8e34-2cb471e37de6" name="新增班组" isLeaf="false">
+            <elementDefinition Id="a42e492a-ebb6-4e90-8e0c-6335a88d05f8" />
+            <flowNodeTargets>
+              <controlFlow Id="d62fa18f-7729-44d7-a5fc-1bbcb164bdef" isLeaf="false">
+                <opaqueActionMoniker Id="cb98871c-44a0-45a0-8184-e4112159ffc8" LastKnownName="查询班组" />
+                <elementDefinition Id="79b57cc3-26b8-4ae3-9f0b-5404b2bee08f" />
+              </controlFlow>
+            </flowNodeTargets>
+          </opaqueAction>
+          <activityFinalNode Id="377f4bc3-ecb9-4252-814f-9c482b982d66" name="ActivityFinal1" isLeaf="false">
+            <elementDefinition Id="75d037c0-be06-49a2-9bbe-052df3cf2982" />
+          </activityFinalNode>
+          <opaqueAction Id="cb98871c-44a0-45a0-8184-e4112159ffc8" name="查询班组" isLeaf="false">
+            <elementDefinition Id="fa06bbb8-442d-4b85-bcdb-20e6945f48e8" />
+            <flowNodeTargets>
+              <controlFlow Id="a5beb4a1-cc60-40e3-8b72-12b9e2546abe" isLeaf="false">
+                <opaqueActionMoniker Id="7d3f3f11-0e76-4647-a821-d116e82b408e" LastKnownName="修改/删除班组" />
+                <elementDefinition Id="48053257-3c73-485a-952b-f20bab5bb01c" />
+              </controlFlow>
+            </flowNodeTargets>
+          </opaqueAction>
+          <opaqueAction Id="db742221-33c7-4db9-9fea-16b07f3a845e" name="新增班组人员" isLeaf="false">
+            <elementDefinition Id="4c4b6d2f-1409-4d6c-9ab0-78e5dae3aabd" />
+            <flowNodeTargets>
+              <controlFlow Id="c9215dd1-4955-4fe6-a247-76f286ceddec" isLeaf="false">
+                <opaqueActionMoniker Id="fabbb936-6069-4e89-94bc-b931ee8f92ff" LastKnownName="查询班组人员" />
+                <elementDefinition Id="76e5e6a4-4951-4b79-bfb2-ed9078dcfa73" />
+              </controlFlow>
+            </flowNodeTargets>
+          </opaqueAction>
+          <opaqueAction Id="fabbb936-6069-4e89-94bc-b931ee8f92ff" name="查询班组人员" isLeaf="false">
+            <elementDefinition Id="f00b701a-ed2f-4dff-890f-e777cf58e402" />
+            <flowNodeTargets>
+              <controlFlow Id="8d456a16-4052-41d7-a96d-0f93ce0def07" isLeaf="false">
+                <opaqueActionMoniker Id="2cbb3ff5-5d66-424d-a330-c675a047bcc8" LastKnownName="修改/删除班组人员" />
+                <elementDefinition Id="3df9475d-7ac6-43ad-a8b1-f9a4fe071a55" />
+              </controlFlow>
+            </flowNodeTargets>
+          </opaqueAction>
+          <opaqueAction Id="7d3f3f11-0e76-4647-a821-d116e82b408e" name="修改/删除班组" isLeaf="false">
+            <elementDefinition Id="63481f4c-1335-419f-9120-23f03fb2de36" />
+            <flowNodeTargets>
+              <controlFlow Id="13c98445-c70f-47f5-be5f-796c98f5aac2" isLeaf="false">
+                <opaqueActionMoniker Id="db742221-33c7-4db9-9fea-16b07f3a845e" LastKnownName="新增班组人员" />
+                <elementDefinition Id="4ae84b13-85ab-42f8-8752-5d903816b9dd" />
+              </controlFlow>
+            </flowNodeTargets>
+          </opaqueAction>
+          <opaqueAction Id="2cbb3ff5-5d66-424d-a330-c675a047bcc8" name="修改/删除班组人员" isLeaf="false">
+            <elementDefinition Id="6d2e92b6-eef6-4c7f-8429-950970722857" />
+            <flowNodeTargets>
+              <controlFlow Id="63755b96-8d07-4fb9-b843-3ee4ddf77b68" isLeaf="false">
+                <activityFinalNodeMoniker Id="377f4bc3-ecb9-4252-814f-9c482b982d66" LastKnownName="ActivityFinal1" />
+                <elementDefinition Id="b2865477-0a36-4e81-a267-40ebf26b7302" />
+              </controlFlow>
+            </flowNodeTargets>
+          </opaqueAction>
+        </nodes>
+      </activity>
+    </activityRootModelHasActivity>
+  </packagedElements>
+  <package Id="30fe514c-ce09-4f47-8e40-1f08453885e8" name="HCJXUML">
+    <elementDefinition Id="6348ac1d-75ba-4a39-8ebf-237333c18d4f" />
+    <profileInstances>
+      <packageHasProfileInstances Id="c432845f-bda3-469f-bdcd-0fd2f6f5c107">
+        <profileInstance Id="df00e168-ae99-4845-a5c4-7d18daf5102c" name="StandardProfileL2">
+          <elementDefinition Id="e34d544e-0fea-4ed6-ac5e-1b74119ac791" />
+        </profileInstance>
+        <elementDefinition Id="0caec977-1f8c-4ba3-a7db-8cc9ad9cc73b" />
+      </packageHasProfileInstances>
+      <packageHasProfileInstances Id="13798571-4995-4c52-a20a-3ee10c4a07eb">
+        <profileInstance Id="80864582-cd73-4e09-ae0b-7540aafb2a11" name="StandardProfileL3">
+          <elementDefinition Id="532ea607-fb19-44b8-8502-3351b05452be" />
+        </profileInstance>
+        <elementDefinition Id="29349502-908c-4fda-9054-c48619c59ed0" />
+      </packageHasProfileInstances>
+    </profileInstances>
+  </package>
+</activityRootModel>

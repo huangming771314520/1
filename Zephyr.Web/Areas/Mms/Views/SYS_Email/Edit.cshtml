@@ -1,0 +1,209 @@
+﻿
+@{
+    ViewBag.Title = "SYS_Email1";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@section head{
+    <style type="text/css">
+        div#navigation {
+            background: white;
+        }
+
+        div#wrapper {
+            float: left;
+            
+        }
+
+        div#navigation {
+            float: left;
+        }
+    </style>
+}
+
+
+@section scripts{
+<script src="/Content/js/viewModel/com.viewModel.edit.js"></script>
+<script type="text/javascript">
+    var viewModel = function(data){ 
+        var self = this;
+
+        this.saveClick1 = function () {
+            var IsSend=document.getElementById("IsSend");
+            if(IsSend.value=="1"){
+                com.message('warning', "该邮件已发送！")
+            }else{
+                this.saveClick();
+                
+            }
+            
+        };
+
+        this.tree = {
+            method: 'GET',
+            queryParams: ko.observable(),
+            //url: '/api/Mms/MES_BN_ProductProcessRoute/GetBoomTree?code=1001',
+            url: '/api/Mms/SYS_Email1/GetEmailTree',
+            lines: true,
+            animate: true,
+            loadFilter: function (d) {
+                if (d!=null&&d.length>0) {
+                    var jsonData = eval(d);
+                    return utils.toTreeData(jsonData, 'id', 'pid', "children");
+                }
+                else{
+                    return '';
+                }
+            },
+            onSelect: function (node) {
+                self.pageData.form.CarbonCopy(self.pageData.form.CarbonCopy()+node.text+';');
+
+                
+               
+                  
+            }
+        };
+
+        this.saveClick = function () {
+            //数据验证
+            var validMessage = self.fnIsPageValid();
+            if (validMessage) {
+                com.message('warning', validMessage);
+                return;
+            }
+
+            //取得数据
+            var post = self.fnIsPageChanged();
+            if (!post._changed) {
+                com.message('success', '页面没有数据被修改！');
+                return;
+            }
+
+            //数据提交
+            com.ajax({
+                url: self.urls.edit,
+                data: ko.toJSON(post),
+                success: function (d) {
+                    com.message('success', self.resx.editSuccess);
+                    ko.mapping.fromJS(self.pageData.form, {}, data.dataSource.pageData.form);//更新旧值
+                    for (var i in self.tabs)
+                        if (self.tabs[i].type == self.tabConst.grid)
+                        {
+
+                            self[self.tabConst.edit + i].accept();
+                            alert(11)
+                        }
+
+                        else if (self.tabs[i].type == self.tabConst.form)
+                            ko.mapping.fromJS(self.pageData[[self.tabConst.tab + i]], {}, data.dataSource.pageData[self.tabConst.tab + i]);
+                  
+                }
+            });
+
+        };
+        com.viewModel.edit.apply(self,arguments);
+    } 
+
+    var data = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model));
+    ko.bindingViewModel(new viewModel(data));
+</script>
+}
+<div id="container" >
+    <div id="wrapper">
+        <div class="z-toolbar">
+            <a href="#" plain="true" class="easyui-linkbutton" icon="icon-add" title="发邮件" data-bind="click:saveClick1">发邮件</a>
+            @*<a id="a_undo" href="#" plain="true" class="easyui-linkbutton" icon="icon-undo" data-bind="click:readonly()?null:rejectClick,linkbuttonDisable:readonly" title="撤消">撤消</a>
+                <a id="a_audit" href="#" plain="true" class="easyui-linkbutton" icon="icon-user-accept" data-bind="click:auditClick,easyuiLinkbutton:approveButton" title="审核">审核</a>
+                <a id="a_printer" href="#" plain="true" class="easyui-linkbutton" icon="icon-printer" title="打印" data-bind="click:printClick">打印</a>
+                <div class="datagrid-btn-separator"></div>
+                <a id="a_other" href="#" class="easyui-splitbutton" data-options="menu:'#divother',iconCls:'icon-application_go'" title="其他">其他</a>
+                <div class="datagrid-btn-separator"></div>
+                <a id="a_first" href="#" plain="true" class="easyui-linkbutton" icon="icon-resultset_first" data-bind="click:firstClick,linkbuttonEnable:pageData.scrollKeys.firstEnable" title="第一条"></a>
+                <a id="a_previous" href="#" plain="true" class="easyui-linkbutton" icon="icon-resultset_previous" data-bind="click:previousClick,linkbuttonEnable:pageData.scrollKeys.previousEnable" title="上一条"></a>
+                <a id="a_next" href="#" plain="true" class="easyui-linkbutton" icon="icon-resultset_next" data-bind="click:nextClick,linkbuttonEnable:pageData.scrollKeys.nextEnable" title="下一条"></a>
+                <a id="a_last" href="#" plain="true" class="easyui-linkbutton" icon="icon-resultset_last" data-bind="click:lastClick,linkbuttonEnable:pageData.scrollKeys.lastEnable" title="最后一条"></a>*@
+        </div>
+
+        <div id="divother" style="width:100px; display:none;">
+            <div data-options="iconCls:'icon-add'">发邮件</div>
+            <div data-options="iconCls:'icon-cross'">删除</div>
+            <div data-options="iconCls:'icon-arrow_refresh'">刷新</div>
+        </div>
+
+
+        <div id="master" class="container_12" data-bind="inputwidth:0.9">
+            <div class="grid_1 lbl" >邮件编码</div>
+            <div class="grid_3 val"><input type="text" id="EmailCode" data-bind="value:pageData.form.EmailCode,readOnly:true" class="z-txt " disabled="disabled" /></div>
+            <div class="clear"></div>
+            <div class="grid_1 lbl">主题</div>
+            <div class="grid_3 val"><input type="text" data-bind="value:pageData.form.EmailName ,readOnly:readonly" style="width:200px" class="z-txt " /></div>
+
+            <div class="clear"></div>
+
+            <div class="grid_1 lbl">收信人</div>
+            <div class="grid_3 val">
+                <input type="text" data-bind="combogridValue:pageData.form.Sender , readOnly:true" style="width:200px;margin-left:7px;" class="z-txt easyui-combogrid" data-options="url:'/Commons/GetCommonSearchList',
+                                required:true,
+                                queryParams : {
+                                     tableName:'[SYS_BN_User]',
+                                         searchField:'[UserCode],[UserName]',
+                                         firstFightField:'[UserCode]',
+                                         CacheKey:'SYS_BN_User',
+                                         CacheTime:'480',
+                                         connName:'Mms'
+                                },
+                                method: 'GET',
+                                panelWidth:250,
+                                fit:true,
+                                delay: 1000,
+                                mode: 'remote',
+                                value: 'UserCode',
+                                idField: 'UserCode',
+                                textField: 'UserName',
+                                columns:[[
+                                { field: 'UserCode',title: '员工编号',width: 100 },
+                                { field: 'UserName',title:'员工名称',width:150 }
+                                    ]],
+
+                            keyHandler:{
+                            query:function(keyword) {
+                           var queryParams=$(this).combogrid('grid').datagrid('options').queryParams;
+                           queryParams.keyword=keyword;
+                           $(this).combogrid('grid').datagrid('options').queryParams=queryParams;
+                           $(this).combogrid('grid').datagrid('reload');
+                           }}" />
+            </div>
+            <div class="grid_1 lbl">抄送</div>
+            <div class="grid_3 val">
+                @*<input type="text" data-bind="value:pageData.form.CarbonCopy ,readOnly:readonly" multiline="true" class="easyui-textbox " />*@
+                <textarea name="aa" data-bind="value:pageData.form.CarbonCopy" style="width:200px;height:15px"></textarea>
+            </div>
+
+            <div class="clear"></div>
+
+            <div class="grid_1 lbl">发送时间</div>
+            <div class="grid_3 val"><input type="text" data-bind="value:pageData.form.SendTime ,readOnly:true" class="z-txt " disabled="disabled" /></div>
+
+            <div class="grid_1 lbl" style="display:none">发送状态</div>
+            <div class="grid_3 val"><input type="text" id="IsSend" data-bind="value:pageData.form.IsSend ,readOnly:true" class="z-txt " style="display:none" /></div>
+
+            <div class="clear"></div>
+            <div class="grid_1 lbl">&nbsp;</div>
+            <div class="grid_2 val">&nbsp;</div>
+            <div class="clear"></div>
+
+        </div>
+
+        <div id="tt" class="easyui-tabs" style="width: 850px; ">
+            <div title="主要内容">
+                <textarea name="a" data-bind="value:pageData.form.Context" style="width:1500px;height:800px;"></textarea>
+            </div>
+        </div>
+    </div>
+
+    <div id="navigation" style="width: 80px;margin-left:10px">
+            <div title="联系人" class="easyui-panel" data-options="title: '联系人', iconCls: 'icon-node_tree', height: $(window).height() - 4 ,width:279">
+                <ul data-bind="easyuiTree:tree" id="mm-tree"></ul>
+            </div>
+        </div>
+    </div>

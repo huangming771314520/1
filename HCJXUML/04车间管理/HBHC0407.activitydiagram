@@ -1,0 +1,50 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<activityRootModel xmlns:dm0="http://schemas.microsoft.com/VisualStudio/2008/DslTools/Core" xmlns:dm1="http://schemas.microsoft.com/dsltools/Kernel" xmlns:dm2="http://schemas.microsoft.com/dsltools/Component" xmlns:dm3="http://schemas.microsoft.com/dsltools/UseCase" xmlns:dm4="http://schemas.microsoft.com/dsltools/Activity" xmlns:dm5="http://schemas.microsoft.com/dsltools/Interaction" xmlns:dm6="http://schemas.microsoft.com/dsltools/UmlModelLibrary" xmlns:dm7="http://schemas.microsoft.com/dsltools/UmlDiagrams" xmlns:dm8="http://schemas.microsoft.com/dsltools/ModelStore" xmlns:dm9="http://schemas.microsoft.com/dsltools/SimpleShapesModel" dslVersion="1.0.0.0" Id="039d1aa1-657b-4745-89a4-ea596adc3d8b" name="0407车间退料" linkedPackageId="ee50c13c-8266-4e47-b17e-8e145bc0ca0e" xmlns="http://schemas.microsoft.com/VisualStudio/TeamArchitect/ActivityDesigner">
+  <profileInstances>
+    <packageHasProfileInstances Id="a8150004-5b79-45b5-9553-073e3cc42b2e">
+      <profileInstance Id="61959ccd-01b0-4d1a-9ffa-5dcf71b64a00" name="StandardProfileL2">
+        <elementDefinition Id="e34d544e-0fea-4ed6-ac5e-1b74119ac791" />
+      </profileInstance>
+      <elementDefinition Id="0caec977-1f8c-4ba3-a7db-8cc9ad9cc73b" />
+    </packageHasProfileInstances>
+    <packageHasProfileInstances Id="4a22c75f-c32e-43bd-a3a9-be447106aea7">
+      <profileInstance Id="28066e0d-25ef-4403-a125-079ff9986039" name="StandardProfileL3">
+        <elementDefinition Id="532ea607-fb19-44b8-8502-3351b05452be" />
+      </profileInstance>
+      <elementDefinition Id="29349502-908c-4fda-9054-c48619c59ed0" />
+    </packageHasProfileInstances>
+  </profileInstances>
+  <packagedElements>
+    <activityRootModelHasActivity>
+      <activity Id="233854f4-17e6-4e3d-a4b9-3cbc2402aa2a" name="0407车间退料" isAbstract="false" isLeaf="false" isActiveClass="false" isReentrant="false" isReadOnly="false" isSingleExecution="false">
+        <elementDefinition Id="ad7030ed-d7e1-4fb0-aa85-bdbe78bcd66d" />
+        <nodes>
+          <initialNode Id="75cccba2-60ca-405e-bab5-5da852e90211" name="Initial1" isLeaf="false">
+            <elementDefinition Id="982ab4cc-ca40-4698-9eab-f0f8c6ae1b06" />
+            <flowNodeTargets>
+              <controlFlow Id="c5615f80-3567-45f9-a2a2-e93efc4463e0" isLeaf="false">
+                <opaqueActionMoniker Id="a39a48de-ac19-4619-86c2-793562e3933f" LastKnownName="Action1" />
+                <elementDefinition Id="ebb1d288-ac90-45af-b976-1de65282be18" />
+              </controlFlow>
+            </flowNodeTargets>
+          </initialNode>
+          <activityFinalNode Id="8914b2f8-4853-4368-8e6b-794c96607cd8" name="ActivityFinal1" isLeaf="false">
+            <elementDefinition Id="69c4ccce-ec78-415e-b4f7-84a4551ed622" />
+          </activityFinalNode>
+          <opaqueAction Id="a39a48de-ac19-4619-86c2-793562e3933f" name="Action1" isLeaf="false">
+            <elementDefinition Id="e1d2a8cc-c317-46a8-a78f-07db036c3ca3" />
+            <flowNodeTargets>
+              <controlFlow Id="51254f2d-541d-471f-9c99-10bf16251800" isLeaf="false">
+                <activityFinalNodeMoniker Id="8914b2f8-4853-4368-8e6b-794c96607cd8" LastKnownName="ActivityFinal1" />
+                <elementDefinition Id="06d5ea88-78d5-4fb4-843f-f112138aab36" />
+              </controlFlow>
+            </flowNodeTargets>
+          </opaqueAction>
+        </nodes>
+      </activity>
+    </activityRootModelHasActivity>
+  </packagedElements>
+  <package Id="ee50c13c-8266-4e47-b17e-8e145bc0ca0e" name="HCJXUML">
+    <elementDefinition Id="6348ac1d-75ba-4a39-8ebf-237333c18d4f" />
+  </package>
+</activityRootModel>

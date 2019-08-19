@@ -1,0 +1,54 @@
+﻿<Page x:Class="WpfClient.ProductProcessPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:local="clr-namespace:WpfClient"
+      mc:Ignorable="d" 
+      d:DesignHeight="450" d:DesignWidth="800"
+      Title="ProductProcessPage" Loaded="Page_Loaded">
+
+    <Grid Background="#FF414141" Name="pageContainer" PreviewKeyDown="PageContainer_PreviewKeyDown" PreviewKeyUp="PageContainer_PreviewKeyUp">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="3*" MinWidth="200" MaxWidth="300"></ColumnDefinition>
+            <ColumnDefinition Width="7*"></ColumnDefinition>
+            <ColumnDefinition Width="30"></ColumnDefinition>
+        </Grid.ColumnDefinitions>
+        <Grid Grid.Row="0" Grid.Column="0" Name="tbMaterialInfo">
+            <ScrollViewer VerticalScrollBarVisibility="Auto">
+                <StackPanel Name="MaterialInfoContainer"></StackPanel>
+            </ScrollViewer>
+        </Grid>
+        <Grid Grid.Row="0" Grid.Column="1" Name="tbDrawingShow">
+            <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="60"></RowDefinition>
+                    <RowDefinition Height="*"></RowDefinition>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" MinWidth="400"></ColumnDefinition>
+                </Grid.ColumnDefinitions>
+                <Grid Grid.Row="0" Grid.Column="0">
+                    <Label HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="30" Foreground="#FFF0F0F0" Name="lblProjectName"></Label>
+                </Grid>
+                <Grid Grid.Row="1" Grid.Column="0">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="auto"></RowDefinition>
+                        <RowDefinition Height="*"></RowDefinition>
+                    </Grid.RowDefinitions>
+                    <Grid Grid.Row="0" Name="projectInfo" Background="#FF5F5F5F" >
+
+                    </Grid>
+                    <Grid Grid.Row="1">
+                        <Grid Background="Black" Margin="2" Name="mxDraw"/>
+                    </Grid>
+                </Grid>
+            </Grid>
+        </Grid>
+        <Grid Grid.Row="0" Grid.Column="2" Name="tbDrawingList">
+            <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Name="drawingListContainer">
+
+            </Grid>
+        </Grid>
+    </Grid>
+</Page>

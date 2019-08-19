@@ -1,0 +1,73 @@
+﻿@{
+    ViewBag.Title = "MES_SavantManageRecordReport";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@section scripts{
+    <script src="/Content/js/viewModel/com.viewModel.search.js"></script>
+    <script type="text/javascript">
+        var data = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model));
+        var viewModel = function () {
+            var self = this;
+            com.viewModel.search.apply(this, arguments);
+            this.ChooseRootPartClick = function () {
+                var target = parent.$('#CommonSearchDialog').length ? parent.$('#CommonSearchDialog') : parent.$('<div id="CommonSearchDialog"></div>').appendTo('body');
+                utils.clearIframe(target);
+                var opt;
+                opt = { title: '列表', width: 800, height: 600, modal: true, collapsible: false, minimizable: false, maximizable: true, closable: true };
+                opt.content = "<iframe src='/mms/home/CommonDialog?xmlName=ChooseProjectPart' style='height:100%;width:100%;border:0;' frameborder='0'></iframe>";  //frameborder="0" for ie7
+                opt.onSelect = function (data) {
+                    var row = data[0];
+                    self.form.ContractCode(row.ContractCode);
+                    self.form.ProductID(row.ProductID);
+                    $("#a_search").click();
+                };
+                target.window(opt);
+            }
+        }
+        ko.bindingViewModel(new viewModel(data));
+    </script>
+}
+
+<div class="z-toolbar">
+    <a href="#" plain="true" class="easyui-linkbutton" icon="icon-arrow_refresh" title="刷新" data-bind="click:refreshClick">刷新</a>
+    <a id="a_audit" href="#" plain="true" class="easyui-linkbutton" icon="icon-user-accept" data-bind="click:ChooseRootPartClick" title="选择项目零件">选择项目零件</a>
+    <a href="#" plain="true" class="easyui-splitbutton" data-options="menu:'#dropdown',iconCls:'icon-download'">导出</a>
+</div>
+
+<div id="dropdown" style="width:100px; display:none;">
+    <div data-options="iconCls:'icon-ext-xls'" suffix="xls" data-bind="click:downloadClick">Excel2003   </div>
+    <div data-options="iconCls:'icon-page_excel'" suffix="xlsx" data-bind="click:downloadClick">Excel2007   </div>
+    <div data-options="iconCls:'icon-ext-doc'" suffix="doc" data-bind="click:downloadClick">Word2003    </div>
+</div>
+
+<div class="container_12" style="position:relative;" data-bind="inputWidth:0.9">
+    <div class="grid_1 lbl">合同编号</div>
+    <div class="grid_2 val"><input type="text" disabled data-bind="value:form.ContractCode" class="z-txt" /></div>
+    <div class="grid_1 lbl">产品</div>
+    <div class="grid_2 val"><input type="text" disabled data-bind="comboboxValue:form.ProductID,datasource:dataSource.ProductID" class="z-txt easyui-combobox" /></div>
+    <div class="clear"></div>
+    <div class="prefix_9" style="position:absolute;top:5px;height:0;display:none;">
+        <a id="a_search" href="#" class="buttonHuge button-blue" data-bind="click:searchClick" style="margin:0 15px;">查询</a>
+        <a id="a_reset" href="#" class="buttonHuge button-blue" data-bind="click:clearClick">清空</a>
+    </div>
+</div>
+
+<table data-bind="datagrid:grid">
+    <thead>
+        <tr>
+            <th field="ContractCode" sortable="true" align="left" width="60">合同编号</th>
+            <th field="ProjectName" sortable="true" align="left" width="120">工程项目</th>
+            <th field="ProductName" sortable="true" align="left" width="150">产品</th>
+            <th field="PartFigureCode" sortable="true" align="left" width="180">零件图号</th>
+            <th field="PartName" sortable="true" align="left" width="180">零件名称</th>
+            <th field="SpareMateNum" sortable="true" align="left" width="80">下料数量</th>
+            <th field="SavantCode" sortable="true" align="left" width="120">中间件编号</th>
+            <th field="BoardCode" sortable="true" align="left" width="120">筋板编号</th>
+            <th field="BiankingSize" sortable="true" align="left" width="120">筋板尺寸</th>
+            <th field="BoardInventoryCode" sortable="true" align="left" width="120">钢板编号</th>
+            <th field="BoardInventoryName" sortable="true" align="left" width="120">钢板名称</th>
+        </tr>
+    </thead>
+</table>
+

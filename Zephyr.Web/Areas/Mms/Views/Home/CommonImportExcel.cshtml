@@ -1,0 +1,165 @@
+﻿@{
+    ViewBag.Title = "CommonImportExcel";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@section head{
+    <style type="text/css">
+        table.view {
+            border: 1px solid #A8CFEB;
+            border-collapse: collapse;
+            margin-bottom: 5px;
+            height: 98%;
+            width: 98%;
+        }
+
+        .view th {
+            padding-left: 10px;
+            padding-right: 5px;
+            padding-top: 5px;
+            padding-bottom: 5px;
+            width: 30%;
+            border: 1px solid silver;
+            background-color: #F1F6FF;
+        }
+
+        .view td {
+            padding-left: 10px;
+            padding-right: 5px;
+            padding-top: 5px;
+            padding-bottom: 5px;
+            border: 1px solid silver;
+            background-color: #FAFCFF;
+        }
+    </style>
+
+}
+
+@section scripts{
+    <script type="text/javascript">
+        $(function () {
+            var iframe = getThisIframe();
+            var thiswin = parent.$(iframe).parent();
+            var options = thiswin.window("options");
+            var param = options.paramater;
+            var xmlName = param.xmlName;
+            var className = param.className;
+
+            $.ajax({
+                url: '/Commons/CommonImportExcel_Templet',
+                type: 'GET',
+                cache: false,
+                data: { xmlName: xmlName },
+                contentType: 'application/json',
+                async: false
+            }).done(function (res) {
+                if (res != "") {
+                    var result = res.split('|');
+                    if (result.length == 1) {
+                        $("#ExcelUrl").attr("href", res);
+                        $("#ExcelUrl").text("下载模板");
+                    }
+                    else if (result.length == 2) {
+                        $("#ExcelUrl").attr("href", result[0]);
+                        $("#ExcelUrl").text(result[1]);
+                    }
+                }
+                else {
+                    $("#ExcelUrl").text("暂无模板");
+                }
+            }).fail(function (res) {
+                
+            });
+
+            $('#UploadForm').click(function () {
+                if ($('#ImportExcelFile').val() == "") {
+                    com.message('warning', "请选择Excel文件");
+                    return;
+                }
+                var oMyForm = new FormData();
+                oMyForm.append("xmlName", xmlName);
+                oMyForm.append("className", className);
+                oMyForm.append("ImportExcelFile", $('#ImportExcelFile')[0].files[0]);
+                $.ajax({
+                    url: '/Commons/CommonImportExcel',
+                    type: 'POST',
+                    cache: false,
+                    data: oMyForm,
+                    processData: false,
+                    contentType: false,
+                    async: false
+                }).done(function (res) {
+                    if (res.status == true) {
+                        com.message('success', res.msg);
+                    }
+                    else {
+                        com.message('success', res.msg);
+                    }
+                    if (options.OnSelect) {
+                        options.OnSelect(res);
+                    }
+                    CloseDialog();
+                }).fail(function (res) {
+                    com.message('warning', res.msg);
+                    if (options.OnSelect) {
+                        options.OnSelect(res);
+                    }
+                });
+            });
+        });
+
+        function getThisIframe() {
+            if (!parent) return null;
+            var iframes = parent.document.getElementsByTagName('iframe');
+            if (iframes.length == 0) return null;
+            for (var i = 0; i < iframes.length; ++i) {
+                var iframe = iframes[i];
+                if (iframe.contentWindow === self) {
+                    return iframe;
+                }
+            }
+            return null;
+        }
+
+        function destroyIframe(iframeEl) {
+            if (!iframeEl) return;
+            iframeEl.parentNode.removeChild(iframeEl);
+            iframeEl = null;
+        };
+
+        function CloseDialog() {
+            var iframe = getThisIframe();
+            var thiswin = parent.$(iframe).parent();
+            destroyIframe(iframe);
+            thiswin.window('destroy');
+        }
+    </script>
+}
+
+<div data-options="region:'center'" style="padding:10px;">
+    <form enctype="multipart/form-data" method="post">
+        <table class="view">
+            <tr>
+                <th>
+                    <label>Excel文件：</label>
+                </th>
+                <td>
+                    <input class="easyui-filebox" type="file" id="ImportExcelFile" name="ImportExcelFile" />
+                </td>
+            </tr>
+
+            <tr>
+                <th>
+                    <label>下载Excel模板：</label>
+                </th>
+                <td>
+                    <a id="ExcelUrl" href="#"></a>
+                </td>
+            </tr>
+        </table>
+    </form>
+</div>
+<div data-options="region:'south',border:false" style="text-align:center;">
+    <a href="javascript:void(0)" class="easyui-linkbutton" id="UploadForm" data-options="iconCls:'icon-ok'">导入</a>
+    <a href="javascript:void(0)" class="easyui-linkbutton" onclick="CloseDialog()" data-options="iconCls:'icon-cancel'">取消</a>
+</div>

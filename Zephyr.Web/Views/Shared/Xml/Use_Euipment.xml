@@ -1,0 +1,16 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<settings lookupType="project" defaultOrderBy='Equipment_Id'>
+  <module>Mms</module>
+  <select>
+
+    Equipment_Id as   value,Equipment_Name as   text
+  </select>
+  <from>
+    [QHD_Mes].dbo.ERP_Equipment
+  </from>
+  <where defaultForAll='true' defaultCp='equal' defaultIgnoreEmpty='true' >
+    <field name='Equipment_Id'         cp='startwith'  ></field>
+    <field name='Equipment_Name'         cp='like'       ></field>
+   
+  </where>
+</settings>

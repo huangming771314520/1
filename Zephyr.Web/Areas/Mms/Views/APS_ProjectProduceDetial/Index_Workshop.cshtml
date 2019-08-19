@@ -1,0 +1,142 @@
+﻿@{
+    ViewBag.Title = "APS_ProjectProduceDetial";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@section scripts{
+    <script src="/Content/js/viewModel/com.viewModel.searchEdit.js"></script>
+    @*<script src="~/Content/Highcharts/highcharts.js"></script>*@
+    <script src="~/Content/Highcharts/highstock.js"></script>
+    <script src="~/Content/Highcharts/modules/exporting.js"></script>
+    <script type="text/javascript">
+        using(['validatebox', 'combobox','lookup','numberbox','datebox','datetimebox','combogrid','combotree','extend','menu'],easyuifix.datagrid_editor_extend);
+        var myself;
+        var viewModel = function(data){
+            var self = this;
+            com.viewModel.searchEdit.apply(self,arguments);
+        }
+        var data = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model));
+        ko.bindingViewModel(new viewModel(data));
+
+        showPic();
+
+        function showPic(){
+            var PlanedStartTime;
+            var PlanedFinishTime;
+            var WorkshopID;
+
+            var time = new Date();
+            try{
+                PlanedStartTime=$("#PlanedStartTime").datebox("getValue");
+                PlanedFinishTime=$("#PlanedFinishTime").datebox("getValue");
+                WorkshopID=$("#WorkshopID").textbox('getValue');
+            }catch(e){
+                PlanedStartTime=com.formatTime(time); //显示系统时间
+                PlanedFinishTime=com.formatTime(time);
+
+                WorkshopID="";
+            }
+            var minDate=new Date(PlanedStartTime);
+            var maxDate=new Date(PlanedFinishTime);
+            com.ajax({
+                type: 'GET',
+                url: "/api/mms/APS_ProjectProduceDetial/GetWorkshopInfo",
+                data:{PlanedStartTime:PlanedStartTime,PlanedFinishTime:PlanedFinishTime,WorkshopID:WorkshopID},
+                success: function (d) {
+                    var chart = Highcharts.chart('container', {
+                        chart: {
+                            type: 'column'
+                        },
+                        title: {
+                            text: '车间资源图表'
+                        },
+                        xAxis: {
+                            categories: ['2019-01-17', '2019-01-17', '2019-01-17', '2019-01-17', '2019-01-19']
+                        },
+                        yAxis: {
+                            min: 0,
+                            title: {
+                                text: '分钟'
+                            },
+                            stackLabels: {  // 堆叠数据标签
+                                enabled: true,
+                                //style: {
+                                //    fontWeight: 'bold',
+                                //    color: (Highcharts.theme && Highcharts.theme.textColor) || 'gray'
+                                //}
+                            }
+                        },
+                        legend: {
+                            align: 'right',
+                            verticalAlign: 'top',
+                            borderColor: '#CCC',
+                            borderWidth: 1,
+                            shadow: false
+                        },
+                        tooltip: {
+                            formatter: function () {
+                                return '<b>' + this.x + '</b><br/>' +
+                                    this.series.name + ': ' + this.y + '<br/>' +
+                                    '总量: ' + this.point.stackTotal;
+                            }
+                        },
+                        plotOptions: {
+                            column: {
+                                stacking: 'normal',
+                                dataLabels: {
+                                    enabled: true,
+                                    color: (Highcharts.theme && Highcharts.theme.dataLabelsColor) || 'white',
+                                    style: {
+                                        // 如果不需要数据标签阴影，可以将 textOutline 设置为 'none'
+                                        textOutline: '1px 1px black'
+                                    }
+                                }
+                            }
+                        },
+                        series: [{
+                            name: '小张',
+                            data: [5, 3, 4, 7, 2]
+                        }, {
+                            name: '小彭',
+                            data: [2, 2, 3, 2, 1]
+                        }, {
+                            name: '小潘',
+                            data: [3, 4, 4, 2, 5]
+                        }]
+                    });
+                }
+            });
+        }
+    </script>
+}
+<div class="z-toolbar">
+    <a href="#" plain="true" class="easyui-linkbutton" icon="icon-arrow_refresh" title="刷新" data-bind="click:refreshClick">刷新</a>
+    @*<a href="#" plain="true" class="easyui-linkbutton" icon="icon-add" title="新增" data-bind="click:addClick">新增</a>
+        <a href="#" plain="true" class="easyui-linkbutton" icon="icon-edit" title="编辑" data-bind="click:editClick">编辑</a>
+        <a href="#" plain="true" class="easyui-linkbutton" icon="icon-save" title="保存" data-bind="click:saveClick">保存</a>
+        <a href="#" plain="true" class="easyui-splitbutton" data-options="menu:'#dropdown',iconCls:'icon-download'">导出</a>*@
+
+</div>
+
+<div id="dropdown" style="width:100px; display:none;">
+    <div data-options="iconCls:'icon-ext-xls'" suffix="xls" data-bind="click:downloadClick">Excel2003   </div>
+    <div data-options="iconCls:'icon-page_excel'" suffix="xlsx" data-bind="click:downloadClick">Excel2007   </div>
+    <div data-options="iconCls:'icon-ext-doc'" suffix="doc" data-bind="click:downloadClick">Word2003    </div>
+</div>
+
+<div class="container_12" style="position:relative;">
+    <div class="grid_1 lbl">计划开始时间</div>
+    <div class="grid_2 val"><input type="text" id="PlanedStartTime" data-bind="dateboxValue:form.PlanedStartTime" class="z-txt easyui-datebox" /></div>
+    <div class="grid_1 lbl">计划结束时间</div>
+    <div class="grid_2 val"><input type="text" id="PlanedFinishTime" data-bind="dateboxValue:form.PlanedFinishTime" class="z-txt easyui-datebox" /></div>
+    <div class="grid_1 lbl">车间ID</div>
+    <div class="grid_2 val"><input type="text" id="WorkshopID" data-bind="Value:form.WorkshopID" class="z-txt" /></div>
+    <div class="clear"></div>
+    <div class="prefix_9" style="position:absolute;top:5px;height:0;">
+        <a id="a_search" href="#" class="buttonHuge button-blue" data-bind="click:searchClick" style="margin:0 15px;" onclick="showPic()">查询</a>
+        <a id="a_reset" href="#" class="buttonHuge button-blue" data-bind="click:clearClick">清空</a>
+    </div>
+</div>
+
+<div id="container" style="height:400px; width:90%; overflow-y:scroll"></div>
+

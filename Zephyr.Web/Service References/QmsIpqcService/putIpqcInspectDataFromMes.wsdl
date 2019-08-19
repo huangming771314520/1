@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<wsdl:definitions xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:wsaw="http://www.w3.org/2006/05/addressing/wsdl" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:ns="http://impl.webservice.spc.com" xmlns:ns1="http://org.apache.axis2/xsd" targetNamespace="http://impl.webservice.spc.com" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+  <wsdl:documentation>putIpqcInspectDataFromMes</wsdl:documentation>
+  <wsdl:types>
+    <xs:schema attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://impl.webservice.spc.com">
+      <xs:element name="putIpqcInspectDataFromMes">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element minOccurs="0" name="insDatas" nillable="true" type="xs:string" />
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="putIpqcInspectDataFromMesResponse">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element minOccurs="0" name="return" nillable="true" type="xs:string" />
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+    </xs:schema>
+  </wsdl:types>
+  <wsdl:message name="putIpqcInspectDataFromMesRequest">
+    <wsdl:part name="parameters" element="ns:putIpqcInspectDataFromMes" />
+  </wsdl:message>
+  <wsdl:message name="putIpqcInspectDataFromMesResponse">
+    <wsdl:part name="parameters" element="ns:putIpqcInspectDataFromMesResponse" />
+  </wsdl:message>
+  <wsdl:portType name="putIpqcInspectDataFromMesPortType">
+    <wsdl:operation name="putIpqcInspectDataFromMes">
+      <wsdl:input wsaw:Action="urn:putIpqcInspectDataFromMes" message="ns:putIpqcInspectDataFromMesRequest" />
+      <wsdl:output wsaw:Action="urn:putIpqcInspectDataFromMesResponse" message="ns:putIpqcInspectDataFromMesResponse" />
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:binding name="putIpqcInspectDataFromMesSoap11Binding" type="ns:putIpqcInspectDataFromMesPortType">
+    <soap:binding transport="http://schemas.xmlsoap.org/soap/http" />
+    <wsdl:operation name="putIpqcInspectDataFromMes">
+      <soap:operation soapAction="urn:putIpqcInspectDataFromMes" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:binding name="putIpqcInspectDataFromMesSoap12Binding" type="ns:putIpqcInspectDataFromMesPortType">
+    <soap12:binding transport="http://schemas.xmlsoap.org/soap/http" />
+    <wsdl:operation name="putIpqcInspectDataFromMes">
+      <soap12:operation soapAction="urn:putIpqcInspectDataFromMes" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:binding name="putIpqcInspectDataFromMesHttpBinding" type="ns:putIpqcInspectDataFromMesPortType">
+    <http:binding verb="POST" />
+    <wsdl:operation name="putIpqcInspectDataFromMes">
+      <http:operation location="putIpqcInspectDataFromMes" />
+      <wsdl:input>
+        <mime:content part="parameters" type="application/xml" />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:content part="parameters" type="application/xml" />
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name="putIpqcInspectDataFromMes">
+    <wsdl:port name="putIpqcInspectDataFromMesHttpSoap11Endpoint" binding="ns:putIpqcInspectDataFromMesSoap11Binding">
+      <soap:address location="http://192.168.1.102:8080/SPC/services/putIpqcInspectDataFromMes.putIpqcInspectDataFromMesHttpSoap11Endpoint/" />
+    </wsdl:port>
+    <wsdl:port name="putIpqcInspectDataFromMesHttpSoap12Endpoint" binding="ns:putIpqcInspectDataFromMesSoap12Binding">
+      <soap12:address location="http://192.168.1.102:8080/SPC/services/putIpqcInspectDataFromMes.putIpqcInspectDataFromMesHttpSoap12Endpoint/" />
+    </wsdl:port>
+    <wsdl:port name="putIpqcInspectDataFromMesHttpEndpoint" binding="ns:putIpqcInspectDataFromMesHttpBinding">
+      <http:address location="http://192.168.1.102:8080/SPC/services/putIpqcInspectDataFromMes.putIpqcInspectDataFromMesHttpEndpoint/" />
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>

@@ -1,0 +1,117 @@
+﻿<link href="~/Content/js/jquery-easyui-1.7.0/themes/icon.css" rel="stylesheet" />
+<link href="~/Content/js/jquery-easyui-1.7.0/themes/default/easyui.css" rel="stylesheet" />
+<script src="~/Content/js/jquery-easyui-1.7.0/jquery.min.js"></script>
+<script src="~/Content/js/jquery-easyui-1.7.0/jquery.easyui.min.js"></script>
+<script src="~/Content/js/core/utils.js"></script>
+<script src="~/Content/js/core/common.js"></script>
+
+<style type="text/css">
+    body {
+        margin: 2px;
+    }
+
+    .my_container {
+        width: 100%;
+        height: 100%;
+        display: flex;
+        flex-direction: column-reverse;
+    }
+
+    .btnTarget {
+        display: block;
+        width: 80px;
+        line-height: 22px;
+        border: 1px #cccccc solid;
+        background-color: #fafafa;
+        text-align: center;
+        text-decoration: none;
+        border-radius: 2px;
+        color: #666666;
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+        .btnTarget:hover {
+            background-color: #e6e6e6;
+            color: #333333;
+        }
+</style>
+
+<div class="my_container">
+    <div style="flex:auto;">
+        <table id="tb" style="height:100%;"></table>
+    </div>
+    <div style="height:Auto;margin:10px 20px;">
+        <div style="display:none;">
+            <input id="productName" class="easyui-textbox" label="产品名称:" labelwidth="100" labelAlign="right" prompt="" style="width:calc(16% - 20px); min-width:200px;" />
+            <input id="pName" class="easyui-textbox" label="零件名称:" labelwidth="100" labelAlign="right" prompt="" style="width:calc(16% - 20px); min-width:200px;" />
+        </div>
+        <input id="cCode" class="easyui-textbox" label="合同编号:" labelwidth="100" labelAlign="right" prompt="" style="width:calc(20% - 20px); min-width:200px;" />
+        <input id="pFigure" class="easyui-textbox" label="零件图号:" labelwidth="100" labelAlign="right" prompt="" style="width:calc(20% - 20px); min-width:200px;" />
+        <input id="savantCode" class="easyui-textbox" label="中间件编号:" labelwidth="100" labelAlign="right" prompt="" style="width:calc(20% - 20px); min-width:200px;" />
+        <a id="btnSearch" class="easyui-linkbutton" icon="icon-search" onclick="onSearch()">查询</a>
+        <a id="btnReset" class="easyui-linkbutton" icon="icon-reload" onclick="onReset()">重置</a>
+    </div>
+</div>
+
+<script type="text/javascript">
+
+    $().ready(function () {
+
+        $('#tb').datagrid({
+            queryParams: { cCode: '', productName: '', pFigure: '', pName: '', savantCode: '' },
+            url: '/api/Mms/PRS_BlankingRecord/GetBlankingProcessCardData',
+            method: 'get',
+            animate: true,
+            rownumbers: true,
+            striped: true,
+            singleSelect: true,
+            columns: [[
+                {
+                    title: '操作', align: 'center', field: 'CZ', width: 120, formatter: function (value, row, index) {
+                        var url = '/mms/MES_BN_ProductProcessRoute/ProcessRouteEditTest?cCode=' + row.ContractCode + '&pName=' + row.ProjectName + '&figureCode=' + row.PartFigureCode + '&pCode=' + row.PartCode + '&type=1';
+                        return '<a class="btnTarget" href="javascript:com.openTab(\'下料工艺编辑\', \'' + url + '\');">编辑工艺</a>';
+                    }
+                },
+                { title: '合同编号', field: 'ContractCode', width: 120 },
+                { title: '工程项目', field: 'ProjectName', width: 160 },
+                { title: '产品', field: 'ProductName', width: 160 },
+                { title: '零件图号', field: 'PartFigureCode', width: 200 },
+                { title: '零件名称', field: 'PartName', width: 160 },
+                { title: '中间件编号', field: 'SavantCode', width: 120 }
+            ]]
+        });
+
+    })
+
+    function onSearch() {
+        var params = {
+            cCode: $("#cCode").textbox("getValue"),
+            productName: $("#productName").textbox("getValue"),
+            pFigure: $("#pFigure").textbox("getValue"),
+            pName: $("#pName").textbox("getValue"),
+            savantCode: $("#savantCode").textbox("getValue")
+        };
+        $('#tb').datagrid('options').queryParams = params;
+        $('#tb').datagrid('reload');
+    }
+
+    function onReset() {
+        var params = {
+            cCode: '',
+            productName: '',
+            pFigure: '',
+            pName: '',
+            savantCode: ''
+        };
+        $('#tb').datagrid('options').queryParams = params;
+        $('#tb').datagrid('reload');
+
+        $("#cCode").textbox("setValue", "");
+        $("#productName").textbox("setValue", "");
+        $("#pFigure").textbox("setValue", "");
+        $("#pName").textbox("setValue", "");
+        $("#savantCode").textbox("setValue", "");
+    }
+
+</script>

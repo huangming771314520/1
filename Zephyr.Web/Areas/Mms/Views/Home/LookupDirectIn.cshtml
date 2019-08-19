@@ -1,0 +1,85 @@
+﻿@{
+    ViewBag.Title = "LookupDirectIn";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@section head{
+    <style type="text/css">
+        .z-toolbar {
+            border-width: 0;
+            margin: 0;
+        }
+
+        #form_div {
+            padding: 0 !important;
+            height: 100%;
+            width: 100%;
+        }
+
+        .lbl {
+            text-align: right;
+            line-height: 25px;
+        }
+
+        .datagrid .panel-body {
+            border-width: 0 !important;
+        }
+
+        body {
+            padding: 0 !important;
+        }
+    </style>
+}
+
+@section scripts{
+    <script src="~/Areas/Mms/ViewModels/mms.viewModel.lookupEdit.js"></script>
+    <script src="~/Areas/Mms/ViewModels/mms.lookupDirectIn.js"></script>
+}
+
+<div id="layoutbox">
+
+    <div region="center" split="true">
+        <div id="right" class="easyui-layout" fit="true">
+            <div region="north" style="height: 480px" border="false" split="true">
+                <div class="z-toolbar">
+                    <div id="master" class="container_14">
+                        <div class="grid_2 lbl" id="valueTitle">单据编号</div>
+                        <div class="grid_3 val">
+                            <input type="text" id="JIT_ORDER_NO" name="JIT_ORDER_NO" class="z-txt" data-cp="like" />
+                        </div>
+                        <div class="grid_2 lbl" id="textTitle">条码编号</div>
+                        <div class="grid_3 val">
+                            <input type="text" id="BAR_CODE" name="BAR_CODE" class="z-txt" data-cp="like" />
+                        </div>
+                        <div class="grid_2 lbl" id="valueTitle">供应商编号</div>
+                        <div class="grid_3 val">
+                            <input type="text" id="SUPPLY_NO" name="SUPPLY_NO" class="z-txt" data-cp="like" />
+                        </div>
+
+                    </div>
+                </div>
+                <div class="z-toolbar" style="border-bottom-width: 1px;">
+                    <div id="master1" class="container_14">
+                        <div class="grid_2 lbl" id="textTitle">供应商名称</div>
+                        <div class="grid_3 val">
+                            <input type="text" id="SUPPLY_NAME" name="SUPPLY_NAME" class="z-txt" data-cp="like" />
+                        </div>
+                        <div class="grid_2 lbl" id="textTitle">创建时间</div>
+                        <div class="grid_3 val">
+                            <input type="text" id="CreateDate" name="CreateDate" class="z-txt" data-cp="like" />
+                        </div>
+                        <div class="grid_4 val" style="margin-top: 0px;"><a id="btnSearch" href="#" plain="true" class="easyui-linkbutton" icon="icon-search" title="过滤">过滤</a> <a id="btnClear" href="#" plain="true" class="easyui-linkbutton" icon="icon-clear" title="清空">清空</a></div>
+                    </div>
+                </div>
+                <div id="list"></div>
+            </div>
+
+            <div region="center" border="false" split="true" style="height: 0px">
+                <div class="z-toolbar" style="text-align: center; padding: 4px 0; border-top-width: 1px; position: relative;">
+                    <button id="btnConfirm" class="sexybutton"><span><span><span class="ok" style="right:5px">确定</span></span></span></button>&nbsp;
+                    <button id="btnCancel" class="sexybutton"><span><span><span class="cancel">取消</span></span></span></button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

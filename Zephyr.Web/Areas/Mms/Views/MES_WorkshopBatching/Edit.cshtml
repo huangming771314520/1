@@ -1,0 +1,197 @@
+﻿@{
+    ViewBag.Title = "MES_WorkshopBatchingDetail";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@section scripts{
+    <script src="/Content/js/viewModel/com.viewModel.edit.js"></script>
+    <script type="text/javascript">
+        using(['validatebox', 'combobox', 'lookup','numberspinner', 'datebox', 'numberbox', 'datetimebox', 'combogrid', 'combotree', 'extend', 'menu'], easyuifix.datagrid_editor_extend);
+    var viewModel = function(data){
+        var self = this;
+        com.viewModel.edit.apply(self,arguments);
+        this.grid0.size = { w: 8, h: 125 };
+        this.grid0.ChoosePartClick = function () {
+            self.grid0.datagrid('loadData', { total: 0, rows: [] });
+            var target = parent.$('#ProcessBomWindow').length ? parent.$('#ProcessBomWindow') : parent.$('<div id="ProcessBomWindow"></div>').appendTo('body');
+            var opt;
+            opt = { title: '选择工艺BOM', modal: true, width: 1000, height: 500, collapsible: false, minimizable: false, maximizable: true, shadow: false, closable: true, collapsible: true };
+            opt.content = "<iframe src='/mms/MES_WorkshopBatching/ChooseProcessBom' style='height:100%;width:100%;border:0;' frameborder='0'></iframe>";  //frameborder="0" for ie7
+            opt.params = {
+                ContractCode: self.pageData.form.ContractCode(),
+                ProductID: self.pageData.form.ProductID(),
+                PartCode: self.pageData.form.RootPartCode()
+            };
+            opt.onSelect = function (data) {
+                console.log(data);
+                self.pageData.form.PartCode(data.PartCode);
+                self.grid0.datagrid('appendRow', {
+                    PartCode: data.PartCode,
+                    ParentCode: data.ParentCode,
+                    PartName: data.PartName,
+                    PartFigureNumber: data.PartFigureCode,
+                    MaterialCode: data.MaterialCode,
+                    PartQuantity: data.PartQuantity,
+                    Quantity: self.ProductNumber,
+                    RequirementNum: parseInt(data.PartQuantity) * parseInt(self.ProductNumber),
+                    BatchingCode: '',
+                    IsCrux: data.IsCrux,
+                    BatchingNum:''
+                });
+                var ChildrenList = data.children;
+                for (var i in ChildrenList) {
+                    self.grid0.datagrid('appendRow', {
+                        PartCode: ChildrenList[i].PartCode,
+                        ParentCode: ChildrenList[i].ParentCode,
+                        PartName: ChildrenList[i].PartName,
+                        PartFigureNumber: ChildrenList[i].PartFigureCode,
+                        MaterialCode: ChildrenList[i].MaterialCode,
+                        PartQuantity: ChildrenList[i].PartQuantity,
+                        Quantity: self.ProductNumber,
+                        RequirementNum: parseInt(ChildrenList[i].PartQuantity) * parseInt(self.ProductNumber),
+                        BatchingCode: '',
+                        IsCrux: ChildrenList[i].IsCrux,
+                        BatchingNum:''
+                    });
+                }
+
+                //$.ajax({
+                //    url: "/api/Mms/MES_WorkshopBatchingDetail/GetData",
+                //    type: "get",
+                //    data: {
+                //        figureNo: data.PartFigureCode,
+                //        parentPartCode:data.ParentCode
+                //    },
+                //    async: false,
+                //    success: function (result) {
+                //        console.log(result)
+                //        if (result.Result) {
+                //            self.grid0.datagrid('appendRow', {
+                //                PartCode: result.Data.PartCode,
+                //                ParentCode:  result.Data.ParentCode,
+                //                PartName:  result.Data.PartName,
+                //                PartFigureNumber: result.Data.PartFigureNumber,
+                //                MaterialCode:  result.Data.MaterialCode,
+                //                PartQuantity: result.Data.PartQuantity,
+                //                Quantity: self.ProductNumber,
+                //                RequirementNum: parseInt(result.Data.PartQuantity) * parseInt(self.ProductNumber),
+                //                BatchingCode: '',
+                //                IsCrux: result.Data.IsCrux
+                //            });
+                //        }
+                //    }
+                //})
+            }
+            target.window(opt);
+        }
+        this.ProductNumber = 0;
+        this.ChooseRootPartClick = function () {
+            var target = parent.$('#CommonSearchDialog').length ? parent.$('#CommonSearchDialog') : parent.$('<div id="CommonSearchDialog"></div>').appendTo('body');
+            utils.clearIframe(target);
+            var opt;
+            opt = { title: '列表', width: 800, height: 600, modal: true, collapsible: false, minimizable: false, maximizable: true, closable: true };
+            opt.content = "<iframe src='/mms/home/CommonDialog?xmlName=ChooseProjectPart' style='height:100%;width:100%;border:0;' frameborder='0'></iframe>";  //frameborder="0" for ie7
+            opt.onSelect = function (data) {
+                var row = data[0];
+                self.pageData.form.RootPartCode(row.PartCode);
+                self.pageData.form.ContractCode(row.ContractCode);
+                self.pageData.form.ProductID(row.ProductID);
+                self.ProductNumber = row.Quantity;
+            };
+            target.window(opt);
+        }
+    }
+    var data = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model));
+    ko.bindingViewModel(new viewModel(data));
+    </script>
+}
+
+<div class="z-toolbar">
+    <a id="a_save" href="#" plain="true" class="easyui-linkbutton" icon="icon-save" data-bind="click:saveClick,linkbuttonDisable:readonly" title="保存">保存</a>
+    <a id="a_undo" href="#" plain="true" class="easyui-linkbutton" icon="icon-undo" data-bind="click:rejectClick,linkbuttonDisable:readonly" title="撤消">撤消</a>
+    <a id="a_audit" href="#" plain="true" class="easyui-linkbutton" icon="icon-user-accept" data-bind="click:ChooseRootPartClick" title="选择项目零件">选择项目零件</a>
+</div>
+
+<div id="master" class="container_12" data-bind="inputwidth:0.9">
+    <div class="grid_1 lbl">配料流水号</div>
+    <div class="grid_3 val"><input type="text" disabled data-bind="value:pageData.form.BatchingCode" class="z-txt " /></div>
+    <div class="grid_1 lbl">根零件编码</div>
+    <div class="grid_3 val"><input type="text" disabled data-bind="comboboxValue:pageData.form.RootPartCode,datasource:dataSource.PartName" class="z-txt easyui-combobox" /></div>
+    <div class="grid_1 lbl">零件编码</div>
+    <div class="grid_3 val"><input type="text" disabled data-bind="comboboxValue:pageData.form.PartCode,datasource:dataSource.PartName" class="z-txt easyui-combobox" /></div>
+    <div class="clear"></div>
+    <div class="grid_1 lbl">合同编号</div>
+    <div class="grid_3 val"><input type="text" disabled data-bind="value:pageData.form.ContractCode" class="z-txt " /></div>
+    <div class="grid_1 lbl">产品</div>
+    <div class="grid_3 val"><input type="text" disabled data-bind="comboboxValue:pageData.form.ProductID,datasource:dataSource.ProductID" class="z-txt easyui-combobox" /></div>
+    <div class="grid_1 lbl">车间</div>
+    <div class="grid_3 val"><input type="text" data-options="required:true" data-bind="comboboxValue:pageData.form.WorkshopCode,datasource:dataSource.WorkshopCode,readOnly:readonly" class="z-txt easyui-combobox" /></div>
+
+    <div class="clear"></div>
+</div>
+
+<div class="easyui-tabs">
+    <div title="车间配料明细">
+        <table data-bind="datagrid:grid0" id="tt">
+            <thead>
+                <tr>
+                    <th field="ID" sortable="true" align="left" width="120" hidden>主键ID</th>
+                    <th field="PartCode" sortable="true" align="left" width="120" hidden>零件编号</th>
+                    <th field="ParentCode" sortable="true" align="left" width="120" hidden>父级编号</th>
+                    <th field="PartFigureNumber" sortable="true" align="left" width="180">零件图号</th>
+                    <th field="PartName" sortable="true" align="left" width="150">零件名称</th>
+                    <th field="MaterialCode" sortable="true" align="left" width="120">材质</th>
+                    <th field="PartQuantity" sortable="true" align="left" width="120">单台数量</th>
+                    <th field="Quantity" sortable="true" align="left" width="120">台数</th>
+                    <th field="RequirementNum" sortable="true" align="left" width="120">需求数量</th>
+                    <th field="BatchingNum" sortable="true" align="left" width="120" editor="{type:'numberspinner'}">领料数量</th>
+                    <th field="OutDeptCode" sortable="true" align="left" width="100" formatter="utils.fnValueToText(data.dataSource.OutDeptCode)" editor="{type:'combogrid',options:{
+                        url:'/Commons/GetCommonSearchList',
+                        queryParams : {
+                        tableName:'[SYS_BN_Warehouse]',
+                         searchField:'[WarehouseCode],[WarehouseName]',
+                         firstFightField:'[WarehouseCode]',
+
+                                     CacheKey:'SYS_BN_Warehouse',
+                                     CacheTime:'480',
+                                     connName:'Mms'
+                            },
+                            method: 'GET',
+                            panelWidth:400,
+                            fit:true,
+                            delay: 1000,
+                            mode: 'remote',
+                            value: 'WarehouseCode',
+                            idField: 'WarehouseCode',
+                            textField: 'WarehouseName',
+                            columns:[[
+                            { field: 'WarehouseCode',title: '',width: 200 },
+                            { field: 'WarehouseName',title: '出库部门',width: 200 }
+                                ]],
+                    onSelect: function (rowIndex, rowData) {
+                           var index =  $('#tt').datagrid('getRowIndex',$('#tt').datagrid('getSelected'));
+                           $('#tt').datagrid('getEditor',{index:index,field:'OutDeptCode'}).target.val(rowData['WarehouseCode']);
+                },
+                 keyHandler:{
+                   query:function(keyword) {
+                   var queryParams=$(this).combogrid('grid').datagrid('options').queryParams;
+                   queryParams.keyword=keyword;
+                   $(this).combogrid('grid').datagrid('options').queryParams=queryParams;
+                   $(this).combogrid('grid').datagrid('reload');
+                  $(this).combogrid('setValue', keyword);
+                }}
+                }}">部门</th>
+                    <th field="IsCrux" sortable="true" align="left" width="80">是否关键件</th>
+                    <th field="BatchingCode" sortable="true" align="left" width="120" hidden>所属配料单号</th>
+                    <th field="CreatePerson" sortable="true" align="left" width="120" hidden>创建人</th>
+                    <th field="CreateTime" sortable="true" align="left" width="120" hidden>创建时间</th>
+                </tr>
+            </thead>
+            <div id="gridtb0">
+                <a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-search',plain:true" data-bind="click:grid0.ChoosePartClick,linkbuttonDisable:readonly">新增</a>
+                <a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-edit',plain:true" data-bind="click:grid0.onClickRow,linkbuttonDisable:readonly">编辑</a>
+                <a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-remove',plain:true" data-bind="click:grid0.removeRowClick,linkbuttonDisable:readonly">删除</a>
+            </div>
+        </table>
+    </div>
+</div>

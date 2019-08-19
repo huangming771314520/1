@@ -1,0 +1,164 @@
+﻿
+@{
+    ViewBag.Title = "MES_MaterialReturnDetail";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@section scripts{
+    <script src="/Content/js/viewModel/com.viewModel.edit.js"></script>
+    <script type="text/javascript">
+    var myself;
+    var viewModel = function(data){
+        var self = this;
+        com.viewModel.edit.apply(self,arguments);
+        myself=self;
+        this.grid0.size={w:8,h:125};
+
+        this.SearchDialog = function () {
+            var gridRows = self.grid0.datagrid('getData').rows;
+            var setting = {
+                type: this.type,
+                targetField: this.targetField,
+                sourceField: this.sourceField,
+                settingArray: this.settingArray
+            }
+            //settingArray 0:width 1:height 2:xmlName
+            var target = parent.$('#CommonSearchDialog').length ? parent.$('#CommonSearchDialog') : parent.$('<div id="CommonSearchDialog"></div>').appendTo('body');
+            utils.clearIframe(target);
+            var opt;
+            opt = { title: '列表', width: setting.settingArray[0], height: setting.settingArray[1], modal: true, collapsible: false, minimizable: false, maximizable: true, closable: true };
+            //opt.content = "<iframe src='/mms/home/CommonDialog2?xmlName=" + setting.settingArray[2] + "&parm=WarehouseCode:" + self.dataSource.WarehouseCode + "' style='height:100%;width:100%;border:0;' frameborder='0'></iframe>";  //frameborder="0" for ie7
+            opt.content = "<iframe src='/mms/home/CommonDialog2?xmlName=" + setting.settingArray[2] + "&parm=DepartmentID:" +myself.pageData.form.DepartmentID()+ "' style='height:100%;width:100%;border:0;' frameborder='0'></iframe>";  //frameborder="0" for ie7
+            params = { xmlName: setting.settingArray[2] };
+            opt.paramater = params;
+            opt.onSelect = function (data) {
+                com.ajax({
+                    type: 'GET',
+                    url: '/api/Mms/MES_MaterialReturnDetail/GetMaterialPick?id='+data[0].ID,
+                    cache:false,
+                    async:false,
+                    success: function (list) {
+                        self.grid0.datagrid('loadData',{total:0,rows:[]});
+                        for (var i = 0; i < list.length; i++) {
+                            com.ajax({
+                                type: 'GET',
+                                url: self.urls.newkey,
+                                data: { type: 'grid0', key: self.pageData.scrollKeys.current() },
+                                cache:false,
+                                async:false,
+                                success: function (d) {
+                                    myself.pageData.form.WarehouseCode(data[0].WarehouseCode);
+                                    myself.pageData.form.WarehouseName(data[0].WarehouseName);
+                                    myself.pageData.form.ContractCode(data[0].WarehouseID);
+                                    myself.pageData.form.ProjectName(data[0].WarehouseName);
+                                    myself.pageData.form.PickBillCode(data[0].BillCode);
+                                    var jsonstr=$.extend({},list[i],{ID:d});
+                                    jsonstr.MainID=self.tabs[0].defaults.MainID;
+                                    self.grid0.datagrid('appendRow', jsonstr);
+                                }
+                            });
+                        }
+                    }
+                });
+
+            };
+            target.window(opt);
+        }
+
+        this.StorageClick=function(){
+            var post = {
+                BillCode:self.dataSource.pageData.form.BillCode,
+            };
+            com.ajax({
+                type:'POST',
+                url:self.urls.storageSave,
+                data:JSON.stringify(post),
+                success:function(result){
+                    com.message(result.Result ? 'success' : 'warning', result.Msg);
+                    if (result.Result) {
+                        window.location.reload();
+                    }
+                }
+            });
+        }
+
+        this.saveClick = function () {
+            //取得数据
+            var post = self.fnIsPageChanged();
+            if (!post._changed) {
+                com.message('success', '页面没有数据被修改！');
+                return;
+            }
+
+            //数据提交
+            com.ajax({
+                url: self.urls.edit,
+                data: ko.toJSON(post),
+                success: function (d) {
+                    com.message('success', self.resx.editSuccess);
+                    window.location.reload();
+                }
+            });
+        };
+
+    }
+    var data = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model));
+    ko.bindingViewModel(new viewModel(data));
+    </script>
+}
+
+<div class="z-toolbar">
+    <a id="a_save" href="#" plain="true" class="easyui-linkbutton" icon="icon-save" data-bind="click:readonly()?null:saveClick,linkbuttonDisable:readonly" title="保存">保存</a>
+    <a id="a_add" href="#" class="easyui-linkbutton" data-options="iconCls:'icon-search',plain:true" data-bind="event: { click: function(data, event) {SearchDialog.call({type:'form',targetField:'Name',sourceField:'Name','settingArray':['600','400','ChoosePicking']})}}">选择领料单</a>
+    <a id="a_inStorage" href="#" plain="true" class="easyui-linkbutton" icon="icon-user-accept" data-bind="click:readonly()?null:StorageClick,linkbuttonDisable:readonly" title="审核">审核</a>
+</div>
+
+<div id="divother" style="width:100px; display:none;">
+    <div data-options="iconCls:'icon-add'">新增</div>
+    <div data-options="iconCls:'icon-cross'">删除</div>
+    <div data-options="iconCls:'icon-arrow_refresh'">刷新</div>
+</div>
+
+<div id="master" class="container_12" data-bind="inputwidth:0.9">
+    <div class="grid_1 lbl">单号</div>
+    <div class="grid_3 val"><input type="text" data-bind="value:pageData.form.BillCode ,readOnly:true" class="z-txt " /></div>
+    <div class="grid_1 lbl">领料单号</div>
+    <div class="grid_3 val"><input type="text" data-bind="value:pageData.form.PickBillCode ,readOnly:true" class="z-txt " /></div>
+    <div class="grid_1 lbl">部门编码</div>
+    <div class="grid_3 val"><input type="text" data-bind="value:pageData.form.DepartmentID ,readOnly:true" class="z-txt " /></div>
+
+    <div class="clear"></div>
+
+    <div class="grid_1 lbl">部门名称</div>
+    <div class="grid_3 val"><input type="text" data-bind="value:pageData.form.DepartmentName ,readOnly:true" class="z-txt " /></div>
+    <div class="grid_1 lbl">退料日期</div>
+    <div class="grid_3 val"><input type="text" data-bind="value:pageData.form.ReturnDate ,readOnly:true" class="z-txt " /></div>
+
+    <div class="clear"></div>
+</div>
+
+<div id="tt" class="easyui-tabs">
+    <div title="明细">
+        <table data-bind="datagrid:grid0">
+            <thead>
+                <tr>
+                    <th field="ID" sortable="true" align="left" hidden width="80" editor="text"></th>
+                    <th field="MainID" sortable="true" align="left" hidden width="80" editor="text"></th>
+                    <th field="ContractCode" sortable="true" align="left" width="80" editor="text">合同编号</th>
+                    <th field="ProjectName" sortable="true" align="left" width="80" editor="text">项目名称</th>
+                    <th field="InventoryCode" sortable="true" align="left" width="80" editor="text">存货编码</th>
+                    <th field="InventoryName" sortable="true" align="left" width="80" editor="text">存货名称</th>
+                    <th field="ReturnQuantity" sortable="true" align="left" width="80" editor="text">退料数量</th>
+                    <th field="Model" sortable="true" align="left" width="150">型号规格</th>
+                    <th field="Unit" sortable="true" align="left" width="150">物料单位</th>
+                </tr>
+            </thead>
+        </table>
+
+        <div id="gridtb0">
+            <a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-search',plain:true" data-bind="click:readonly()?null:grid0.addRowClick,linkbuttonDisable:readonly">新增</a>
+            <a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-edit',plain:true" data-bind="click:readonly()?null:grid0.onClickRow,linkbuttonDisable:readonly">编辑</a>
+            <a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-remove',plain:true" data-bind="click:readonly()?null:grid0.removeRowClick,linkbuttonDisable:readonly">删除</a>
+        </div>
+    </div>
+</div>

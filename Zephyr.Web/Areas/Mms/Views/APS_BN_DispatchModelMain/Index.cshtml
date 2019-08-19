@@ -1,0 +1,90 @@
+﻿
+@{
+    ViewBag.Title = "APS_BN_DispatchModelMain";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var Cols = new Zephyr.Models.sys_roleMenuColumnMapService().GetCurrentUserMenuColumns();
+}
+
+@section scripts{
+    <script src="/Content/js/viewModel/com.viewModel.search.js"></script>
+    <script type="text/javascript">
+        var data = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model));
+        var viewModel = function(){ 
+            com.viewModel.search.apply(this, arguments);
+            this.deleteClick1 = function () {
+                com.message('confirm', "确定要删除数据吗?", function (b) {
+                    if (b) {
+                        var row = $("#dg").datagrid("getSelected");
+                        //if (row.BillState == 1) {
+                        //    com.message('success', "已审核不能删除！");
+                        //    return;
+                        //}
+                        
+                            com.ajax({
+                                type: 'GET',
+                                url: "/api/Mms/APS_BN_DispatchModelDetail/GetDelete?id=" + row.ID,
+                                cache: false,
+                                async: false,
+                                success: function (d) {
+                                    if (d > 0) {
+                                        com.message('success', "删除成功！");
+                                        $("#a_search").click();
+                                    }
+                                }
+                            });
+                        
+                    }
+
+                });
+            }
+        }
+        ko.bindingViewModel(new viewModel(data));
+    </script>
+}
+
+    <div class="z-toolbar">
+
+        <a href="#" plain="true" class="easyui-linkbutton" icon="icon-add" title="新增" data-bind="click:addClick">新增</a>
+        <a href="#" plain="true" class="easyui-linkbutton" icon="icon-edit" title="编辑" data-bind="click:editClick">编辑</a>
+        <a href="#" plain="true" class="easyui-linkbutton" icon="icon-cross" title="删除" data-bind="click:deleteClick1">删除</a>
+        @*<a id="a_add" href="#" class="easyui-linkbutton" data-options="iconCls:'icon-search',plain:true" data-bind="event: { click: function(data, event) {SearchDialog.call({type:'form',targetField:'Name',sourceField:'Name','settingArray':['1000','400','PlanChooseProjectPart']})}}">选择项目</a>
+
+        <a href="#" plain="true" class="easyui-linkbutton" icon="icon-bullet_tick" title="" onclick="$('#dialogShortcut').dialog('open')">计划排程</a>
+        <a href="#" plain="true" class="easyui-linkbutton" icon="icon-user-accept" title="审核" data-bind="click:audit1Click">审核</a>
+        <a href="#" plain="true" class="easyui-linkbutton" data-options="iconCls:'icon-bullet_tick',plain:true" data-bind="click:PlanReleaseClick">计划下达</a>
+
+        <a href="#" plain="true" class="easyui-linkbutton" icon="icon-search" title="转到图表" onclick="GoChart()">查看设备负荷表</a>*@
+    </div>
+
+    <div class="container_12" style="position:relative;">
+        <div class="grid_1 lbl">模型名称</div>
+        <div class="grid_2 val"><input type="text" data-bind="value:form.Name" class="z-txt " /></div>
+
+        <div class="clear"></div>
+        <div class="grid_1 lbl">&nbsp;</div>
+        <div class="grid_2 val">&nbsp;</div>
+        <div class="clear"></div>
+
+        <div class="prefix_9" style="position:absolute;top:5px;height:0;">  
+            <a id="a_search" href="#" class="buttonHuge button-blue" data-bind="click:searchClick" style="margin:0 15px;">查询</a> 
+            <a id="a_reset"  href="#" class="buttonHuge button-blue" data-bind="click:clearClick">清空</a>
+        </div>
+    </div>
+ 
+    <table data-bind="datagrid:grid" id="dg">
+            <thead>  
+                <tr>
+                    <th field="ID" sortable="true" align="left" width="80" @Html.HideColumn(Cols, "ID")>主键ID</th>
+                    <th field="Code" sortable="true" align="left" width="80" @Html.HideColumn(Cols, "Code")>模型编号</th>
+                    <th field="Name" sortable="true" align="left" width="80" @Html.HideColumn(Cols, "Name")>模型名称</th>
+                    <th field="Remark" sortable="true" align="left" width="80" @Html.HideColumn(Cols, "Remark")>备注</th>
+                    <th field="CreatePerson" sortable="true" align="left" width="80" @Html.HideColumn(Cols, "CreatePerson")>创建人</th>
+                    <th field="CreateTime" sortable="true" align="left" width="80" @Html.HideColumn(Cols, "CreateTime") formatter="com.formatDate" >创建时间</th>
+                    <th field="ModifyPerson" sortable="true" align="left" width="80" @Html.HideColumn(Cols, "ModifyPerson")>更新人</th>
+                    <th field="ModifyTime" sortable="true" align="left" width="80" @Html.HideColumn(Cols, "ModifyTime") formatter="com.formatDate" >更新时间</th>
+                    <th field="IsEnable" sortable="true" align="left" width="80" data-options="formatter:function(value,row){ return (value ==1) ? '是':'否';}" @Html.HideColumn(Cols, "IsEnable")>是否可用</th>
+
+                </tr>                            
+        </thead>      
+    </table>
+ 

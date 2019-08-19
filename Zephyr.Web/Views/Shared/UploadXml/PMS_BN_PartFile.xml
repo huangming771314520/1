@@ -1,0 +1,18 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Root>
+  <path>
+    PMS_BN_PartFile/
+  </path>
+  <level>
+    合同
+  </level>
+  <level>
+    项目
+  </level>
+  <level>
+    产品
+  </level>
+  <level>
+    零件
+  </level>
+</Root>

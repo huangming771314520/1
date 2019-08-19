@@ -1,0 +1,15 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<settings lookupType="supplierList" defaultOrderBy='RowNo'>
+  <module>Mms</module>
+  <select>
+    Com_Code as Pre_SuppNo,Com_Name as Pre_SuppName,Com_Code as SUPPLY_NO,Com_Name as SUPPLY_NAME
+  </select>
+  <from>
+    [QHD_Mes].dbo.BD_UnitType
+  </from>
+  <where defaultForAll='true' defaultCp='equal' defaultIgnoreEmpty='true' >
+    <field name='Com_Code'         cp='like'  ></field>
+    <field name='Com_Name'         cp='like'       ></field>
+    <field name='UnitType'         cp='in'       ></field>
+  </where>
+</settings>

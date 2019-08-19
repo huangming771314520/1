@@ -1,0 +1,246 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<activityRootModel xmlns:dm0="http://schemas.microsoft.com/VisualStudio/2008/DslTools/Core" xmlns:dm1="http://schemas.microsoft.com/dsltools/Kernel" xmlns:dm2="http://schemas.microsoft.com/dsltools/Component" xmlns:dm3="http://schemas.microsoft.com/dsltools/UseCase" xmlns:dm4="http://schemas.microsoft.com/dsltools/Activity" xmlns:dm5="http://schemas.microsoft.com/dsltools/Interaction" xmlns:dm6="http://schemas.microsoft.com/dsltools/UmlModelLibrary" xmlns:dm7="http://schemas.microsoft.com/dsltools/UmlDiagrams" xmlns:dm8="http://schemas.microsoft.com/dsltools/ModelStore" xmlns:dm9="http://schemas.microsoft.com/dsltools/SimpleShapesModel" dslVersion="1.0.0.0" Id="01bd8789-c36c-4275-9642-36b355691b13" name="0405车间领料" linkedPackageId="cfa750d7-c5cb-47ea-bc02-0fb0b7b6111e" xmlns="http://schemas.microsoft.com/VisualStudio/TeamArchitect/ActivityDesigner">
+  <ownedCommentsInternal>
+    <comment Id="fd51be5d-d25a-4e10-8188-206a772638e4">
+      <elementDefinition Id="57106b5b-e179-4d67-9a26-6a88cc2476b9" />
+      <body>1、此功能只能车间使用；
+2、车间只能新增自己负责的车间的单据；
+3、获取车间编码
+SELECT
+    --车间编码
+    B.DepartmentCode
+FROM [dbo].[SYS_BN_User] B
+WHERE B.IsEnable = '1'
+      AND B.UserCode = '050328';
+4、领料日期默认为当天，不可修改；
+5、同一个领料单只能领同一个工程项目的物料</body>
+      <annotatedElements>
+        <opaqueActionMoniker Id="a3438b4c-c3ec-4290-9a2d-c832d962657f" LastKnownName="新增车间领料单" />
+      </annotatedElements>
+    </comment>
+    <comment Id="9bfbf028-d900-449b-a46b-2c0c991a42bb">
+      <elementDefinition Id="4d484936-6a43-419e-83a3-dac346abfcee" />
+      <body>1、通过生产下达的生产任务，查询任务需要使用的物料</body>
+      <annotatedElements>
+        <opaqueActionMoniker Id="a5e4d40d-71a7-4808-8557-68e5eeb34ad7" LastKnownName="新增任务相关领料" />
+      </annotatedElements>
+    </comment>
+    <comment Id="b7e7f06f-0050-4bf8-9715-d613c268346c">
+      <elementDefinition Id="e18d8122-024f-4a1b-bac3-897dffdbb9dd" />
+      <body>通过存货编码、存货名称、规格、型号查询需要领料的存货信息；</body>
+      <annotatedElements>
+        <opaqueActionMoniker Id="4fac455b-26b9-413f-ab68-230a982ec059" LastKnownName="新增其他领料" />
+      </annotatedElements>
+    </comment>
+    <comment Id="bad68906-e256-42e0-913c-11139f16b15a">
+      <elementDefinition Id="41e48e36-2f65-47a6-8af4-0e64607988d0" />
+      <body>可以修改数量、备注信息</body>
+      <annotatedElements>
+        <opaqueActionMoniker Id="deba39cc-e777-44f8-8771-27721aae1a40" LastKnownName="修改领料单明细" />
+      </annotatedElements>
+    </comment>
+    <comment Id="befe424a-be80-48cf-800c-c999c0a7792f">
+      <elementDefinition Id="fbdad410-e627-4788-9005-b4a6bc73fe38" />
+      <body>只能修改未审核的领料单；</body>
+      <annotatedElements>
+        <opaqueActionMoniker Id="6324df02-99cd-46ba-af88-e2900314e63e" LastKnownName="修改领料单" />
+      </annotatedElements>
+    </comment>
+    <comment Id="cb804377-9694-438b-a3f3-b83fad833343">
+      <elementDefinition Id="a089064e-8a3e-4e57-8ad0-5d27f22d19cc" />
+      <body>只能删除未审核的领料单；</body>
+      <annotatedElements>
+        <opaqueActionMoniker Id="6b3d5a13-09d7-400f-88d8-218c571a5bc9" LastKnownName="删除领料单" />
+      </annotatedElements>
+    </comment>
+    <comment Id="d371357c-b753-4fc8-aa85-2e160324405e">
+      <elementDefinition Id="39e9619b-8fa0-4065-a475-2e70aef47167" />
+      <body>只能审核有效的未审核的领料单；</body>
+      <annotatedElements>
+        <opaqueActionMoniker Id="33b6ef91-c4a7-4c7a-b77f-6ebdb358982b" LastKnownName="审核领料单" />
+      </annotatedElements>
+    </comment>
+    <comment Id="63d73556-a391-4f55-aeed-473d8053f19d">
+      <elementDefinition Id="1bce7fdf-8121-4fad-abe3-00628bf839a2" />
+      <body>只能删除未审核的领料单明细；</body>
+      <annotatedElements>
+        <opaqueActionMoniker Id="9c0b0ccd-b0ad-4ee9-ab9c-2995062178c6" LastKnownName="删除领料单明细" />
+      </annotatedElements>
+    </comment>
+  </ownedCommentsInternal>
+  <packagedElements>
+    <activityRootModelHasActivity>
+      <activity Id="02da9220-18ad-448e-9b21-fb89f41d4512" name="0405车间领料" isAbstract="false" isLeaf="false" isActiveClass="false" isReentrant="false" isReadOnly="false" isSingleExecution="false">
+        <elementDefinition Id="53835870-c36d-4813-add9-2015e505842c" />
+        <nodes>
+          <initialNode Id="8e8a6762-7805-4442-8e0d-a8b4c6dd4470" name="Initial1" isLeaf="false">
+            <elementDefinition Id="661578de-5f1b-4a76-8ab8-80378ddc5c74" />
+            <flowNodeTargets>
+              <controlFlow Id="4212928c-afd7-4adf-88ea-0ef3583fb453" isLeaf="false">
+                <opaqueActionMoniker Id="a3438b4c-c3ec-4290-9a2d-c832d962657f" LastKnownName="新增车间领料单" />
+                <elementDefinition Id="1039a772-babd-4ff7-9eb1-b900b8210763" />
+              </controlFlow>
+            </flowNodeTargets>
+          </initialNode>
+          <opaqueAction Id="a3438b4c-c3ec-4290-9a2d-c832d962657f" name="新增车间领料单" isLeaf="false">
+            <elementDefinition Id="fb63e334-7f66-4b01-9d49-683311f2387c" />
+            <flowNodeTargets>
+              <controlFlow Id="d1c44a86-6562-46ec-b04f-000c976444ca" isLeaf="false">
+                <forkNodeMoniker Id="34b7f505-f933-41aa-ba06-e3ad6aab5a08" LastKnownName="Fork1" />
+                <elementDefinition Id="2f20db86-3938-4769-baa7-b6d847b263b7" />
+              </controlFlow>
+            </flowNodeTargets>
+          </opaqueAction>
+          <activityFinalNode Id="22035604-d20f-4647-8f13-82ca4e5f27fe" name="ActivityFinal1" isLeaf="false">
+            <elementDefinition Id="229281f4-0cc7-47b5-86be-cd68000d187b" />
+          </activityFinalNode>
+          <opaqueAction Id="a5e4d40d-71a7-4808-8557-68e5eeb34ad7" name="新增任务相关领料" isLeaf="false">
+            <elementDefinition Id="9dbda9c7-f35a-4691-9ccd-7ea69d1aac97" />
+            <flowNodeTargets>
+              <controlFlow Id="7e811ac2-c3e0-421d-9036-7a383903aab9" isLeaf="false">
+                <joinNodeMoniker Id="e4cef337-5e78-4e2e-ae20-854690591ce0" LastKnownName="Join1" />
+                <elementDefinition Id="3e49787b-72d1-4514-8a82-c2cfa38a4cbb" />
+              </controlFlow>
+            </flowNodeTargets>
+          </opaqueAction>
+          <opaqueAction Id="4fac455b-26b9-413f-ab68-230a982ec059" name="新增其他领料" isLeaf="false">
+            <elementDefinition Id="dae5eefc-efef-400d-8765-734dc0f61982" />
+            <flowNodeTargets>
+              <controlFlow Id="ae0597a6-8bb5-4031-a271-1e4c094570b7" isLeaf="false">
+                <joinNodeMoniker Id="e4cef337-5e78-4e2e-ae20-854690591ce0" LastKnownName="Join1" />
+                <elementDefinition Id="83224cb3-2a30-41e9-9008-ad0192ffd02e" />
+              </controlFlow>
+            </flowNodeTargets>
+          </opaqueAction>
+          <opaqueAction Id="deba39cc-e777-44f8-8771-27721aae1a40" name="修改领料单明细" isLeaf="false">
+            <elementDefinition Id="6377b69c-8393-4cd5-b6f8-18bf8ee4554a" />
+            <flowNodeTargets>
+              <controlFlow Id="659f696a-ea9f-41fc-ae54-eac7745361c5" isLeaf="false">
+                <joinNodeMoniker Id="e4cef337-5e78-4e2e-ae20-854690591ce0" LastKnownName="Join1" />
+                <elementDefinition Id="3dda9187-2da7-46e0-9474-c40f261fd441" />
+              </controlFlow>
+            </flowNodeTargets>
+          </opaqueAction>
+          <opaqueAction Id="9c0b0ccd-b0ad-4ee9-ab9c-2995062178c6" name="删除领料单明细" isLeaf="false">
+            <elementDefinition Id="dbf32280-9adb-4f70-99ee-e7dbec7a6d3e" />
+            <flowNodeTargets>
+              <controlFlow Id="8d967a65-966a-48e8-a90a-24a442d4e5c5" isLeaf="false">
+                <joinNodeMoniker Id="e4cef337-5e78-4e2e-ae20-854690591ce0" LastKnownName="Join1" />
+                <elementDefinition Id="e72b15de-d93d-4f8d-8bb7-6a0fd26eb255" />
+              </controlFlow>
+            </flowNodeTargets>
+          </opaqueAction>
+          <opaqueAction Id="6324df02-99cd-46ba-af88-e2900314e63e" name="修改领料单" isLeaf="false">
+            <elementDefinition Id="12be00fa-2aac-4519-b2f1-110b5e2a19de" />
+            <flowNodeTargets>
+              <controlFlow Id="e1d9c298-e908-4628-b3a7-654871061b21" isLeaf="false">
+                <joinNodeMoniker Id="0b887b96-d202-413b-a854-df8187e01034" LastKnownName="Join2" />
+                <elementDefinition Id="bee3cd66-df18-4549-859b-4efb613a80d2" />
+              </controlFlow>
+            </flowNodeTargets>
+          </opaqueAction>
+          <opaqueAction Id="6b3d5a13-09d7-400f-88d8-218c571a5bc9" name="删除领料单" isLeaf="false">
+            <elementDefinition Id="1e6c4da9-fc7b-4ce8-87e4-b87aa9e4b7e3" />
+            <flowNodeTargets>
+              <controlFlow Id="a7ed8385-dae3-4dae-a3a0-1c0fbd674fa6" isLeaf="false">
+                <joinNodeMoniker Id="0b887b96-d202-413b-a854-df8187e01034" LastKnownName="Join2" />
+                <elementDefinition Id="e71562c0-d7c6-4772-bbde-693a6bbd2f13" />
+              </controlFlow>
+            </flowNodeTargets>
+          </opaqueAction>
+          <opaqueAction Id="33b6ef91-c4a7-4c7a-b77f-6ebdb358982b" name="审核领料单" isLeaf="false">
+            <elementDefinition Id="4b5e2ef6-966e-4488-9cac-8d2127e07af0" />
+            <flowNodeTargets>
+              <controlFlow Id="07efc9e5-05c8-41a0-b566-70448416dda9" isLeaf="false">
+                <joinNodeMoniker Id="0b887b96-d202-413b-a854-df8187e01034" LastKnownName="Join2" />
+                <elementDefinition Id="b32501ac-7614-4558-81d7-d01580b38683" />
+              </controlFlow>
+            </flowNodeTargets>
+          </opaqueAction>
+          <opaqueAction Id="70eaaf2a-044a-41d6-bf89-bccd7bc81474" name="查询领料单" isLeaf="false">
+            <elementDefinition Id="eae2c365-c79f-44a0-8151-f210b33fb505" />
+            <flowNodeTargets>
+              <controlFlow Id="e8227e36-310f-44a7-8929-f8d9d20a3c85" isLeaf="false">
+                <activityFinalNodeMoniker Id="22035604-d20f-4647-8f13-82ca4e5f27fe" LastKnownName="ActivityFinal1" />
+                <elementDefinition Id="eb0722c9-46e2-4c67-a41a-b7c4ac3894b4" />
+              </controlFlow>
+            </flowNodeTargets>
+          </opaqueAction>
+          <forkNode Id="34b7f505-f933-41aa-ba06-e3ad6aab5a08" name="Fork1" isLeaf="false">
+            <elementDefinition Id="46550af1-cbf8-4552-b836-33e586b44ed3" />
+            <flowNodeTargets>
+              <controlFlow Id="c6c6b3c5-bec5-4a02-8f7b-8c40e37a0c73" isLeaf="false">
+                <opaqueActionMoniker Id="4fac455b-26b9-413f-ab68-230a982ec059" LastKnownName="新增其他领料" />
+                <elementDefinition Id="5e1dd115-4b2a-406c-a38f-f2821adbeeb7" />
+              </controlFlow>
+              <controlFlow Id="d9e0933f-827f-4910-82d5-04375616d787" isLeaf="false">
+                <opaqueActionMoniker Id="deba39cc-e777-44f8-8771-27721aae1a40" LastKnownName="修改领料单明细" />
+                <elementDefinition Id="72360d42-12ff-48c0-912b-c89b8c3971cf" />
+              </controlFlow>
+              <controlFlow Id="13781b1a-fac4-49db-b442-23bb00500596" isLeaf="false">
+                <opaqueActionMoniker Id="9c0b0ccd-b0ad-4ee9-ab9c-2995062178c6" LastKnownName="删除领料单明细" />
+                <elementDefinition Id="48562f96-58b3-4085-b849-5bc6c1bdd8d6" />
+              </controlFlow>
+              <controlFlow Id="80601bd3-5bcb-4dbe-b32d-1323aa28d4a3" isLeaf="false">
+                <opaqueActionMoniker Id="a5e4d40d-71a7-4808-8557-68e5eeb34ad7" LastKnownName="新增任务相关领料" />
+                <elementDefinition Id="403e4464-5102-45b4-8f11-d9baed57de48" />
+              </controlFlow>
+            </flowNodeTargets>
+          </forkNode>
+          <joinNode Id="e4cef337-5e78-4e2e-ae20-854690591ce0" name="Join1" isLeaf="false">
+            <elementDefinition Id="b347d31c-e348-4884-9e7c-977341d66529" />
+            <flowNodeTargets>
+              <controlFlow Id="c9846f3b-ce7c-4877-87aa-553fe018ed2f" isLeaf="false">
+                <forkNodeMoniker Id="075a8197-6ee1-4c6b-b5a8-8700e1bb02e8" LastKnownName="Fork2" />
+                <elementDefinition Id="75af655e-465b-4d9c-80f8-6a0b202e9e20" />
+              </controlFlow>
+            </flowNodeTargets>
+          </joinNode>
+          <forkNode Id="075a8197-6ee1-4c6b-b5a8-8700e1bb02e8" name="Fork2" isLeaf="false">
+            <elementDefinition Id="a5c0debc-b226-4aaf-9091-00b4240ee019" />
+            <flowNodeTargets>
+              <controlFlow Id="13b65e88-005d-41e5-bfb8-f01a18d2ef33" isLeaf="false">
+                <opaqueActionMoniker Id="6324df02-99cd-46ba-af88-e2900314e63e" LastKnownName="修改领料单" />
+                <elementDefinition Id="6ab5fcec-3779-4e64-8dbf-a489668f9d43" />
+              </controlFlow>
+              <controlFlow Id="53292c88-b42f-4529-b0eb-0423bf0c39c8" isLeaf="false">
+                <opaqueActionMoniker Id="33b6ef91-c4a7-4c7a-b77f-6ebdb358982b" LastKnownName="审核领料单" />
+                <elementDefinition Id="f7453eac-cbbb-4a58-9191-54022cb235ee" />
+              </controlFlow>
+              <controlFlow Id="cc85c12d-98fa-4e42-9338-eace877386a6" isLeaf="false">
+                <opaqueActionMoniker Id="6b3d5a13-09d7-400f-88d8-218c571a5bc9" LastKnownName="删除领料单" />
+                <elementDefinition Id="8e0549fc-9762-4474-8908-1c1dbf15e9ef" />
+              </controlFlow>
+            </flowNodeTargets>
+          </forkNode>
+          <joinNode Id="0b887b96-d202-413b-a854-df8187e01034" name="Join2" isLeaf="false">
+            <elementDefinition Id="9cc15f23-f598-4574-9c78-b74bcfa39101" />
+            <flowNodeTargets>
+              <controlFlow Id="94c2c786-b127-46fb-b492-7aa0b6470624" isLeaf="false">
+                <opaqueActionMoniker Id="70eaaf2a-044a-41d6-bf89-bccd7bc81474" LastKnownName="查询领料单" />
+                <elementDefinition Id="c5a533c6-febb-41d6-876d-82365a882979" />
+              </controlFlow>
+            </flowNodeTargets>
+          </joinNode>
+        </nodes>
+      </activity>
+    </activityRootModelHasActivity>
+  </packagedElements>
+  <package Id="cfa750d7-c5cb-47ea-bc02-0fb0b7b6111e" name="HCJXUML">
+    <elementDefinition Id="6348ac1d-75ba-4a39-8ebf-237333c18d4f" />
+    <profileInstances>
+      <packageHasProfileInstances Id="524c4d00-5e3b-4eaa-84d3-8b64e39ddc19">
+        <profileInstance Id="8b3e1fdd-7294-4cdc-8e71-82f8ebdec39d" name="StandardProfileL2">
+          <elementDefinition Id="e34d544e-0fea-4ed6-ac5e-1b74119ac791" />
+        </profileInstance>
+        <elementDefinition Id="0caec977-1f8c-4ba3-a7db-8cc9ad9cc73b" />
+      </packageHasProfileInstances>
+      <packageHasProfileInstances Id="eb40d6fe-c773-42a2-a176-86dee62367cf">
+        <profileInstance Id="2fc77016-e2b5-4d1f-b0b5-aeb3f59cd053" name="StandardProfileL3">
+          <elementDefinition Id="532ea607-fb19-44b8-8502-3351b05452be" />
+        </profileInstance>
+        <elementDefinition Id="29349502-908c-4fda-9054-c48619c59ed0" />
+      </packageHasProfileInstances>
+    </profileInstances>
+  </package>
+</activityRootModel>

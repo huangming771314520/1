@@ -1,0 +1,160 @@
+﻿* {
+    padding: 0;
+    margin: 0;
+}
+
+/*页面标题-刘海样式*/
+#all {
+    /*width: 1350px;*/
+    /*height: 500px;*/
+}
+
+#all_top {
+    width: 100%;
+    height: 60px;
+    margin: 0 auto;
+}
+
+.top_left {
+    float: left;
+    width: 100%;
+    height: 30px;
+    background: #d8d5d5;
+}
+
+.top_center {
+    border-left: 150px solid transparent;
+    border-right: 150px solid transparent;
+    width: 300px;
+    margin: 0 auto;
+    border-top: 60px solid #d8d5d5;
+    text-align: center;
+    position: relative;
+}
+
+    .top_center > p {
+        position: absolute;
+        left: 100px;
+        top: -50px;
+        font-size: 28px;
+        font-weight: bold;
+        color: #ffffff;
+    }
+
+/*页面表格-样式*/
+#tab_contents {
+    margin-top: 10px;
+}
+
+    #tab_contents table {
+        /*background: #b8b9b8;*/
+        width: 100%;
+        height: 10px;
+        margin: 0px auto;
+        text-align: center;
+        /*margin-bottom: 10px;*/
+    }
+
+        #tab_contents table tr {
+            height: 80px;
+            background: #f2f2f2;
+        }
+
+table.gridtable {
+    font-family: verdana,arial,sans-serif;
+    font-size: 13px;
+    border-width: 1px;
+    border-color: gray;
+    border-collapse: collapse;
+    width: 100%;
+    text-align: center;
+    table-layout: fixed;
+    
+}
+
+    table.gridtable th {
+        border-width: 1px;
+        padding: 8px;
+        border-style: solid;
+        border-color: gray;
+        /*background-color: black;*/
+    }
+
+    table.gridtable td {
+        border-width: 1px;
+        padding: 8px;
+        border-style: solid;
+        border-color: gray;
+        font-size: 25px;
+        /*font-weight: bold;*/
+        /*background-color: black;*/
+    }
+
+/*底部样式*/
+#all_foot {
+    width: 100%;
+    height: 300px;
+    /*background:#7eb6d7;*/
+    border: 1px solid gray;
+}
+
+.foot_left {
+    width: 40%;
+    height: 220px;
+    float: left;
+    padding-top: 10px;
+    /*border: 1px solid gray;*/
+}
+/*饼状图样式-左右*/
+#container_one {
+    width: 48%;
+    height: 220px;
+    float: left;
+}
+
+#container_two {
+    width: 48%;
+    height: 220px;
+    float: right;
+}
+
+.foot_right{
+      height: 200px;
+      width:35%;
+      overflow:hidden;
+       z-index:-100;
+}
+
+/*底部文字样式*/
+.foot_right_div{
+    width: 35%;
+    overflow: hidden;
+    -webkit-animation: foot_right 5s linear infinite;
+    animation: foot_right 5s linear infinite;
+    position: absolute;
+    left:45%;
+    z-index:-100;
+    color: #25cf25;
+    font-size:20px;
+}
+
+.foot_right_div_static{
+    width: 35%;
+    overflow: hidden;
+    position: absolute;
+    left:45%;
+    z-index:-100;
+    color: #25cf25;
+    font-size:20px;
+    margin-top:5px;
+}
+
+@keyframes foot_right {
+    0% {
+        transform: translateY(50px);
+    }
+
+    100% {
+        transform: translateY(-200px);
+    }
+}

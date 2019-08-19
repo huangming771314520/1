@@ -1,0 +1,403 @@
+﻿@{
+    //Zephyr.Models.PMS_ProductTask task = ViewData["ProductTask"] as Zephyr.Models.PMS_ProductTask;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title></title>
+
+    <link href="~/Content/js/jquery-easyui-1.7.0/themes/icon.css" rel="stylesheet" />
+    <link href="~/Content/js/jquery-easyui-1.7.0/themes/default/easyui.css" rel="stylesheet" />
+    <style type="text/css">
+        * {
+            font-family: "微软雅黑";
+        }
+
+        .icon-edit {
+            background: url('../../../../Content/js/jquery-easyui-1.7.0/themes/icons/edit.png') no-repeat center center;
+        }
+    </style>
+
+</head>
+
+@*ViewData["productID"] = productID;
+    ViewData["contractCode"] = contractCode;
+    ViewData["pName"] = pName;
+    ViewData["pModel"] = pModel;
+    ViewData["DeliveryTime"] = DeliveryTime;
+    ViewData["Quantity"] = Quantity;
+    ViewData["pSpecifications"] = pSpecifications;*@
+<body>
+    <div style="width:360px;height:100%;float:left;margin-right:5px;">
+        <div class="easyui-panel" title="详细信息" style="padding:20px;">
+            <ul data-bind="easyuiTree:tree" id="Ctree"></ul>
+        </div>
+    </div>
+    <div class="easyui-panel" title="任务信息" style="padding:20px;float:left;">
+        <div style="margin-bottom:10px">
+            <a href="/mms/PMS_ContractInfo/ProductInfoIndex?pID=@ViewData["pID"]&ccode=@ViewData["contractCode"]&pname=''&projectDetailID=@ViewData["projectdetailid"]&pState=@ViewData["pState"]" class="easyui-linkbutton" icon="icon-back" onclick="">返回产品信息</a>
+            @*<a href="#" onclick="onEdit()" class="l-btn l-btn-small">
+                    <span class="l-btn-left l-btn-icon-left">
+                        <span class="l-btn-text">编辑</span>
+                        <span class="l-btn-icon icon-edit">&nbsp;</span>
+                    </span>
+                </a>*@
+            <a id="edit" onclick="onEdit()" href="#" class="easyui-linkbutton" icon="icon-edit">编辑</a>
+            <a id="save" href="#" class="easyui-linkbutton" icon="icon-save" onclick="SaveData()">保存</a>
+
+        </div>
+        <hr style=" height:1px;border:none;border-top:1px solid #efefef;margin:20px 0px;" />
+        <div style="margin-bottom:10px">
+            <input id="ContractCode" class="easyui-textbox" label="合同编号:" prompt="" disabled="disabled" style="width:100%" value="@ViewData["contractCode"]">
+        </div>
+        <div style="margin-bottom:10px">
+            <input id="ProjectID" hidden value="@ViewData["pID"]" />
+            <input id="ProductID" hidden value="@ViewData["productID"]" />
+            <input class="easyui-textbox" id="ProductName" label="产品名称:" prompt="" disabled="disabled" style="width:100%" value="@ViewData["pName"]">
+        </div>
+        <div style="margin-bottom:10px">
+            <input class="easyui-textbox" id="Model" label="型号:" prompt="" disabled="disabled" style="width:100%" value="@ViewData["pModel"]">
+        </div>
+        <div style="margin-bottom:10px">
+            <input class="easyui-textbox" id="Specifications" label="规格:" prompt="" disabled="disabled" style="width:100%" value="@ViewData["pSpecifications"]">
+        </div>
+        <div style="margin-bottom:10px">
+            <input class="easyui-textbox" id="Quantity" label="产品数量:" prompt="" disabled="disabled" style="width:100%" value="@ViewData["Quantity"]">
+        </div>
+        <div style="margin-bottom:10px">
+            <input class="easyui-datebox" id="DeliveryTime" label="交货日期:" prompt="" disabled="disabled" style="width:300px" value="@ViewData["DeliveryTime"]">
+        </div>
+        <div id="taskSelect">
+            <div style="margin-bottom:10px">
+                <input id="sJType" type="checkbox" onchange="changeType('sJType')" value="1">
+                <input id="sJTypeProductTaskID" hidden>
+                <label class="m-title" style="font-size: 18px;font-weight: bold;">设计任务</label>
+
+                @*<input id="sJType" onchange="changeType('sJType')" class="easyui-switchbutton" @if (task.TaskType == 1) { @Html.Raw("checked")    ; }>*@
+
+                <a id="target_SJ_Info" href="#" onclick="onGetDesignDetail()" style="color:cornflowerblue ;margin-left: 10px;">明细</a>
+            </div>
+            <div style="margin-bottom:10px" id="isJType">
+                <input class="easyui-datebox" id="sJTypeTaskStartDate" disabled="disabled" label="开始日期:" data-options="
+                       events:{blur: function(){
+                       FunSetDifferenceDays($('#sJTypeTaskStartDate'), $('#sJTypeTaskFinishDate'), $('#sJTypeTaskCycle'));
+                       }}" prompt="" style="width:300px">
+                <input class="easyui-datebox" id="sJTypeTaskFinishDate" disabled="disabled" label="结束日期:" data-options="
+                       events:{blur: function(){
+                       FunSetDifferenceDays($('#sJTypeTaskStartDate'), $('#sJTypeTaskFinishDate'), $('#sJTypeTaskCycle'));
+                       }}" prompt="" style="width:300px">
+                @*<input type="text" class="easyui-textbox" id="sJTypeTaskCycle" disabled="disabled" label="任务周期:" prompt="" style="width:200px">*@
+
+                <input class="easyui-textbox" id="sJTypeTaskCycle" data-options="iconCls:'icon-search'" disabled="disabled" prompt="请输入任务周期:" style="width:300px">
+            </div>
+            <div style="margin-bottom:10px">
+                <input type="checkbox" id="cGType" name="" onchange="changeType('cGType')" value="2" label=":">
+                <input id="cGTypeProductTaskID" hidden>
+                <label class="m-title" style="font-size: 18px;font-weight: bold;">采购任务</label>
+                @*<input id="cGType" onchange="changeType('cGType')" class="easyui-switchbutton" @if (task.TaskType == 2) { @Html.Raw("checked")       ; }>*@
+            </div>
+
+            <div style="margin-bottom:10px" id="icGType">
+                <input class="easyui-datebox" id="cGTypeTaskStartDate" disabled="disabled" label="开始日期:" data-options="
+                       events:{blur: function(){
+                       FunSetDifferenceDays($('#cGTypeTaskStartDate'), $('#cGTypeTaskFinishDate'), $('#cGTypeTaskCycle'));
+                       }}" prompt="" style="width:300px">
+                <input class="easyui-datebox" id="cGTypeTaskFinishDate" disabled="disabled" label="结束日期:" data-options="
+                       events:{blur: function(){
+                       FunSetDifferenceDays($('#cGTypeTaskStartDate'), $('#cGTypeTaskFinishDate'), $('#cGTypeTaskCycle'));
+                       }}" prompt="" style="width:300px">
+                @*<input type="text" class="easyui-textbox" id="cGTypeTaskCycle" disabled="disabled" label="任务周期:" prompt="" style="width:200px">*@
+                <input class="easyui-textbox" id="cGTypeTaskCycle" data-options="iconCls:'icon-search'" disabled="disabled" prompt="请输入任务周期:" style="width:300px">
+            </div>
+            <div style="margin-bottom:10px">
+                <input type="checkbox" id="sCType" onchange="changeType('sCType')" name="" value="3" label=":">
+                <input id="sCTypeProductTaskID" hidden>
+                <label class="m-title" style="font-size: 18px;font-weight: bold;">生产任务</label>
+                @*<input id="sCType" onchange="changeType('sCType')" class="easyui-switchbutton" @if (task.TaskType == 3) { @Html.Raw("checked")       ; }>*@
+                <a id="target_SC_Info" onclick="onGetProductionTaskDetail()" href="javascript:void(0)" style="color:cornflowerblue ;margin-left: 10px;">明细</a>
+            </div>
+            <div style="margin-bottom:10px" id="isCType">
+                <input class="easyui-datebox" id="sCTypeTaskStartDate" disabled="disabled" label="开始日期:" data-options="
+                       events:{blur: function(){
+                       FunSetDifferenceDays($('#sCTypeTaskStartDate'), $('#sCTypeTaskFinishDate'), $('#sCTypeTaskCycle'));
+                       }}" prompt="" style="width:300px">
+                <input class="easyui-datebox" id="sCTypeTaskFinishDate" disabled="disabled" label="结束日期:" data-options="
+                       events:{blur: function(){
+                       FunSetDifferenceDays($('#sCTypeTaskStartDate'), $('#sCTypeTaskFinishDate'), $('#sCTypeTaskCycle'));
+                       }}" prompt="" style="width:300px">
+                @*<input type="text" class="easyui-textbox" id="sCTypeTaskCycle" disabled="disabled" label="任务周期:" prompt="" style="width:200px">*@
+                <input class="easyui-textbox" id="sCTypeTaskCycle" data-options="iconCls:'icon-search'" disabled="disabled" prompt="请输入任务周期:" style="width:300px">
+            </div>
+        </div>
+    </div>
+
+    <script src="~/Content/js/jquery-easyui-1.7.0/jquery.min.js"></script>
+    <script src="~/Content/js/jquery-easyui-1.7.0/jquery.easyui.min.js"></script>
+    <script src="~/Content/js/jquery-easyui-1.7.0/locale/easyui-lang-zh_CN.js"></script>
+    <script src="~/Content/js/core/utils.js"></script>
+    <script src="~/Content/js/core/common.js"></script>
+    <script type="text/javascript">
+        //function onEdit() {
+        //    $("#sJType").attr("disabled", false);
+        //    $("#cGType").attr("disabled", false);
+        //    $("#sCType").attr("disabled", false);
+
+        //}
+        //function setControlDisable() {
+        //    $("#sJType").attr("disabled", true);
+        //    $("#cGType").attr("disabled", true);
+        //    $("#sCType").attr("disabled", true);
+        //}
+
+        var TaskTypes = [];
+
+        $().ready(function () {
+            //setControlDisable() ;
+            //alert("进入");
+
+            var pState =@ViewData["pState"];
+            if (pState == 1) {
+                $("#edit").linkbutton('disable');
+            }
+            else {
+                $("#edit").linkbutton('enable');
+            }
+            $("#save").linkbutton('disable');
+            $("#sJType").attr("disabled", true);
+            $("#cGType").attr("disabled", true);
+            $("#sCType").attr("disabled", true);
+
+            $.ajax({
+                type:'GET',
+                url:"/api/Mms/PMS_ContractInfo/GetProducTaskData?contractCode=" + $("#ContractCode").val() + "&productID=" +$("#ProductID").val(),
+                async: false,
+                success:function (result) {
+                    $("#sJTypeProductTaskID").val(-1)
+                    $("#cGTypeProductTaskID").val(-1)
+                    $("#sCTypeProductTaskID").val(-1)
+                    for (var i = 0; i < result.length; i++) {
+
+                        var checkboxs = $("#taskSelect :checkbox");
+                        var ids = $(checkboxs[i]).attr("id");
+                        $("#ProductID").val(result[0].ProductID);
+                        $("#ProductName").textbox("setValue", result[0].ProductName);
+                        $("#Model").textbox("setValue", result[0].Model);
+                        $("#ContractCode").textbox("setValue", result[0].ContractCode);
+                        $("#Specifications").textbox("setValue", result[0].Specifications);
+                        $("#Quantity").textbox("setValue", result[0].Quantity);
+                        $("#DeliveryTime").datebox("setValue", result[0].DeliveryTime);
+
+                        TaskTypes.push(result[i].TaskType);
+
+                        switch (result[i].TaskType) {
+                            case 1:
+                                $("#sJTypeProductTaskID").val(result[i].ID)
+                                $("#sJTypeTaskStartDate").datebox("setValue", result[i].TaskStartDate);
+                                $("#sJTypeTaskFinishDate").datebox("setValue", result[i].TaskFinishDate);
+                                $("#sJTypeTaskCycle").textbox("setValue", result[i].TaskCycle);
+                                $('#sJType').click();continue;
+                                break;
+                            case 2:
+                                $("#cGTypeProductTaskID").val(result[i].ID)
+                                $("#cGTypeTaskStartDate").datebox("setValue", result[i].TaskStartDate);
+                                $("#cGTypeTaskFinishDate").datebox("setValue", result[i].TaskFinishDate);
+                                $("#cGTypeTaskCycle").textbox("setValue", result[i].TaskCycle);
+                                $('#cGType').click();continue;
+                                break;
+                            case 3:
+                                $("#sCTypeProductTaskID").val(result[i].ID)
+                                $("#sCTypeTaskStartDate").datebox("setValue", result[i].TaskStartDate);
+                                $("#sCTypeTaskFinishDate").datebox("setValue", result[i].TaskFinishDate);
+                                $("#sCTypeTaskCycle").textbox("setValue", result[i].TaskCycle);
+                                $('#sCType').click();continue;
+                                break;
+                            default:
+
+                        }
+                    }
+                }
+            });
+
+        })
+
+        function onEdit() {
+            $("#save").linkbutton('enable');
+            $("#edit").linkbutton('disable');
+
+            $("#sJType").attr("disabled", false);
+            $("#cGType").attr("disabled", false);
+            $("#sCType").attr("disabled", false);
+
+            for (var i = 0; i < TaskTypes.length; i++) {
+                switch (TaskTypes[i]) {
+                    case 1: $('#sJType').click(); break;
+                    case 2: $('#cGType').click(); break;
+                    case 3: $('#sCType').click(); break;
+                    default: break;
+                }
+            }
+        }
+
+        function FunSetDifferenceDays(sObj, eObj, setObj) {
+            var sDate = $(sObj).datebox("getValue");
+            var eDate = $(eObj).datebox("getValue");
+            if ((sDate != "" && sDate != NaN && sDate != null && sDate != "undefault") && (eDate != "" && eDate != NaN && eDate != null && eDate != "undefault")) {
+                $(setObj).textbox("setValue",FunTimeDifference(sDate, eDate)+1);
+            }
+        }
+
+        function FunTimeDifference(sDate, eDate) {
+            var dateSpan,iDays;
+            sDate = Date.parse(sDate);
+            eDate = Date.parse(eDate);
+            dateSpan = eDate - sDate;
+            dateSpan = Math.abs(dateSpan);
+            iDays = Math.floor(dateSpan / (24 * 3600 * 1000));
+            return iDays
+        };
+
+        function changeType(ids) {
+            //alert("123");
+            //$("#checkbox").is(":checked")
+            var inputId = "i" + ids;
+            if ($("#" + ids).is(":checked")) {
+                $("#" + inputId + " input:not(:text)").datebox({
+                    disabled: false
+                });
+                $("#" + inputId + " input:text").textbox({
+                    disabled: false
+                });
+
+            }
+            else {
+                $("#" + inputId + " input:not(:text)").datebox({
+                    disabled: true
+                });
+                $("#" + inputId + " input:text").textbox({
+                    disabled: true
+                });
+            }
+        }
+
+        function SaveData() {
+            var checkboxs = $("#taskSelect :checkbox");
+
+            var model = [];
+            for (var i = 0; i < checkboxs.length; i++) {
+
+                if ($(checkboxs[i]).is(":checked")) {
+                    var number =$(checkboxs[i]).val();
+                    var ids = $(checkboxs[i]).attr("id");
+                    model.push({
+                        ID:$("#"+ids+"ProductTaskID").val(),
+                        ProductID:$("#ProductID").val(),
+                        ContractCode: $("#ContractCode").val(),
+                        ProductTaskCode: "",
+                        TaskType: $(checkboxs[i]).val(),
+                        TaskStartDate: $("#" + ids + "TaskStartDate").datebox("getValue"),
+                        TaskFinishDate: $("#" + ids + "TaskFinishDate").datebox("getValue"),
+                        TaskCycle: $("#" + ids + "TaskCycle").textbox("getValue"),
+                        BillState: 0,
+                        IsEnable: 1,
+                    });
+                }
+            }
+            $.ajax({
+                type: "post",
+                url: '/api/mms/pms_contractinfo/postproductsavedata',
+                data: JSON.stringify(model),
+                contentType: 'application/json;charset=utf-8',
+                async: false,
+                success: function (result) {
+                    debugger;
+                    if (result==0) {
+                        com.message('success', "保存成功！");
+                        window.location.reload();
+                    }
+                    $('#Ctree').tree("options").queryParams = { cCode: $("#ContractCode").val() };
+                    $('#Ctree').tree('reload');
+                }
+            });
+        }
+
+
+
+
+
+        function onGetDesignDetail() {
+            var pState =@ViewData["pState"];
+            var projectDetailID = @ViewData["ProductID"];
+            var contractCode = $("#ContractCode").val();
+            var pName = $("#ProductName").val();
+            var pSpecifications = $("#Specifications").val();
+            var pModel = $("#Model").val();
+            window.location.href = '/mms/PMS_ContractInfo/DesignTaskDetailedIndex?pID='+$("#ProjectID").val()+'&contractCode=' + contractCode + "&productID=" + projectDetailID + "&pName=" + pName + "&pModel=" + pModel + "&pSpecifications=" + pSpecifications+"&MainID="+$("#sJTypeProductTaskID").val()+"&pState="+pState;
+        }
+
+        function onGetProductionTaskDetail() {
+            var pState =@ViewData["pState"];
+            var projectDetailID = $("#ProductID").val();;
+            var contractCode = $("#ContractCode").val();
+            var pName = $("#ProductName").val();
+            var pSpecifications = $("#Specifications").val();
+            var pModel = $("#Model").val();
+            var pQuantity = $("#Quantity").val();
+            var pDeliveryTime = $("#DeliveryTime").val();
+            //string contractCode, string productID, string pName, string pModel, string pSpecifications, string DeliveryTime, string Quantity, string MainID
+            window.location.href = '/mms/PMS_ContractInfo/ProductionTaskDetailedIndex?pID='+$("#ProjectID").val()+'&contractCode=' + contractCode + "&productID=" + projectDetailID+ "&pName=" + pName+ "&pModel=" + pModel+ "&pSpecifications=" + pSpecifications+ "&Quantity=" + pQuantity+ "&DeliveryTime=" + pDeliveryTime+ "&MainID=" + $("#sCTypeProductTaskID").val()+"&pState="+pState;
+        }
+
+        $('#Ctree').tree({
+            method: 'GET',
+            queryParams: { cCode: $("#ContractCode").val() },
+            lines: true,
+            animate: true,
+            url: '/api/Mms/PMS_ContractInfo/GetTaskTree',
+            loadFilter: function (d) {
+                if (d != null && d.length > 0) {
+                    var jsonData = eval(d);
+                    return utils.toTreeData(jsonData, 'id', 'pid', "children");
+                }
+                else {
+                    return '';
+                }
+            },
+            onSelect: function (node) {
+                var pState =@ViewData["pState"];
+
+                if (node.pid == "0") {
+                    window.location.href = "/mms/PMS_ContractInfo/ContractInfoIndex?projectID=" + node.id.substring(1, node.id.length);
+                } else if (node.pid.substring(0, 1) == "P") {
+                    window.location.href = "/mms/PMS_ContractInfo/ProductInfoIndex?pID=" + $("#ProjectID").val() + "&cCode=" + $("#ContractCode").val() + "&pName=0&projectDetailID=0&sousid=" + node.id.substring(1, node.id.length)+ "&pState=" + pState;
+                } else if (node.pid.substring(0, 1) == "A") {
+                    $.get("/api/Mms/PMS_ContractInfo/GetProjectDetailData2?id=" + node.pid.substring(1, node.pid.length), function (result) {
+                        if (result.result) {
+                            window.location.href = '/mms/PMS_ContractInfo/TaskInfoIndex?pID=' + $("#ProjectID").val() + '&contractCode=' + $("#ContractCode").val() + "&productID=" + node.pid.substring(1, node.pid.length) + "&pName=" + result.data[0].ProductName + "&pModel=" + result.data[0].Model + "&pSpecifications=" + result.data[0].Specifications + "&DeliveryTime=" + result.data[0].DeliveryTime + "&Quantity=" + result.data[0].Quantity+ "&pState=" + pState;
+                        }
+                    })
+
+                }
+                else if (node.pid.substring(0, 1) == "B") {
+                    $.get("/api/Mms/PMS_ContractInfo/GetProjectDetailData2?id=" + node.text.substr(node.text.indexOf('&') + 1, node.text.lastIndexOf('&') - node.text.indexOf('&') - 1), function (result) {
+                        if (result.result) {
+                            window.location.href = '/mms/PMS_ContractInfo/DesignTaskDetailedIndex?pID=' + $("#ProjectID").val() + '&contractCode=' + $("#ContractCode").val() + "&productID=" + node.text.substr(node.text.indexOf('&') + 1, node.text.lastIndexOf('&') - node.text.indexOf('&') - 1) + "&pName=" + result.data[0].ProductName + "&pModel=" + result.data[0].Model + "&pSpecifications=" + result.data[0].Specifications + "&MainID=" + node.pid.substring(1, node.pid.length) + "&id=" + node.id+ "&pState=" + pState;
+                        }
+                    })
+                }
+                else if (node.pid.substring(0, 1) == "D") {
+                    $.get("/api/Mms/PMS_ContractInfo/GetProjectDetailData2?id=" + node.text.substr(node.text.indexOf('&') + 1, node.text.lastIndexOf('&') - node.text.indexOf('&') - 1), function (result) {
+                        if (result.result) {
+                            window.location.href = '/mms/PMS_ContractInfo/ProductionTaskDetailedIndex?pID=' + $("#ProjectID").val() + '&contractCode=' + $("#ContractCode").val() + "&productID=" + node.text.substr(node.text.indexOf('&') + 1, node.text.lastIndexOf('&') - node.text.indexOf('&') - 1) + "&pName=" + result.data[0].ProductName + "&pModel=" + result.data[0].Model + "&pSpecifications=" + result.data[0].Specifications + "&Quantity=" + result.data[0].Quantity + "&DeliveryTime=" + result.data[0].DeliveryTime + "&MainID=" + node.pid.substring(1, node.pid.length) + "&id=" + node.id+ "&pState=" + pState;
+                        }
+                    })
+                }
+            }
+        });
+
+    </script>
+
+</body>
+</html>

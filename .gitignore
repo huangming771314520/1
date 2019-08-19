@@ -1,18 +1,70 @@
-# Build and Release Folders
-bin-debug/
-bin-release/
-[Oo]bj/
-[Bb]in/
+.vs/
+ClientFilesUpLoad/bin/
+ClientFilesUpLoad/obj/
+MesWinService/bin/
+MesWinService/obj/
+WpfClient/BLL/bin/
+WpfClient/BLL/obj/
+WpfClient/DAL/bin/
+WpfClient/DAL/obj/
+WpfClient/HandyControl/bin/
+WpfClient/HandyControl/obj/
+WpfClient/Model/bin/
+WpfClient/Model/obj/
+WpfClient/PreviewClient/bin/
+WpfClient/PreviewClient/obj/
+WpfClient/WpfClient/bin/
+WpfClient/WpfClient/obj/
+Zephyr.Net/Zephyr.Bin/
+Zephyr.Net/Zephyr.Core/bin/
+Zephyr.Net/Zephyr.Core/obj/
+Zephyr.Net/Zephyr.Data/bin/
+Zephyr.Net/Zephyr.Data/obj/
+Zephyr.Net/Zephyr.Generator/obj/
+Zephyr.Net/Zephyr.Utils/bin/
+Zephyr.Net/Zephyr.Utils/obj/
+Zephyr.Net/Zephyr.WorkFlow/obj/
+Zephyr.Web/bin/
+Zephyr.Web/logs/
+Zephyr.Web/obj/
+Zephyr.WinForm/bin/
+Zephyr.WinForm/obj/
+WpfClient/AutoUpdater/bin/
+WpfClient/AutoUpdater/obj/
+/packages/repositories.config
+/Zephyr.Web/Zephyr.Web.csproj.user
+/WpfClient/MesWpfClient/bin
+/WpfClient/MesWpfClient/obj
+/WpfClient/Update/bin
+/WpfClient/Update/obj
+Zephyr.Web/Upload/
+*.pubxml
+*.user
+/FtpFileUpload/bin
+/FtpFileUpload/obj
+/SetReg/bin
+/SetReg/obj
+/Zephyr.Web/Properties/PublishProfiles/FolderProfile.pubxml.user
+/Zephyr.Web/Properties/PublishProfiles/FolderProfile.pubxml
 
-# Other files and folders
-.settings/
+Zephyr\.Web/Properties/PublishProfiles/
 
-# Executables
-*.swf
-*.air
-*.ipa
-*.apk
+ProcessBlueprintUpload/bin/
 
-# Project files, i.e. `.project`, `.actionScriptProperties` and `.flexProperties`
-# should NOT be excluded as they contain compiler settings and other important
-# information for Eclipse / Flash Builder.
+ProcessBlueprintUpload/obj/
+
+BlueprintUploadWinformUI/bin/
+
+BlueprintUploadWinformUI/obj/
+
+PrintBarCodeServer/bin/
+
+PrintBarCodeServer/obj/
+
+MesClient/bin/
+
+MesClient/obj/
+
+BlueprintUpload/bin/
+
+BlueprintUpload/obj/

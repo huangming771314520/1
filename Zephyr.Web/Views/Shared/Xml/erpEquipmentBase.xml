@@ -1,0 +1,23 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<settings lookupType="erpEquipmentBase" defaultOrderBy='Equipment_id'>
+  <module>Mms</module>
+  <select>
+    [Model]
+    ,[Type]
+    ,[Weight]
+    ,[Size]
+    ,[Coefficient_ji]
+    ,[Coefficient_dian]
+    ,[Coefficient_re]
+    ,[Coefficient_lu]
+    ,[Equipment_Id],[Equipment_Id] as Equipment_No,[Equipment_Name],[Use_Department] as [Department_Before],[Place] as [Place_Before],[Equipment_Type],[Equipment_TypeName],[Use_Department] as [Workshop]
+  </select>
+  <from>
+   [QHD_Mes].[dbo].[ERP_Equipment]
+  </from>
+  <where defaultForAll='true' defaultCp='equal' defaultIgnoreEmpty='true' >
+    <field name='Equipment_Id'         cp='like'  ></field>
+    <field name='Equipment_Name'         cp='like'       ></field>
+   
+  </where>
+</settings>

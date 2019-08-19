@@ -1,0 +1,157 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<activityRootModel xmlns:dm0="http://schemas.microsoft.com/VisualStudio/2008/DslTools/Core" xmlns:dm1="http://schemas.microsoft.com/dsltools/Kernel" xmlns:dm2="http://schemas.microsoft.com/dsltools/Component" xmlns:dm3="http://schemas.microsoft.com/dsltools/UseCase" xmlns:dm4="http://schemas.microsoft.com/dsltools/Activity" xmlns:dm5="http://schemas.microsoft.com/dsltools/Interaction" xmlns:dm6="http://schemas.microsoft.com/dsltools/UmlModelLibrary" xmlns:dm7="http://schemas.microsoft.com/dsltools/UmlDiagrams" xmlns:dm8="http://schemas.microsoft.com/dsltools/ModelStore" xmlns:dm9="http://schemas.microsoft.com/dsltools/SimpleShapesModel" dslVersion="1.0.0.0" Id="839fb049-fcab-4c94-b537-754437999571" name="0204设计更改" linkedPackageId="1e66b863-66ca-4384-9bf0-212b4c5d5915" xmlns="http://schemas.microsoft.com/VisualStudio/TeamArchitect/ActivityDesigner">
+  <ownedCommentsInternal>
+    <comment Id="e70f04bf-1d65-4741-b21a-9c43e6e0cf46">
+      <elementDefinition Id="d7480e05-442e-4a67-8aba-3b7f27c80927" />
+      <body>SELECT
+    -- 合同编号
+    A.ContractCode,
+    --工程项目
+    A.ProjectName,
+    --产品名称
+    B.ProductName,
+    --任务类型
+    f.Text,
+    --零件图号
+    E.PartFigureCode
+FROM [dbo].[PMS_BN_Project] A
+    INNER JOIN [dbo].[PMS_BN_ProjectDetail] B
+        ON A.ProjectID = B.MainID
+           AND B.IsEnable = '1'
+    INNER JOIN [dbo].[PMS_ProductTask] C
+        ON B.ID = C.ProductID
+           AND C.TaskType = '1'
+           AND C.IsEnable = '1'
+    INNER JOIN [dbo].[PMS_DesignTaskDetail] D
+        ON C.ID = D.MainID
+           AND D.ActualFinishTime IS NOT NULL
+           AND D.IsEnable = '1'
+    INNER JOIN [dbo].[SYS_BOM] E
+        ON D.PartCode = E.PartCode
+    INNER JOIN [HBHC_Sys].[dbo].[sys_code] f
+        ON D.TaskType = f.Value
+           AND f.CodeType = 'TaskType'
+           AND f.IsEnable = '1';</body>
+      <annotatedElements>
+        <opaqueActionMoniker Id="035a5722-1cd3-4dd9-9f2d-614cb83d68af" LastKnownName="查询设计任务" />
+      </annotatedElements>
+    </comment>
+    <comment Id="0feb2192-c943-4af4-9ebb-a57ad0ecaa87">
+      <elementDefinition Id="5d5ae8f1-56f8-47f5-9699-a5877574ab4c" />
+      <body>1、申请单号自动生成；
+2、合同编号、零件图号根据选择带出；
+3、单据状态(未审核、已审核、已下载)默认为未审核；</body>
+      <annotatedElements>
+        <opaqueActionMoniker Id="c0078121-97ea-45c0-935b-8909cd9f528b" LastKnownName="新增设计更改申请" />
+      </annotatedElements>
+    </comment>
+    <comment Id="74b40a65-1ec3-478c-a5b4-4aa8c3acfc21">
+      <elementDefinition Id="2809df39-4e3f-44a0-870a-62a84c5f4fc5" />
+      <body>1、未审核的设计更改申请才允许修改；
+
+2、未审核的设计更改申请可以重新上传文件；已审核之后的不能再次上传；
+3、如果需要删除设计更改申请，修改申请单为无效；删除时提示“请确认是否删除”</body>
+      <annotatedElements>
+        <opaqueActionMoniker Id="55e484c3-e8de-417e-bd25-cd413aa4b5c4" LastKnownName="修改/删除设计更改申请" />
+      </annotatedElements>
+    </comment>
+    <comment Id="a91f40e5-f1c2-45b8-a52c-2783c05dec4a">
+      <elementDefinition Id="a41fe819-4d83-4e78-a3a2-908fa45fa403" />
+      <body>1、未审核的不能下载；只能下载已审核的；
+2、下载后，更新设计更改申请为“已下载”；</body>
+      <annotatedElements>
+        <opaqueActionMoniker Id="e50a3333-c374-40b6-822b-3810986b1d23" LastKnownName="下载设计更改申请" />
+      </annotatedElements>
+    </comment>
+    <comment Id="6638f2fc-993e-4354-baf6-84e508a7566b">
+      <elementDefinition Id="1790c29b-4ddf-441a-802e-028901c85983" />
+      <body>只有未审核的设计更改申请才可以审核，修改设计更改申请为“已审核”</body>
+      <annotatedElements>
+        <opaqueActionMoniker Id="3244ac6a-279c-4890-a3cf-bde17f63f009" LastKnownName="审核设计更改申请" />
+      </annotatedElements>
+    </comment>
+  </ownedCommentsInternal>
+  <packagedElements>
+    <activityRootModelHasActivity>
+      <activity Id="15e55afd-64d4-48be-bb64-d6a1f3afc517" name="0204设计更改" isAbstract="false" isLeaf="false" isActiveClass="false" isReentrant="false" isReadOnly="false" isSingleExecution="false">
+        <elementDefinition Id="c2c4a0ac-8ae8-44e3-a8bc-5e1fdfffa37b" />
+        <nodes>
+          <initialNode Id="19a80eb8-0cbb-4ca9-a210-a7231b823aa3" name="Initial1" isLeaf="false">
+            <elementDefinition Id="fbf367e2-54f0-4b27-b822-0b90f7bb814f" />
+            <flowNodeTargets>
+              <controlFlow Id="0395d5bf-310c-41f2-a611-9e77237f8b0d" isLeaf="false">
+                <opaqueActionMoniker Id="035a5722-1cd3-4dd9-9f2d-614cb83d68af" LastKnownName="查询设计任务" />
+                <elementDefinition Id="b6d961af-65dd-42d6-9931-54514a566c3a" />
+              </controlFlow>
+            </flowNodeTargets>
+          </initialNode>
+          <opaqueAction Id="035a5722-1cd3-4dd9-9f2d-614cb83d68af" name="查询设计任务" isLeaf="false">
+            <elementDefinition Id="66d2d47b-8658-4565-93ba-5eb4134a103d" />
+            <flowNodeTargets>
+              <controlFlow Id="61fe1fb5-fdee-4ec9-9feb-6fb2bf747594" isLeaf="false">
+                <opaqueActionMoniker Id="c0078121-97ea-45c0-935b-8909cd9f528b" LastKnownName="新增设计更改申请" />
+                <elementDefinition Id="d7407316-d3ce-4c0b-b48e-3b3b8b715381" />
+              </controlFlow>
+            </flowNodeTargets>
+          </opaqueAction>
+          <activityFinalNode Id="9cac72cf-d16f-4cf4-8119-8f2b3b5e5f36" name="ActivityFinal1" isLeaf="false">
+            <elementDefinition Id="0a6e1713-5af7-43b7-802d-85132ab27a4a" />
+          </activityFinalNode>
+          <opaqueAction Id="c0078121-97ea-45c0-935b-8909cd9f528b" name="新增设计更改申请" isLeaf="false">
+            <elementDefinition Id="b8d6870b-17f2-4c3d-b97e-425871461959" />
+            <flowNodeTargets>
+              <controlFlow Id="f96fc836-4372-4abb-93ce-796e4606422a" isLeaf="false">
+                <opaqueActionMoniker Id="55e484c3-e8de-417e-bd25-cd413aa4b5c4" LastKnownName="修改/删除设计更改申请" />
+                <elementDefinition Id="ba45b2c7-ae4a-44cf-835c-d25d6745602a" />
+              </controlFlow>
+            </flowNodeTargets>
+          </opaqueAction>
+          <opaqueAction Id="55e484c3-e8de-417e-bd25-cd413aa4b5c4" name="修改/删除设计更改申请" isLeaf="false">
+            <elementDefinition Id="5e79fffd-5e8a-4fdb-8df1-3d7b1c906ce7" />
+            <flowNodeTargets>
+              <controlFlow Id="5682d06f-8b08-452d-bcd3-6822822da81a" isLeaf="false">
+                <opaqueActionMoniker Id="3244ac6a-279c-4890-a3cf-bde17f63f009" LastKnownName="审核设计更改申请" />
+                <elementDefinition Id="7ab6796c-ac5f-4a01-8242-136cd6307161" />
+              </controlFlow>
+            </flowNodeTargets>
+          </opaqueAction>
+          <opaqueAction Id="3244ac6a-279c-4890-a3cf-bde17f63f009" name="审核设计更改申请" isLeaf="false">
+            <elementDefinition Id="f9a3f9b2-b8c7-46a3-9b1e-71c67f33aef6" />
+            <flowNodeTargets>
+              <controlFlow Id="167ace56-86fb-413b-acde-7fb35959f920" isLeaf="false">
+                <opaqueActionMoniker Id="e50a3333-c374-40b6-822b-3810986b1d23" LastKnownName="下载设计更改申请" />
+                <elementDefinition Id="e0f4210a-3ff0-49b4-8cb3-fd370a5e27ad" />
+              </controlFlow>
+            </flowNodeTargets>
+          </opaqueAction>
+          <opaqueAction Id="e50a3333-c374-40b6-822b-3810986b1d23" name="下载设计更改申请" isLeaf="false">
+            <elementDefinition Id="7dad4fe7-ff32-4e11-be66-71e6110ab07e" />
+            <flowNodeTargets>
+              <controlFlow Id="d3d0a997-0594-4e5a-8449-6a0e46a9f75d" isLeaf="false">
+                <activityFinalNodeMoniker Id="9cac72cf-d16f-4cf4-8119-8f2b3b5e5f36" LastKnownName="ActivityFinal1" />
+                <elementDefinition Id="ee98ada7-6f32-4443-b9d8-768921493122" />
+              </controlFlow>
+            </flowNodeTargets>
+          </opaqueAction>
+        </nodes>
+      </activity>
+    </activityRootModelHasActivity>
+  </packagedElements>
+  <package Id="1e66b863-66ca-4384-9bf0-212b4c5d5915" name="HCJXUML">
+    <elementDefinition Id="6348ac1d-75ba-4a39-8ebf-237333c18d4f" />
+    <profileInstances>
+      <packageHasProfileInstances Id="7ba134f7-0c66-46b1-ad06-cbf3a13b7ee6">
+        <profileInstance Id="ca27a42f-c445-4f1a-88b9-a0967ec38c7f" name="StandardProfileL2">
+          <elementDefinition Id="e34d544e-0fea-4ed6-ac5e-1b74119ac791" />
+        </profileInstance>
+        <elementDefinition Id="0caec977-1f8c-4ba3-a7db-8cc9ad9cc73b" />
+      </packageHasProfileInstances>
+      <packageHasProfileInstances Id="cba90a26-b30d-4f8f-bf14-9bfd8e71ee8b">
+        <profileInstance Id="1818cf5e-8483-41de-b22a-e3d68a365704" name="StandardProfileL3">
+          <elementDefinition Id="532ea607-fb19-44b8-8502-3351b05452be" />
+        </profileInstance>
+        <elementDefinition Id="29349502-908c-4fda-9054-c48619c59ed0" />
+      </packageHasProfileInstances>
+    </profileInstances>
+  </package>
+</activityRootModel>

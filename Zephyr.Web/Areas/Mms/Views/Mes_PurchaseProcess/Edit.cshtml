@@ -1,0 +1,223 @@
+﻿
+@{
+    ViewBag.Title = "Mes_PurchaseProcessDetail";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    Zephyr.Models.Mes_PurchaseProcess PurchaseProcess = ViewBag.purchaseProcess;
+}
+
+@section scripts{
+    <script src="/Content/js/viewModel/com.viewModel.edit.js"></script>
+    <script type="text/javascript">
+        using(['validatebox', 'combotree', 'numberspinner', 'combobox', 'lookup', 'datebox', 'datetimebox', 'combogrid'], easyuifix.datagrid_editor_extend);
+    var viewModel = function(data){
+        var self = this;
+        com.viewModel.edit.apply(self, arguments);
+       
+        this.saveClick1 = function () {
+            var invoiceTime = self.pageData.form.InvoiceTime();
+            var invoiceAmount = self.pageData.form.InvoiceAmount();
+            var ArrivalQuantity = self.pageData.form.ArrivalQuantity();
+            var InvoiceAmount = self.pageData.form.InvoiceAmount();
+            console.log(invoiceTime);
+            console.log(invoiceAmount);
+            console.log(ArrivalQuantity);
+            console.log(InvoiceAmount);
+            if (invoiceTime != "" ) {
+                if (invoiceAmount != "") {
+                    self.saveClick();
+                }
+                else {
+                    com.message("warning", "请同时填写开票时间和开票金额")
+                    return;
+                }
+            }
+            
+           
+        }
+
+        this.approveClick = function () {
+            var post = {
+                mainID: self.dataSource.pageData.scrollKeys.current,
+            };
+
+            com.ajax({
+                url: self.urls.storageSave,
+                type: 'POST',
+                data: JSON.stringify(post),
+                success: function (d) {
+                    com.message('success', d);
+                    window.location.reload();
+                }
+            });
+        }
+      
+    }
+    var data = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model));
+    ko.bindingViewModel(new viewModel(data));
+    </script>
+}
+
+<div class="z-toolbar">
+    <a id="a_save" href="#" plain="true" class="easyui-linkbutton" icon="icon-save" data-bind="click:readonly()?null:saveClick1,linkbuttonDisable:readonly" title="保存">保存</a>
+    @*<a id="a_undo" href="#" plain="true" class="easyui-linkbutton" icon="icon-undo" data-bind="click:readonly()?null:rejectClick,linkbuttonDisable:readonly" title="撤消">撤消</a>*@
+    <a id="a_audit" href="#" plain="true" class="easyui-linkbutton" icon="icon-user-accept" data-bind="click:approveClick,easyuiLinkbutton:approveButton" title="审核">审核</a>
+    @*<a id="a_printer" href="#" plain="true" class="easyui-linkbutton" icon="icon-printer" title="打印" data-bind="click:printClick">打印</a>
+    <div class="datagrid-btn-separator"></div>
+    <a id="a_other" href="#" class="easyui-splitbutton" data-options="menu:'#divother',iconCls:'icon-application_go'" title="其他">其他</a>
+    <div class="datagrid-btn-separator"></div>
+    <a id="a_first" href="#" plain="true" class="easyui-linkbutton" icon="icon-resultset_first" data-bind="click:firstClick,linkbuttonEnable:pageData.scrollKeys.firstEnable" title="第一条"></a>
+    <a id="a_previous" href="#" plain="true" class="easyui-linkbutton" icon="icon-resultset_previous" data-bind="click:previousClick,linkbuttonEnable:pageData.scrollKeys.previousEnable" title="上一条"></a>
+    <a id="a_next" href="#" plain="true" class="easyui-linkbutton" icon="icon-resultset_next" data-bind="click:nextClick,linkbuttonEnable:pageData.scrollKeys.nextEnable" title="下一条"></a>
+    <a id="a_last" href="#" plain="true" class="easyui-linkbutton" icon="icon-resultset_last" data-bind="click:lastClick,linkbuttonEnable:pageData.scrollKeys.lastEnable" title="最后一条"></a>*@
+</div>
+
+@*<div id="divother" style="width:100px; display:none;">
+    <div data-options="iconCls:'icon-add'">新增</div>
+    <div data-options="iconCls:'icon-cross'">删除</div>
+    <div data-options="iconCls:'icon-arrow_refresh'">刷新</div>
+</div>*@
+
+<div id="master" class="container_12" data-bind="inputwidth:0.9">
+    <div class="grid_1 lbl">合同编号</div>
+    <div class="grid_3 val"><input type="text" data-bind="value:pageData.form.ContractCode ,readOnly:true" class="z-txt " /></div>
+    <div class="grid_1 lbl" hidden>产品ID</div>
+    <div class="grid_3 val"><input type="text" data-bind="value:pageData.form.ProductID ,readOnly:true" class="z-txt " hidden /></div>
+    @*<div class="grid_1 lbl">采购员编码</div>
+        <div class="grid_3 val"><input type="text" data-bind="value:pageData.form.UserCode ,readOnly:readonly" class="z-txt " /></div>*@
+    <div class="grid_1 lbl">采购员名称</div>
+    <div class="grid_3 val"><input type="text" data-bind="value:pageData.form.SaleMan ,readOnly:true" class="z-txt " /></div>
+    <div class="clear"></div>
+
+
+    @*<div class="grid_1 lbl">采购物料编码</div>
+        <div class="grid_3 val"><input type="text" data-bind="value:pageData.form.InventoryCode ,readOnly:readonly" class="z-txt " /></div>*@
+    <div class="grid_1 lbl">采购物料名称</div>
+    <div class="grid_3 val"><input type="text" data-bind="value:pageData.form.InventoryName ,readOnly:true" class="z-txt " /></div>
+    <div class="grid_1 lbl">型号规格</div>
+    <div class="grid_3 val"><input type="text" data-bind="value:pageData.form.Model ,readOnly:true" class="z-txt " /></div>
+    <div class="grid_1 lbl">材质</div>
+    <div class="grid_3 val"><input type="text" data-bind="value:pageData.form.MaterialCode ,readOnly:true" class="z-txt " /></div>
+    <div class="clear"></div>
+
+    <div class="grid_1 lbl">采购数量</div>
+    <div class="grid_3 val"><input type="text" data-bind="value:pageData.form.Quantity ,readOnly:true" class="z-txt " /></div>
+    @{
+        if (PurchaseProcess.ActualFinishState == 1)
+        {
+            <div class="grid_1 lbl">到货数量</div>
+            <div class="grid_3 val"><input type="text" data-bind="value:pageData.form.ArrivalQuantity ,readOnly:true" class="z-txt " /></div>
+        }
+        else
+        {
+            <div class="grid_1 lbl">到货数量</div>
+            <div class="grid_3 val"><input type="text" data-bind="value:pageData.form.ArrivalQuantity ,readOnly:readonly" class="z-txt " /></div>
+        }
+    }
+
+    @*<div class="grid_1 lbl">供应商编码</div>
+        <div class="grid_3 val"><input type="text" data-bind="value:pageData.form.SupplierCode ,readOnly:true" class="z-txt " /></div>*@
+    <div class="grid_1 lbl">供应商</div>
+    <div class="grid_3 val"><input type="text" data-bind="value:pageData.form.SupplierName ,readOnly:true" class="z-txt " /></div>
+    <div class="clear"></div>
+
+
+    <div class="grid_1 lbl">采购订单编码</div>
+    <div class="grid_3 val"><input type="text" data-bind="value:pageData.form.PurchaseCode ,readOnly:true" class="z-txt " /></div>
+    <div class="grid_1 lbl">计划时间</div>
+    <div class="grid_3 val"><input type="text" data-bind="dateboxValue:pageData.form.PlanArrivelDate ,dateboxReadOnly : true" class="z-txt easyui-datebox" /></div>
+    <div class="grid_1 lbl">签约日期</div>
+    <div class="grid_3 val"><input type="text" data-bind="dateboxValue:pageData.form.PrchaseDate ,dateboxReadOnly:true" class="z-txt  easyui-datebox" /></div>
+    <div class="clear"></div>
+
+    <div class="grid_1 lbl">交货时间</div>
+    <div class="grid_3 val"><input type="text" data-bind="dateboxValue:pageData.form.FinishDate ,dateboxReadOnly:true" class="z-txt  easyui-datebox" /></div>
+    @{
+        if (PurchaseProcess.ActualFinishState == 1)
+        {
+            <div class="grid_1 lbl">实到时间</div>
+            <div class="grid_3 val"><input type="text" data-bind="dateboxValue:pageData.form.ActualFinishDate ,dateboxReadOnly:true" class="z-txt  easyui-datebox" /></div>
+        }
+        else
+        {
+            <div class="grid_1 lbl">实到时间</div>
+            <div class="grid_3 val"><input type="text" data-bind="dateboxValue:pageData.form.ActualFinishDate ,dateboxReadOnly:readonly" class="z-txt  easyui-datebox" /></div>
+        }
+    }
+
+    @{
+        if (PurchaseProcess.PickMaterialState == 1)
+        {
+            <div class="grid_1 lbl">领料日期</div>
+            <div class="grid_3 val"><input type="text" data-bind="dateboxValue:pageData.form.PickMaterialDate ,dateboxReadOnly:true" class="z-txt  easyui-datebox" /></div>
+        }
+        else
+        {
+            <div class="grid_1 lbl">领料日期</div>
+            <div class="grid_3 val"><input type="text" data-bind="dateboxValue:pageData.form.PickMaterialDate ,dateboxReadOnly:readonly" class="z-txt  easyui-datebox" /></div>
+        }
+    }
+    @*<div class="grid_1 lbl">领料日期</div>
+        <div class="grid_3 val"><input type="text" data-bind="dateboxValue:pageData.form.PickMaterialDate ,readOnly:readonly" class="z-txt  easyui-datebox" /></div>*@
+
+    <div class="clear"></div>
+
+
+    <div class="grid_1 lbl">当前状态</div>
+    @*<div class="grid_3 val"><input type="text" data-bind="value:pageData.form.CurrentState ,readOnly:true" class="z-txt " /></div>*@
+    <div class="grid_3 val">
+        <input type="text" data-bind="comboboxValue:pageData.form.CurrentState,comboboxReadOnly:true" data-options="url:'/Commons/GetComboboxList?CodeType=PurchaseCurrentState',valueField:'value',textField:'text'" class="z-txt easyui-combobox" />
+    </div>
+    @{
+        if (PurchaseProcess.InvoiceState == 1)
+        {
+            <div class="grid_1 lbl">开票时间</div>
+            <div class="grid_3 val"><input type="text" data-bind="dateboxValue:pageData.form.InvoiceTime ,dateboxReadOnly:true" class="z-txt  easyui-datebox" /></div>
+            <div class="grid_1 lbl">开票金额</div>
+            <div class="grid_3 val"><input type="text" data-bind="value:pageData.form.InvoiceAmount ,readOnly:true" class="z-txt " /></div>
+        }
+        else
+        {
+            <div class="grid_1 lbl">开票时间</div>
+            <div class="grid_3 val"><input type="text" data-bind="dateboxValue:pageData.form.InvoiceTime ,dateboxReadOnly:readonly" class="z-txt  easyui-datebox" /></div>
+            <div class="grid_1 lbl">开票金额</div>
+            <div class="grid_3 val"><input type="text" data-bind="value:pageData.form.InvoiceAmount ,readOnly:readonly" class="z-txt " /></div>
+        }
+    }
+    @*<div class="grid_1 lbl">开票时间</div>
+        <div class="grid_3 val"><input type="text" data-bind="dateboxValue:pageData.form.InvoiceTime ,readOnly:readonly" class="z-txt  easyui-datebox" /></div>
+        <div class="grid_1 lbl">开票金额</div>
+        <div class="grid_3 val"><input type="text" data-bind="value:pageData.form.InvoiceAmount ,readOnly:readonly" class="z-txt " /></div>*@
+
+    <div class="clear"></div>
+
+    @{
+        if (PurchaseProcess.UnqualityQuantityState == 1)
+        {
+            <div class="grid_1 lbl">不合格数量</div>
+            <div class="grid_3 val"><input type="text" data-bind="value:pageData.form.UnqualityQuantity ,readOnly:true" class="z-txt " /></div>
+        }
+        else
+        {
+            <div class="grid_1 lbl">不合格数量</div>
+            <div class="grid_3 val"><input type="text" data-bind="value:pageData.form.UnqualityQuantity ,readOnly:readonly" class="z-txt " /></div>
+        }
+    }
+    @{
+        if (PurchaseProcess.UnqualityQuantityState == 1)
+        {
+            <div class="grid_1 lbl">整改次数</div>
+            <div class="grid_3 val"><input type="text" data-bind="value:pageData.form.RectificationNumber ,readOnly:true" class="z-txt " /></div>
+        }
+        else
+        {
+            <div class="grid_1 lbl">整改次数</div>
+            <div class="grid_3 val"><input type="text" data-bind="value:pageData.form.RectificationNumber ,readOnly:readonly" class="z-txt " /></div>
+        }
+    }
+
+    <div class="grid_1 lbl">备注</div>
+    <div class="grid_3 val"><input type="text" data-bind="value:pageData.form.Remark ,readOnly:readonly" class="z-txt " /></div>
+    <div class="clear"></div>
+
+</div>
+

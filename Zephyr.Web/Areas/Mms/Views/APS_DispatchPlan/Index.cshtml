@@ -1,0 +1,156 @@
+﻿@{
+    ViewBag.Title = "APS_DispatchPlan";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@section scripts{
+    <script src="/Content/js/viewModel/com.viewModel.searchEdit.js"></script>
+    <script type="text/javascript">
+        using(['datebox']);
+        var viewModel = function (data) {
+            var self = this;
+            com.viewModel.searchEdit.apply(self, arguments);
+            this.addClick = function () {
+                //var target = parent.$('#CommonUploadFilePage').length ? parent.$('#CommonUploadFilePage') : parent.$('<div id="CommonUploadFilePage"></div>').appendTo('body');
+                //utils.clearIframe(target);
+                //var opt;
+                //opt = { title: '选择调度计划模型', width: 800, height: 500, modal: true, collapsible: false, minimizable: false, maximizable: true, closable: true };
+                //opt.content = "<iframe src='/Mms/APS_DispatchPlan/ChooseDispatchModel' style='height:100%;width:100%;border:0;' frameborder='0'></iframe>";  //frameborder="0" for ie7
+                //target.window(opt);
+
+                var post = { DispatchModelCode: 5, ContractCode: '160802', ProductID: 40, PlanQuantity:3 };
+                com.ajax({
+                    url: '/api/Mms/APS_DispatchPlan/PostCreateDispatchPlanList',
+                    type: 'post',
+                    data: JSON.stringify(post),
+                    async:false,
+                    success: function (d) {
+                        var allRows = self.grid.datagrid('getRows');
+                        for(var i=allRows.length-1;i>=0;i--){
+                            self.grid.datagrid('deleteRow',i);
+                        }
+                        for (var i in d.plan_list) {
+                            self.grid.datagrid('appendRow', d.plan_list[i]);
+                        }
+                        var PlanCode = d.plan_list[0].PlanCode;
+                        self.form.ContractCode(post.ContractCode);
+                        self.form.ProductID(post.ProductID);
+                        self.form.PlanQuantity(post.PlanQuantity);
+                        self.form.PlanCode(PlanCode);
+                    }
+                });
+            }
+
+            this.CreateDispatchPlan=function(){
+                com.dialog({
+                    title: "&nbsp;调度计划排程",
+                    iconCls: 'icon-node_tree',
+                    width: 400,
+                    height: 200,
+                    html: "#type-template",
+                    viewModel: function (w) {
+                        var that = this;
+                        this.PlanStartTime= ko.observable();
+                        this.PlanFinishTime=ko.observable();
+                        this.confirmClick = function () {
+                            var formValid = com.formValidate(w);
+                            if (!formValid)
+                            {
+                                return;
+                            }
+                            var post={
+                                PlanStartTime:that.PlanStartTime(),
+                                PlanFinishTime:that.PlanFinishTime(),
+                                ContractCode:self.form.ContractCode(),
+                                ProductID:self.form.ProductID(),
+                                PlanQuantity:self.form.PlanQuantity(),
+                                PlanCode:self.form.PlanCode(),
+                                rows: self.grid.datagrid('getRows')
+                            }
+                            com.ajax({
+                                url: '/api/Mms/APS_DispatchPlan/PostUpdateDispatchPlanList',
+                                type: 'post',
+                                data: JSON.stringify(post),
+                                async:false,
+                                success: function (d) {
+                                    var allRows = self.grid.datagrid('getRows');
+                                    for(var i=allRows.length-1;i>=0;i--){
+                                        self.grid.datagrid('deleteRow',i);
+                                    }
+                                    for (var i in d.plan_list) {
+                                        self.grid.datagrid('appendRow', d.plan_list[i]);
+                                    }
+                                }
+                            });
+                        };
+                        this.cancelClick = function () {
+                            w.dialog('close');
+                        };
+                    }
+                })
+            }
+        }
+        var data = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model));
+        ko.bindingViewModel(new viewModel(data));
+    </script>
+}
+<div class="z-toolbar">
+    <a href="#" plain="true" class="easyui-linkbutton" icon="icon-arrow_refresh" title="刷新" data-bind="click:refreshClick">刷新</a>
+    <a href="#" plain="true" class="easyui-linkbutton" icon="icon-add" title="新增" data-bind="click:addClick">新增</a>
+    <a href="#" plain="true" class="easyui-linkbutton" icon="icon-add" title="调度计划排程" data-bind="click:CreateDispatchPlan">调度计划排程</a>
+    <a href="#" plain="true" class="easyui-linkbutton" icon="icon-edit" title="编辑" data-bind="click:editClick">编辑</a>
+    <a href="#" plain="true" class="easyui-linkbutton" icon="icon-cross" title="删除" data-bind="click:deleteClick">删除</a>
+    <a href="#" plain="true" class="easyui-linkbutton" icon="icon-save" title="保存" data-bind="click:saveClick">保存</a>
+</div>
+
+<div class="container_12" style="position:relative;">
+    <div class="grid_1 lbl">调度计划编号</div>
+    <div class="grid_2 val"><input type="text" data-bind="value:form.PlanCode" class="z-txt " /></div>
+    <div class="grid_1 lbl">合同编号</div>
+    <div class="grid_2 val"><input type="text" data-bind="value:form.ContractCode" class="z-txt " /></div>
+    <div class="clear"></div>
+    <div class="grid_1 lbl">所属产品</div>
+    <div class="grid_2 val"><input type="text" data-bind="value:form.ProductID" class="z-txt " /></div>
+    <div class="grid_1 lbl">计划数量</div>
+    <div class="grid_2 val"><input type="text" data-bind="value:form.PlanQuantity" class="z-txt " /></div>
+    <div class="clear"></div>
+
+    @*<div class="prefix_9" style="position:absolute;top:5px;height:0;">
+            <a id="a_search" href="#" class="buttonHuge button-blue" data-bind="click:searchClick" style="margin:0 15px;">查询</a>
+            <a id="a_reset" href="#" class="buttonHuge button-blue" data-bind="click:clearClick">清空</a>
+        </div>*@
+</div>
+
+<table data-bind="datagrid:grid" style="display:none">
+    <thead>
+        <tr>
+            <th field="Seq" hidden="hidden" sortable="true" align="left">排序</th>
+            <th field="PlanCode" sortable="true" align="left" width="120">调度计划编号</th>
+            <th field="TaskName" sortable="true" align="left" width="150">任务名称</th>
+            <th field="EarliestStartTime" sortable="true" align="left" width="130" formatter="com.formatTime">最早开始时间</th>
+            <th field="EarliestFinishTime" sortable="true" align="left" width="130" formatter="com.formatTime">最早结束时间</th>
+            <th field="LatestStartTime" sortable="true" align="left" width="130" formatter="com.formatTime">最晚开始时间</th>
+            <th field="LatestFinishTime" sortable="true" align="left" width="130" formatter="com.formatTime">最晚结束时间</th>
+            <th field="PlanStartTime" sortable="true" align="left" width="130" editor="datebox">计划开始时间</th>
+            <th field="PlanFinishTime" sortable="true" align="left" width="130" editor="datebox">计划结束时间</th>
+            <th field="WorkHour" sortable="true" align="left" width="120">工时定额</th>
+            <th field="FloatHour" sortable="true" align="left" width="120">浮动工时</th>
+        </tr>
+    </thead>
+</table>
+
+<script type="text/html" id="type-template">
+
+    <div class="container_16" style="width:90%;margin:4%;">
+        <div class="grid_4 lbl">计划开始时间</div>
+        <div class="grid_12 val"><input class="z-text easyui-datetimebox" style="width:200px;" data-bind="datetimeboxValue:PlanStartTime" data-options="required:true" /></div>
+        <div class="grid_4 lbl">计划结束时间</div>
+        <div class="grid_12 val"><input class="z-txt easyui-datetimebox" style="width:200px;" data-bind="datetimeboxValue:PlanFinishTime" data-options="required:true" /></div>
+        <div class="clear"></div>
+    </div>
+    <div style="text-align:center;">
+        <a class="easyui-linkbutton" data-options="iconCls:'icon-ok'" data-bind="click:confirmClick" href="javascript:void(0)">正排</a>
+        <a class="easyui-linkbutton" data-options="iconCls:'icon-cancel'" data-bind="click:cancelClick" href="javascript:void(0)">倒排</a>
+    </div>
+
+</script> 

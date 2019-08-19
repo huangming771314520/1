@@ -1,0 +1,213 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Root>
+  <searchDialog name='ChooseSHD'>
+    <!--配置datagrid的数据绑定以及查询功能-->
+    <settings defaultOrderBy='temp.CreateTime desc'>
+      <module>Mms</module>
+      <select>*</select>
+      <from>
+        (  select m.ID, m.MateCode,m.MateName,m.MateNum,m.ConfirmNum,m.BatchCode,m.BillCode as PBillCode,m.Remark,
+        m.SupplierNum,m.SupplierName,m.CreateTime
+        from WMS_BN_TGCheck as m
+        where m.IsCanReceive=1 and m.BillState=1 ) as temp
+      </from>
+      <where defaultForAll='true' defaultCp='equal' defaultIgnoreEmpty='true' >
+        <field name='temp.PBillCode' cp='like'></field>
+
+      </where>
+    </settings>
+    <!--配置datagrid的列属性-->
+    <ColumnList>
+      <column title='主键ID' field='ck' align='left' sortable='true' width='100' checkbox='true'></column>
+      <column title='物料编码' field='MateCode' align='left' sortable='true' width='100' ></column>
+      <column title='物料名称' field='MateName' align='left' sortable='true' width='100' ></column>
+      <!--<column title='物料数量' field='MateNum' align='left' sortable='true' width='100' ></column>-->
+      <column title='批次号' field='BatchCode' align='left' sortable='true' width='100' ></column>
+      <column title='供应商编码' field='SupplierNum' align='left' sortable='true' width='100' ></column>
+      <column title='供应商名称' field='SupplierName' align='left' sortable='true' width='100' searchType='text'></column>
+      <column title='单号' field='PBillCode' align='left' sortable='true' width='100' searchType='text'></column>
+      <column title='单据状态' field='ApproveState' align='left' sortable='true' width='100' ></column>
+      <!--<column title='发货单号' field='TakeGoodsCode' align='left' sortable='true' width='100' searchType='text'></column>-->
+      <!--<column title='收货仓库' field='WarehouseCode' align='left' sortable='true' width='100' searchType='text'></column>
+      <column title='仓库名称' field='WarehouseName' align='left' sortable='true' width='100' searchType='text'></column>
+      <column title='外检结果' field='CheckResult' align='left' sortable='true' width='100' searchType='text'></column>
+      <column title='发货时间' field='SendGoodsTime' align='left' sortable='true' width='120' searchType='daterange' formatter='com.formatDate'></column>
+      <column title='到货时间' field='ArriveTime' align='left' sortable='true' width='120' searchType='daterange' formatter='com.formatDate'></column>
+      <column title='备注信息' field='Remark' align='left' sortable='true' width='100' searchType='text'></column>-->
+    </ColumnList>
+  </searchDialog>
+
+  
+
+  <searchDialog name='ChooseCGSH'>
+    <!--配置datagrid的数据绑定以及查询功能-->
+    <settings defaultOrderBy='temp.CreateTime desc'>
+      <module>Mms</module>
+      <select>*</select>
+      <from>
+        (select d.ID,m.FromCode,m.FromName,m.ApproveState,d.PBillCode, d.MateCode,d.MateName,d.MateNum,d.ConfirmNum,d.BatchCode,d.BillCode,d.CreateTime  from WMS_BN_BillDetail as d
+        inner join WMS_BN_BillMain as m on d.BillCode=m.BillCode
+        where d.BillCode like 'CGSH%') as temp
+      </from>
+      <where defaultForAll='true' defaultCp='equal' defaultIgnoreEmpty='true' >
+        <field name='temp.BillCode' cp='like'></field>
+
+      </where>
+    </settings>
+    <!--配置datagrid的列属性-->
+    <ColumnList>
+      <column title='主键ID' field='ck' align='left' sortable='true' width='100' checkbox='true'></column>
+      <column title='物料编码' field='MateCode' align='left' sortable='true' width='100' ></column>
+      <column title='物料名称' field='MateName' align='left' sortable='true' width='100' ></column>
+      <!--<column title='物料数量' field='MateNum' align='left' sortable='true' width='100' ></column>-->
+      <column title='批次号' field='BatchCode' align='left' sortable='true' width='100' ></column>
+      <column title='供应商编码' field='FromCode' align='left' sortable='true' width='100' ></column>
+      <column title='供应商名称' field='FromName' align='left' sortable='true' width='100' ></column>
+      <column title='采购单号' field='BillCode' align='left' sortable='true' width='100' searchType='text'></column>
+      <column title='单据状态' field='ApproveState' align='left' sortable='true' width='100' ></column>
+    </ColumnList>
+  </searchDialog>
+  
+   
+
+  <searchDialog name='ChooseLLD'>
+    <!--配置datagrid的数据绑定以及查询功能-->
+    <settings defaultOrderBy='temp.CreateTime desc'>
+      <module>Mms</module>
+      <select>*</select>
+      <from>
+        (select d.ID, d.MateCode,d.MateName,d.MateNum,d.ConfirmNum,d.BatchCode,d.BillCode,d.CreateTime from WMS_BN_BillDetail as d
+        where d.BillCode like 'SCLL%') as temp
+      </from>
+      <where defaultForAll='true' defaultCp='equal' defaultIgnoreEmpty='true' >
+        <field name='temp.BillCode' cp='like'></field>
+
+      </where>
+    </settings>
+    <!--配置datagrid的列属性-->
+    <ColumnList>
+      <column title='主键ID' field='ck' align='left' sortable='true' width='100' checkbox='true'></column>
+      <column title='物料编码' field='MateCode' align='left' sortable='true' width='100' ></column>
+      <column title='物料名称' field='MateName' align='left' sortable='true' width='100' ></column>
+      <column title='物料数量' field='MateNum' align='left' sortable='true' width='100' ></column>
+      <column title='批次号' field='BatchCode' align='left' sortable='true' width='100' ></column>
+      <column title='领料单号' field='BillCode' align='left' sortable='true' width='100' searchType='text'></column>
+      <!--<column title='单据状态' field='BillState' align='left' sortable='true' width='100' ></column>-->
+    </ColumnList>
+  </searchDialog>
+  
+  <searchDialog name='ChooseSafeStock'>
+    <!--配置datagrid的数据绑定以及查询功能-->
+    <settings  defaultOrderBy='temp.CreateTime desc'>
+      <module>Mms</module>
+      <select>*</select>
+      <from>
+        (select t1.CreateTime,t1.ID,t1.MateCode,t1.MateName,t1.RealStock as MateNum,t2.MinSafetyStock-t1.RealStock as ConfirmNum ,t2.MinSafetyStock,t2.MaxSafetyStock from WMS_BN_RealStock as t1
+        inner join WMS_BN_WarehouseSafeStock as t2 on t1.MateCode=t2.MateCode and t1.WarehouseCode=t2.WarehouseCode
+        where t1.RealStock&lt;t2.MinSafetyStock) as temp
+    </from>
+      <where defaultForAll='true' defaultCp='equal' defaultIgnoreEmpty='true' >
+        <!--<field name='temp.PBillCode' cp='like'></field>-->
+
+      </where>
+    </settings>
+    <!--配置datagrid的列属性-->
+    <ColumnList>
+      <column title='主键ID' field='ck' align='left' sortable='true' width='100' checkbox='true'></column>
+      <column title='物料编码' field='MateCode' align='left' sortable='true' width='100' ></column>
+      <column title='物料名称' field='MateName' align='left' sortable='true' width='100' ></column>
+      <column title='库存数量' field='RealStock' align='left' sortable='true' width='100' ></column>
+      <column title='调拨数量' field='ConfirmNum' align='left' sortable='true' width='100' ></column>
+      <column title='安全库存' field='MinSafetyStock' align='left' sortable='true' width='100' ></column>
+      <!--<column title='发货单号' field='TakeGoodsCode' align='left' sortable='true' width='100' searchType='text'></column>-->
+      <!--<column title='收货仓库' field='WarehouseCode' align='left' sortable='true' width='100' searchType='text'></column>
+      <column title='仓库名称' field='WarehouseName' align='left' sortable='true' width='100' searchType='text'></column>
+      <column title='外检结果' field='CheckResult' align='left' sortable='true' width='100' searchType='text'></column>
+      <column title='发货时间' field='SendGoodsTime' align='left' sortable='true' width='120' searchType='daterange' formatter='com.formatDate'></column>
+      <column title='到货时间' field='ArriveTime' align='left' sortable='true' width='120' searchType='daterange' formatter='com.formatDate'></column>
+      <column title='备注信息' field='Remark' align='left' sortable='true' width='100' searchType='text'></column>-->
+    </ColumnList>
+  </searchDialog>
+
+  <searchDialog name='ChooseLine'>
+    <!--配置datagrid的数据绑定以及查询功能-->
+    <settings defaultOrderBy='temp.LineCode desc'>
+      <module>Mms</module>
+      <select>*</select>
+      <from>
+        (select ID,[LineCode],[LineName] from EQP_BD_ProductionLine) as temp
+      </from>
+      <where defaultForAll='true' defaultCp='equal' defaultIgnoreEmpty='true' >
+
+      </where>
+    </settings>
+    <!--配置datagrid的列属性-->
+    <ColumnList>
+      <column title='主键ID' field='ck' align='left' sortable='true' width='100' checkbox='true'></column>
+      <column title='生产线' field='LineCode' align='left' sortable='true' width='100' ></column>
+      <column title='生产线名称' field='LineName' align='left' sortable='true' width='100' ></column>
+    </ColumnList>
+  </searchDialog>
+
+  <searchDialog name='ChooseBoard4'>
+    <!--配置datagrid的数据绑定以及查询功能-->
+    <settings  defaultOrderBy='temp.MinNum desc'>
+      <module>Mms</module>
+      <select>*</select>
+      <from>
+        (select a.MateCode,a.MateName,b.MinSafetyStock,b.MaxSafetyStock,SUM(a.RealStock) total_realstock,
+        case when b.MinSafetyStock-SUM(a.RealStock)=0 then 0 else b.MinSafetyStock-SUM(a.RealStock) end  MinNum,(b.MinSafetyStock-SUM(a.RealStock)) as MateNum,(b.MinSafetyStock-SUM(a.RealStock)) as ConfirmNum,(b.MaxSafetyStock-SUM(a.RealStock)) MaxNum from WMS_BN_RealStock a
+        inner join WMS_BN_WarehouseSafeStock b on a.WarehouseCode=b.WarehouseCode and a.MateCode=b.MateCode
+        group by a.MateCode,a.MateName,b.MinSafetyStock,b.MaxSafetyStock
+        ) as temp
+      </from>
+      <where defaultForAll='true' defaultCp='equal' defaultIgnoreEmpty='true' >
+        <!--<field name='temp.PBillCode' cp='like'></field>-->
+
+      </where>
+    </settings>
+    <!--配置datagrid的列属性-->
+    <ColumnList>
+      <column title='主键ID' field='ck' align='left' sortable='true' width='100' checkbox='true'></column>
+      <column title='物料编码' field='MateCode' align='left' sortable='true' width='100' ></column>
+      <column title='物料名称' field='MateName' align='left' sortable='true' width='100' ></column>
+      <column title='当前库存' field='total_realstock' align='left' sortable='true' width='100' ></column>
+      <column title='安全库存' field='MinSafetyStock' align='left' sortable='true' width='100' ></column>
+      <column title='需求数量' field='MinNum' align='left' sortable='true' width='100' ></column>
+    
+    </ColumnList>
+  </searchDialog>
+  <searchDialog name='ChooseBoard5'>
+    <!--配置datagrid的数据绑定以及查询功能-->
+    <settings defaultOrderBy='temp.MateName desc'>
+      <module>Mms</module>
+      <select>*</select>
+      <from>
+        (select a.MateCode,a.MateName,a.NeedNum as ConfirmNum,a.NeedNum as MateNum,isnull(b.RealStock,0) as LineNum,(isnull(a.NeedNum,0)-isnull(b.RealStock,0)) as RealNum,a.LineCode from Board_MaterialPicking_D a
+        left join
+        (select MateCode,WarehouseCode,SUM(RealStock) as RealStock from WMS_BN_RealStock
+        group by MateCode,WarehouseCode) b
+        on b.WarehouseCode=a.WarehouseCode and a.MateCode=b.MateCode
+        ) as temp
+      </from>
+      <where defaultForAll='true' defaultCp='equal' defaultIgnoreEmpty='true' >
+        <!--<field name='temp.PBillCode' cp='like'></field>-->
+
+      </where>
+    </settings>
+    <!--配置datagrid的列属性-->
+    <ColumnList>
+      <column title='主键ID' field='ck' align='left' sortable='true' width='100' checkbox='true'></column>
+      <column title='物料编码' field='MateCode' align='left' sortable='true' width='100' ></column>
+      <column title='物料名称' field='MateName' align='left' sortable='true' width='100' ></column>
+      <column title='生产线' field='LineCode' align='left' sortable='true' width='100' ></column>
+      <column title='产线数量' field='LineNum' align='left' sortable='true' width='100' ></column>
+      <column title='需求数量' field='ConfirmNum' align='left' sortable='true' width='100' ></column>
+
+    </ColumnList>
+  </searchDialog>
+ 
+</Root>
+
+
+

@@ -1,0 +1,15 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<settings lookupType="StorageList" defaultOrderBy='RowNo'>
+  <module>Mms</module>
+  <select>
+    WH_Code,WH_Name,WH_Code as RWH_Code,WH_Name as RWH_Name
+  </select>
+  <from>
+    [QHD_Mes].dbo.W_BD_Depot
+  </from>
+  <where defaultForAll='true' defaultCp='equal' defaultIgnoreEmpty='true' >
+    <field name='WH_Code'         cp='like'  ></field>
+    <field name='WH_Name'         cp='like'       ></field>
+    <field name='ParentWHCode'    cp='equal'       ></field>
+  </where>
+</settings>

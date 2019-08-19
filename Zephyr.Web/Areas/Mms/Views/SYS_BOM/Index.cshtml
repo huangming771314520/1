@@ -1,0 +1,125 @@
+﻿@{
+    ViewBag.Title = "SYS_BOM";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@section scripts{
+    <script src="/Content/js/viewModel/com.viewModel.searchEdit.js"></script>
+    <script type="text/javascript">
+        using(['validatebox', 'combobox','lookup','numberbox','datebox','datetimebox','combogrid','combotree','extend','menu'],easyuifix.datagrid_editor_extend);
+
+        var viewModel = function(data){
+            var self = this;
+            com.viewModel.searchEdit.apply(self,arguments);
+            //this.grid.pagination= false;
+            this.grid.url= '',
+
+           this.searchClick = function () {
+               param = ko.toJS(this.form);
+               this.grid.url= self.urls.query,
+               this.grid.queryParams(param);
+           }
+        };
+
+
+        var data = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model));
+        ko.bindingViewModel(new viewModel(data));
+    </script>
+}
+<div class="z-toolbar">
+    <a href="#" plain="true" class="easyui-linkbutton" icon="icon-arrow_refresh" title="刷新" data-bind="click:refreshClick">刷新</a>
+    @*<a href="#" plain="true" class="easyui-linkbutton" icon="icon-add" title="新增" data-bind="click:addClick">新增</a>
+        <a href="#" plain="true" class="easyui-linkbutton" icon="icon-edit" title="编辑" data-bind="click:editClick">编辑</a>*@
+    @*<a href="#" plain="true" class="easyui-linkbutton" icon="icon-cross" title="删除" data-bind="click:deleteClick">删除</a>*@
+    @*<a href="#" plain="true" class="easyui-linkbutton" icon="icon-save" title="保存" data-bind="click:saveClick">保存</a>*@
+    <a href="#" plain="true" class="easyui-splitbutton" data-options="menu:'#dropdown',iconCls:'icon-download'">导出</a>
+    <a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-page_white_excel',plain:true" title="导入" data-bind="event: { click: function(data, event) {ImportExcelClick('SYS_BOM','SYS_BOMService', data, event) }}">导入</a>
+</div>
+
+<div id="dropdown" style="width:100px; display:none;">
+    <div data-options="iconCls:'icon-ext-xls'" suffix="xls" data-bind="click:downloadClick">Excel2003   </div>
+    <div data-options="iconCls:'icon-page_excel'" suffix="xlsx" data-bind="click:downloadClick">Excel2007   </div>
+    <div data-options="iconCls:'icon-ext-doc'" suffix="doc" data-bind="click:downloadClick">Word2003    </div>
+</div>
+
+<div class="container_12" style="position:relative;">
+    <div class="grid_1 lbl">零件编号</div>
+    <div class="grid_2 val"><input type="text" data-bind="value:form.PartCode" class="z-txt " /></div>
+    @*<div class="grid_1 lbl">零件图号</div>
+        <div class="grid_2 val"><input type="text" data-bind="value:form.PartFigureCode" class="z-txt " /></div>
+
+        <div class="grid_1 lbl">父级编码</div>
+        <div class="grid_2 val"><input type="text" data-bind="value:form.ParentCode" class="z-txt " /></div>*@
+
+    <div class="clear"></div>
+    <div class="grid_1 lbl">&nbsp;</div>
+    <div class="grid_2 val">&nbsp;</div>
+    <div class="clear"></div>
+
+    <div class="prefix_9" style="position:absolute;top:5px;height:0;">
+        <a id="a_search" href="#" class="buttonHuge button-blue" data-bind="click:searchClick" style="margin:0 15px;">查询</a>
+        <a id="a_reset" href="#" class="buttonHuge button-blue" data-bind="click:clearClick">清空</a>
+    </div>
+</div>
+
+<table data-bind="datagrid:grid" style="display:none" id="tt">
+    <thead>
+        <tr>
+            <th field="ID" sortable="true" align="left" width="220" hidden="hidden">ID</th>
+            <th field="PartCode" sortable="true" align="left" width="150" @*editor="{type:'combogrid',options:{
+            url:'/Commons/GetCommonSearchList',
+            required:true,
+            queryParams : {
+                 tableName:'SYS_Part',
+                 searchField : '[PartCode],[PartName]',
+                 firstFightField:'[PartName]',
+                 CacheKey:'SYS_Part',
+                 CacheTime:'480',
+                 connName:'Mms'
+            },
+            method: 'GET',
+            panelWidth:400,
+            fit:true,
+            delay: 1000,
+            mode: 'remote',
+            value: 'PartCode',
+            idField: 'PartCode',
+            textField: 'PartCode',
+            columns:[[
+            { field: 'PartCode',title: '零件编号',width: 150 },
+            { field: 'PartName' , title: '零件名称',width: 250,sortable:true }
+             ]],
+            onSelect: function (rowIndex, rowData) {
+                var index =  $('#tt').datagrid('getRowIndex',$('#tt').datagrid('getSelected'));
+               $('#tt').datagrid('getEditor',{index:index,field:'PartCode'}).target.val(rowData['PartCode']);
+               $('#tt').datagrid('getEditor',{index:index,field:'PartName'}).target.val(rowData['PartName']);
+
+            },
+            keyHandler:{
+            query:function(keyword) {
+            var queryParams=$(this).combogrid('grid').datagrid('options').queryParams;
+            queryParams.keyword=keyword;
+            $(this).combogrid('grid').datagrid('options').queryParams=queryParams;
+            $(this).combogrid('grid').datagrid('reload');
+            $(this).combogrid('setValue', keyword);
+            }}
+        }}"*@>零件编号</th>
+            <th field="PartName" sortable="true" align="left" width="150" @*editor="text"*@>零件名称</th>
+            <th field="PartQuantity" sortable="true" align="left" width="80" @*editor="text"*@>零件数量</th>
+            <th field="MaterialCode" sortable="true" align="left" width="80" @*editor="text"*@>材料编码</th>
+            <th field="ParentCode" sortable="true" align="left" width="100" @*editor="text"*@>父级编码</th>
+            <th field="PartFigureCode" sortable="true" align="left" width="80" @*editor="text"*@>零件图号</th>
+            <th field="InventoryCode" sortable="true" align="left" width="80" @*editor="text"*@>零件存货编号</th>
+            <th field="InventoryName" sortable="true" align="left" width="80" @*editor="text"*@>零件存货名称</th>
+
+            <th field="MaterialInventoryCode" sortable="true" align="left" width="80" @*editor="text"*@>材料存货编号</th>
+            <th field="MaterialInventoryName" sortable="true" align="left" width="80" @*editor="text"*@>材料存货名称</th>
+            <th field="MaterialQuantity" sortable="true" align="left" width="80" @*editor="text"*@>材料数量</th>
+            <th field="VersionCode" sortable="true" align="left" width="80" @*editor="text"*@>版本号</th>
+            <th field="IsEnable" sortable="true" align="left" width="80" data-options="formatter:function(value,row){ return (value == true || value == 'true') ? '是':'否';}" @*editor="text"*@>是否有效</th>
+        </tr>
+    </thead>
+</table>
+
+
+

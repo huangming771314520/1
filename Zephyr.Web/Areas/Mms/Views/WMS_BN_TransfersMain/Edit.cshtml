@@ -1,0 +1,283 @@
+﻿
+@{
+    ViewBag.Title = "WMS_BN_TransfersDetail";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@section scripts{
+<script src="/Content/js/viewModel/com.viewModel.edit.js"></script>
+<script type="text/javascript">
+    var myself;
+    using(['validatebox','combotree','numberspinner','combobox','lookup','datebox','datetimebox','combogrid'],easyuifix.datagrid_editor_extend);
+    var viewModel = function(data){ 
+        var self = this;
+        com.viewModel.edit.apply(self,arguments);
+        myself=self;
+       
+        this.grid0.size={w:8,h:125};
+        this.StorageClick=function(){
+            
+            debugger;
+            com.ajax({
+                type:'POST',
+                url:'/api/Mms/WMS_BN_TransfersDetail/PostStorage?billCode='+self.dataSource.pageData.form.BillCode,
+               
+                success:function(d){
+                    com.message('success',d);
+                    window.location.reload();
+                }
+            });
+        }
+
+        this.onClickRow = function () {
+            if (self.readonly()) return;
+            edit.begin();
+
+            var ed = $('#tt').datagrid('getEditor',{index:rowIndex,field:'InventoryName'});
+            $(ed.target).combogrid('grid').datagrid('options').queryParams.whereSql="IsEnable=1 and WarehouseCode="+myself.pageData.form.OutWarehouseName;
+            $(ed.target).combogrid('grid').datagrid('reload');
+        };
+
+        this.saveClick1=function(){
+            self.saveClick();
+            window.location.reload();
+        }
+
+        this.addRowClick=function(){
+            self.addRowClick();
+            var ed = $('#tt').datagrid('getEditor',{index:rowIndex,field:'InventoryName'});
+            $(ed.target).combogrid('grid').datagrid('options').queryParams.whereSql="IsEnable=1 and WarehouseCode="+myself.pageData.form.OutWarehouseName;
+            $(ed.target).combogrid('grid').datagrid('reload');
+        }
+
+    } 
+    var data = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model));
+    ko.bindingViewModel(new viewModel(data));
+
+    myself.grid0.onAfterEdit = function(editors){
+        debugger;
+        var row = $('#tt').datagrid('getData').rows[editors];
+        var tr = $(this).prev().find('div.datagrid-body').find('tr')[editors]
+        row.TotalPrice=row.ConfirmNum*row.UnitPrice;
+        tr.cells[7].firstChild.innerHTML=row.TotalPrice;
+    };
+
+</script>
+}
+
+<div class="z-toolbar">
+    <a id="a_save" href="#" plain="true" class="easyui-linkbutton" icon="icon-save" data-bind="click:readonly()?null:saveClick1,linkbuttonDisable:readonly" title="保存">保存</a>
+    @*<a id="a_undo" href="#" plain="true" class="easyui-linkbutton" icon="icon-undo" data-bind="click:readonly()?null:rejectClick,linkbuttonDisable:readonly" title="撤消">撤消</a>*@
+    @*<a id="a_audit" href="#" plain="true" class="easyui-linkbutton" icon="icon-user-accept" data-bind="click:auditClick,easyuiLinkbutton:approveButton" title="审核">审核</a>*@
+    <a id="a_inStorage" href="#" plain="true" class="easyui-linkbutton" icon="icon-user-accept" data-bind="click:readonly()?null:StorageClick,linkbuttonDisable:readonly" title="确认收货">确认调拨</a>
+    @*<a id="a_printer" href="#" plain="true" class="easyui-linkbutton" icon="icon-printer" title="打印" data-bind="click:printClick">打印</a>*@
+    <div class="datagrid-btn-separator"></div>
+    <a id="a_other" href="#" class="easyui-splitbutton" data-options="menu:'#divother',iconCls:'icon-application_go'" title="其他">其他</a>
+    <div class="datagrid-btn-separator"></div>
+    <a id="a_first" href="#" plain="true" class="easyui-linkbutton" icon="icon-resultset_first" data-bind="click:firstClick,linkbuttonEnable:pageData.scrollKeys.firstEnable" title="第一条"></a> 
+    <a id="a_previous" href="#" plain="true" class="easyui-linkbutton" icon="icon-resultset_previous" data-bind="click:previousClick,linkbuttonEnable:pageData.scrollKeys.previousEnable" title="上一条"></a> 
+    <a id="a_next" href="#" plain="true" class="easyui-linkbutton" icon="icon-resultset_next" data-bind="click:nextClick,linkbuttonEnable:pageData.scrollKeys.nextEnable" title="下一条"></a> 
+    <a id="a_last" href="#" plain="true" class="easyui-linkbutton" icon="icon-resultset_last" data-bind="click:lastClick,linkbuttonEnable:pageData.scrollKeys.lastEnable" title="最后一条"></a> 
+</div>
+
+<div id="divother" style="width:100px; display:none;">
+    <div data-options="iconCls:'icon-add'">新增</div>
+    <div data-options="iconCls:'icon-cross'">删除</div>
+    <div data-options="iconCls:'icon-arrow_refresh'">刷新</div>
+</div>  
+
+<div id="master" class="container_12" data-bind="inputwidth:0.9">
+    <div class="grid_1 lbl">调拨单号</div>
+    <div class="grid_3 val"><input type="text" data-bind="value:pageData.form.BillCode ,readOnly : true" class="z-txt " /></div>
+    @*<div class="grid_1 lbl">调出仓库ID</div>
+    <div class="grid_3 val"><input type="text" data-bind="value:pageData.form.OutWarehouseID ,readOnly:readonly" class="z-txt " /></div>*@
+    <div class="grid_1 lbl">调出仓库</div>
+    @*<div class="grid_3 val"><input type="text" data-bind="value:pageData.form.OutWarehouseName ,readOnly:readonly" class="z-txt " /></div>*@
+    <div class="grid_3 val">
+        <input type="text" id="outw" data-bind="combogridValue:pageData.form.OutWarehouseName" class="z-txt easyui-combogrid" data-options="url:'/Commons/GetCommonSearchList',
+                queryParams : {
+                     tableName:'[SYS_BN_Warehouse]',
+                         searchField:'[ID],[WarehouseCode],[WarehouseName]',
+                         firstFightField:'[WarehouseName]',
+                         CacheTime:'480',
+                         connName:'Mms'
+                },
+                method: 'GET',
+                panelWidth:250,
+                fit:true,
+                delay: 1000,
+                mode: 'remote',
+                value: 'ID',
+                idField: 'WarehouseName',
+                textField: 'WarehouseName',
+                columns:[[
+                { field: 'ID',title: '仓库ID',width: 100 ,hidden: true},
+                { field: 'WarehouseCode',title: '仓库编号',width: 100 },
+                { field: 'WarehouseName',title:'仓库名称',width:150 }
+                    ]],
+                  onSelect: function (rowIndex, rowData) {
+               myself.pageData.form.OutWarehouseName(rowData['WarehouseName']);
+               myself.pageData.form.OutWarehouseCode(rowData['WarehouseCode']);
+
+               },
+            keyHandler:{
+            query:function(keyword) {
+           var queryParams=$(this).combogrid('grid').datagrid('options').queryParams;
+           queryParams.keyword=keyword;
+           $(this).combogrid('grid').datagrid('options').queryParams=queryParams;
+           $(this).combogrid('grid').datagrid('reload');
+           }}" />
+    </div>
+    
+    @*<div class="clear"></div>*@
+    
+    @*<div class="grid_1 lbl">调入仓库ID</div>
+    <div class="grid_3 val"><input type="text" data-bind="value:pageData.form.InWarehouseID ,readOnly:readonly" class="z-txt " /></div>*@
+    <div class="grid_1 lbl">调入仓库</div>
+    @*<div class="grid_3 val"><input type="text" data-bind="value:pageData.form.InWarehouseName ,readOnly:readonly" class="z-txt " /></div>*@
+    <div class="grid_3 val">
+        <input type="text" data-bind="combogridValue:pageData.form.InWarehouseName" class="z-txt easyui-combogrid" data-options="url:'/Commons/GetCommonSearchList',
+                queryParams : {
+                     tableName:'[SYS_BN_Warehouse]',
+                         searchField:'[ID],[WarehouseCode],[WarehouseName]',
+                         firstFightField:'[WarehouseName]',
+                         CacheKey:'SYS_BN_Warehouse',
+                         CacheTime:'480',
+                         connName:'Mms'
+                },
+                method: 'GET',
+                panelWidth:250,
+                fit:true,
+                delay: 1000,
+                mode: 'remote',
+                value: 'ID',
+                idField: 'WarehouseName',
+                textField: 'WarehouseName',
+                columns:[[
+               { field: 'ID',title: '仓库ID',width: 100 ,hidden: true},
+               { field :'WarehouseCode' ,title:'仓库编号' ,width: 100 },
+               { field :'WarehouseName' ,title:'仓库名称',width:150 }
+               ]],
+               onSelect :function (rowIndex, rowData) {
+               myself.pageData.form.InWarehouseName(rowData['WarehouseName']);
+               myself.pageData.form.InWarehouseCode(rowData['WarehouseCode']);
+               },
+               keyhandler:{
+               query:function(keyword) {
+               var queryparams=$(this).combogrid('grid').datagrid('options').queryParams;
+               queryparams.keyword=keyword;
+               $(this).combogrid('grid').datagrid('options').queryparams=queryParams;
+               $(this).combogrid('grid').datagrid('reload');
+               }}" />
+    </div>
+    @*public string ContractCode { get; set; }
+    public string ProjectName { get; set; }*@
+    <div class="grid_1 lbl">工程项目</div>
+    <div class="grid_3 val">
+        <input type="text" data-bind="combogridValue:pageData.form.ProjectName" class="z-txt easyui-combogrid" data-options="url:'/Commons/GetCommonSearchList',
+                queryParams : {
+                     tableName:'[PMS_BN_Project]',
+                         searchField:'[ContractCode],[ProjectName]',
+                         firstFightField:'[ProjectName]',
+                         whereSql:'IsEnable=1 ',
+                         connName:'Mms'
+                },
+                method: 'GET',
+                panelWidth:250,
+                fit:true,
+                delay: 1000,
+                mode: 'remote',
+                value: 'ProjectName',
+                idField: 'ProjectName',
+                textField: 'ProjectName',
+                columns:[[
+               { field :'ContractCode' ,title:'合同编号' ,width: 100 },
+               { field :'ProjectName' ,title:'仓库名称',width:150 }
+               ]],
+               onSelect :function (rowIndex, rowData) {
+               myself.pageData.form.ContractCode(rowData['ContractCode']);
+               myself.pageData.form.ProjectName(rowData['ProjectName']);
+               },
+               keyhandler:{
+               query:function(keyword) {
+               var queryparams=$(this).combogrid('grid').datagrid('options').queryParams;
+               queryparams.keyword=keyword;
+               $(this).combogrid('grid').datagrid('options').queryparams=queryParams;
+               $(this).combogrid('grid').datagrid('reload');
+               }}" />
+    </div>
+    <div class="clear"></div>
+</div>
+
+<div  class="easyui-tabs">  
+    <div title="tab1">
+        <table data-bind="datagrid:grid0" id="tt">
+            <thead>
+                <tr>
+                    <th field="ID" hidden="true" sortable="true" align="left" width="80" editor="text">主键ID</th>
+                    <th field="BillCode" hidden sortable="true" align="left" width="80" editor="text">盘点单号</th>
+                    <th field="InventoryCode" hidden="true" sortable="true" align="left" width="80" editor="text">存货编码</th>
+                    <th field="InventoryName" sortable="true" align="left" width="100" editor="{type:'combogrid',options:{
+                        url:'/Commons/GetCommonSearchList',
+                        required:true,
+                        queryParams : {
+                        tableName:'[SYS_Part]',
+                         searchField:'[InventoryCode],[InventoryName],[QuantityUnit]',
+                         firstFightField:'[InventoryName]',
+                                     connName:'Mms'
+                            },
+                            method: 'GET',
+                            panelWidth:400,
+                            fit:true,
+                            delay: 1000,
+                            mode: 'remote',
+                            value: 'InventoryName',
+                            idField: 'InventoryName',
+                            textField: 'InventoryName',
+                            columns:[[
+                            { field: 'InventoryCode',title: '物料编码',width: 200 },
+                            { field: 'InventoryName',title: '物料名称',width: 200 },
+                            { field: 'QuantityUnit',title: '单位',width: 200 }
+                                ]],
+                    onSelect: function (rowIndex, rowData) {
+                           var index =  $('#tt').datagrid('getRowIndex',$('#tt').datagrid('getSelected'));
+                           $('#tt').datagrid('getEditor',{index:index,field:'InventoryName'}).target.val(rowData['InventoryName']);
+                         $('#tt').datagrid('getEditor',{index:index,field:'InventoryCode'}).target.val(rowData['InventoryCode']);
+                         $('#tt').datagrid('getEditor',{index:index,field:'Unit'}).target.val(rowData['QuantityUnit']);
+
+                },
+                 keyHandler:{
+                   query:function(keyword) {
+                   var queryParams=$(this).combogrid('grid').datagrid('options').queryParams;
+                   queryParams.keyword=keyword;
+                   $(this).combogrid('grid').datagrid('options').queryParams=queryParams;
+                   $(this).combogrid('grid').datagrid('reload');
+                  $(this).combogrid('setValue', keyword);
+                }}
+                }}">物料编号</th>
+                    <th field="Unit" sortable="true" align="left" width="80" editor="text">单位</th>
+                    @*<th field="MateNum" sortable="true" align="left" width="80" editor="text">物料需求数量</th>*@
+                    <th field="ConfirmNum" sortable="true" align="left" width="80" editor="text">确认数量</th>
+                    <th field="UnitPrice" sortable="true" align="left" width="80" editor="{type: 'numberbox',options:{min: 0}}">单价</th>
+                    <th field="TotalPrice" sortable="true" align="left" width="80">总金额</th>
+                    <th field="BatchCode" sortable="true" align="left" width="80" editor="text">质检批次号</th>
+                    <th field="Remark" sortable="true" align="left" width="80" editor="text">备注</th>
+                    @*<th field="IsEnable"		sortable="true"	align="left"	width="80" editor="{type:'combobox',options:{}}" formatter="com.formatCheckbox">是否可用</th>*@
+                    <th field="IsEnable" sortable="true" align="left" width="70" data-options="formatter:function(value,row){ return (value == 1) ? '是':'否';}" editor="{type:'combobox',
+                    options:{data:[{value:1,text:'是'},{value:0,text:'否'}],panelWidth:100,panelHeight: 100,valueField: 'value',textField: 'text'}}">
+                        是否可用
+                    </th>
+                    <th field="CreatePerson" hidden="true" sortable="true" align="left" width="80" editor="text">创建人</th>
+                    <th field="CreateTime" hidden="true" sortable="true" align="left" width="80" editor="text">创建时间</th>
+                    <th field="ModifyPerson" hidden="true" sortable="true" align="left" width="80" editor="text">更新人</th>
+                    <th field="ModifyTime" hidden="true" sortable="true" align="left" width="80" editor="text">更新时间</th>
+                </tr>
+            </thead>
+            <div id="gridtb0">
+                <a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-search',plain:true" data-bind="click:readonly()?null:grid0.addRowClick,linkbuttonDisable:readonly">新增</a>
+                <a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-edit',plain:true" data-bind="click:readonly()?null:grid0.onClickRow,linkbuttonDisable:readonly">编辑</a>
+                <a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-remove',plain:true" data-bind="click:readonly()?null:grid0.removeRowClick,linkbuttonDisable:readonly">删除</a>
+            </div>  
+        </table>
+    </div>
+</div>

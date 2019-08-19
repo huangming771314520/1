@@ -1,0 +1,282 @@
+﻿@{
+    ViewBag.Title = "PMS_BN_ProjectPart";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@section scripts{
+    <script src="/Content/js/viewModel/com.viewModel.searchEdit.js"></script>
+    <script type="text/javascript">
+        using(['validatebox', 'combobox','lookup','numberbox','datebox','datetimebox','combogrid','combotree','extend','menu'],easyuifix.datagrid_editor_extend);
+        var myself;
+        var viewModel = function(data){
+            var self = this;
+            com.viewModel.searchEdit.apply(self, arguments);
+            myself=self;
+            var tab_height=($(window).height()/2)+50;
+            //this.grid0.size={w:5,h:tab_height};
+            this.grid0 = {
+                size: { w: 5, h: tab_height },
+                queryParams: ko.observable(),
+                //singleSelect: self.singleSelect,
+                checkOnSelect: true,
+                selectOnCheck: false,
+                singleSelect: true
+            };
+            this.grid = {
+                size: { w: 6, h: 77 },
+                url: self.urls.query,
+                queryParams: ko.observable(),
+                pagination: true,
+                checkOnSelect: true,
+                selectOnCheck: false,
+                singleSelect: true
+            };
+            this.gridEdit = new com.editGridViewModel(this.grid);
+            this.grid.onDblClickRow = this.gridEdit.begin;
+            this.grid.onClickRow = function(){
+                self.gridEdit.ended();
+                loadTabsData();
+            }
+            this.searchClick = function () {
+                param = ko.toJS(this.form);
+                this.grid.queryParams(param);
+            };
+
+            this.clearClick = function () {
+                var jsonData = ko.toJS(self.form);
+                for (var key in jsonData) {
+                    jsonData[key] = '';
+                }
+                ko.mapping.fromJS(jsonData, {}, self.form)
+                this.searchClick();
+            };
+            this.saveClick_one=function(){
+                self.gridEdit.ended(); //结束grid编辑状态
+                self.saveClick();
+                //var post = {};
+                //post.list = self.gridEdit.getChanges(data.setting.postListFields);
+                //if (self.gridEdit.ended() && post.list._changed) {
+                //    com.ajax({
+                //        url: self.urls.edit,
+                //        data: ko.toJSON(post),
+                //        success: function (d) {
+                //            com.message('success', self.resx.editSuccess);
+                //            self.gridEdit.accept();
+                //            window.location.reload();
+                //        }
+                //    });
+                //}
+            }
+            this.addClick_one=function(){
+                var row = $.extend(true,{}, {});
+                debugger;
+                self.gridEdit.addnew(row);
+            }
+            this.SearchDialog = function () {
+                var setting = {
+                    type: this.type,
+                    targetField: this.targetField,
+                    sourceField: this.sourceField,
+                    settingArray: this.settingArray
+                }
+                //settingArray 0:width 1:height 2:xmlName
+                var target = parent.$('#CommonSearchDialog').length ? parent.$('#CommonSearchDialog') : parent.$('<div id="CommonSearchDialog"></div>').appendTo('body');
+                utils.clearIframe(target);
+                var opt;
+                opt = { title: '列表', width: setting.settingArray[0], height: setting.settingArray[1], modal: true, collapsible: false, minimizable: false, maximizable: true, closable: true };
+                opt.content = "<iframe src='/mms/home/CommonDialog?xmlName=" + setting.settingArray[2] + "' style='height:100%;width:100%;border:0;' frameborder='0'></iframe>";  //frameborder="0" for ie7
+                params = { xmlName: setting.settingArray[2] };
+                opt.paramater = params;
+                opt.onSelect = function (data) {
+                    self.grid.datagrid('loadData',{total:0,rows:[]});
+                    for (var i = 0; i < data.length; i++) {
+                        var jsonstr=$.extend({},self.grid.defaults,data[i],{});
+                        jsonstr.ProjectDetailID=data[i].ProjectDetailID;
+                        jsonstr.ProjectID=data[0].ProjectID;
+                        jsonstr.IsEnable=1;
+                        jsonstr.ID="";
+                        self.grid.datagrid('appendRow', jsonstr);
+                    }
+                    self.form.ContractCode=data[0].ContractCode;
+                    $("#ContractCode").val(data[0].ContractCode);
+                    self.form.ProductName=data[0].ProductName;
+                    $("#ProductName").val(data[0].ProductName);
+                };
+                target.window(opt);
+            }
+        }
+        var data = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model));
+        ko.bindingViewModel(new viewModel(data));
+        function loadTabsData()
+        {
+            var title = $('#tt').tabs('getSelected').panel('options').title;
+            var row = myself.grid.datagrid('getSelected');
+
+            if (title=="项目生产明细计划") {
+                myself.grid0.url="/api/Mms/PMS_BN_ProjectPart/GetPageData";
+                myself.grid0.queryParams({PartCode:row.PartCode,ContractCode:row.ContractCode,tabName:title });
+            }
+            //else if (title=="工艺路线管理") {
+            //    myself.grid1.url="/api/Mms/MES_BD_ProductStandard/GetPageData";
+            //    myself.grid1.queryParams({lineCode:row.LineCode,tabName:title });
+            //}
+
+        }
+    </script>
+}
+<div class="z-toolbar">
+    <a href="#" plain="true" class="easyui-linkbutton" icon="icon-arrow_refresh" title="刷新" data-bind="click:refreshClick">刷新</a>
+    @*<a href="#" plain="true" class="easyui-linkbutton" icon="icon-cross" title="删除" data-bind="click:deleteClick_one">删除</a>*@
+    <a href="#" plain="true" class="easyui-linkbutton" icon="icon-save" title="保存" data-bind="click:saveClick">保存</a>
+    <a id="a_add" href="#" class="easyui-linkbutton" data-options="iconCls:'icon-search',plain:true" data-bind="event: { click: function(data, event) {SearchDialog.call({type:'form',targetField:'Name',sourceField:'Name','settingArray':['800','400','ChooseXM']})}}">选择项目</a>
+
+</div>
+
+<div class="container_12" style="position:relative;">
+    <div class="grid_1 lbl">合同编码</div>
+    <div class="grid_2 val"><input id="ContractCode" type="text" data-bind="value:form.ContractCode" class="z-txt " /></div>
+    <div class="grid_1 lbl">产品名称</div>
+    <div class="grid_2 val"><input id="ProductName" type="text" data-bind="value:form.ProductName" class="z-txt " /></div>
+
+    <div class="grid_1 lbl">零件编号</div>
+    <div class="grid_2 val"><input  type="text" data-bind="value:form.PartCode" class="z-txt " /></div>
+
+    <div class="clear"></div>
+    <div class="grid_1 lbl">&nbsp;</div>
+    <div class="grid_2 val">&nbsp;</div>
+    <div class="clear"></div>
+
+    <div class="prefix_9" style="position:absolute;top:5px;height:0;">
+        <a id="a_search" href="#" class="buttonHuge button-blue" data-bind="click:searchClick" style="margin:0 15px;">查询</a>
+        <a id="a_reset" href="#" class="buttonHuge button-blue" data-bind="click:clearClick">清空</a>
+    </div>
+</div>
+
+<div id="" class="easyui-panel" title="项目零件关联" style="background:#fafafa;" data-options="collapsible:true,collapsed:false,">
+    <table data-bind="datagrid:grid" style="display:none;height:700px" id="t" >
+        <thead>
+            <tr>
+                <th field="ID" sortable="true" align="left" width="220" hidden="hidden">ID</th>
+                <th field="ContractCode" sortable="true" align="left" width="100" editor="{type:'combogrid',options:{
+                        url:'/Commons/GetCommonSearchList',
+                        required:true,
+                        queryParams : {
+                             tableName:'PMS_BN_Project',
+                             searchField : '[ContractCode],[ProjectName]',
+                             firstFightField:'[ContractCode]',
+                             CacheKey:'PMS_BN_Project',
+                             CacheTime:'480',
+                             connName:'Mms'
+                        },
+                        method: 'GET',
+                        panelWidth:400,
+                        fit:true,
+                        delay: 1000,
+                        mode: 'remote',
+                        value: 'ContractCode',
+                        idField: 'ContractCode',
+                        textField: 'ContractCode',
+                        columns:[[
+                        { field: 'ContractCode',title: '合同编码',width: 150 },
+                        { field: 'ProjectName' , title: '项目名称',width: 250,sortable:true }
+                         ]],
+                        onSelect: function (rowIndex, rowData) {
+                            var index =  $('#t').datagrid('getRowIndex',$('#t').datagrid('getSelected'));
+                           $('#t').datagrid('getEditor',{index:index,field:'ContractCode'}).target.val(rowData['ContractCode']);
+                           $('#t').datagrid('getEditor',{index:index,field:'ProjectName'}).target.val(rowData['ProjectName']);
+
+                        },
+                        keyHandler:{
+                        query:function(keyword) {
+                        var queryParams=$(this).combogrid('grid').datagrid('options').queryParams;
+                        queryParams.keyword=keyword;
+                        $(this).combogrid('grid').datagrid('options').queryParams=queryParams;
+                        $(this).combogrid('grid').datagrid('reload');
+                        $(this).combogrid('setValue', keyword);
+                        }}
+                    }}">合同编码</th>
+                <th field="ProjectName" sortable="true" align="left" width="150" editor="text">项目名称</th>
+                <th field="ProductName" sortable="true" align="left" width="80">产品名称</th>
+                <th field="ProductType" sortable="true" align="left" width="100" data-options="formatter:function(value,row){return com.formatCombobox('ProductType',value);}">产品类型</th>
+                <th field="Model" sortable="true" align="left" width="150">型号</th>
+                <th field="Specifications" sortable="true" align="left" width="80">规格</th>
+                @*<th field="PartCode" sortable="true" align="left" width="100" editor="{type:'combogrid',options:{
+                        url:'/Commons/GetCommonSearchList',
+                        required:true,
+                        queryParams : {
+                             tableName:'SYS_Part',
+                             searchField : '[PartCode],[PartName]',
+                             firstFightField:'[PartName]',
+                             CacheKey:'SYS_Part',
+                             CacheTime:'480',
+                             connName:'Mms'
+                        },
+                        method: 'GET',
+                        panelWidth:400,
+                        fit:true,
+                        delay: 1000,
+                        mode: 'remote',
+                        value: 'PartCode',
+                        idField: 'PartCode',
+                        textField: 'PartCode',
+                        columns:[[
+                        { field: 'PartCode',title: '零件编号',width: 150 },
+                        { field: 'PartName' , title: '零件名称',width: 250,sortable:true }
+                         ]],
+                        onSelect: function (rowIndex, rowData) {
+                            var index =  $('#tt').datagrid('getRowIndex',$('#tt').datagrid('getSelected'));
+                           $('#tt').datagrid('getEditor',{index:index,field:'PartCode'}).target.val(rowData['PartCode']);
+                           $('#tt').datagrid('getEditor',{index:index,field:'PartName'}).target.val(rowData['PartName']);
+
+                        },
+                        keyHandler:{
+                        query:function(keyword) {
+                        var queryParams=$(this).combogrid('grid').datagrid('options').queryParams;
+                        queryParams.keyword=keyword;
+                        $(this).combogrid('grid').datagrid('options').queryParams=queryParams;
+                        $(this).combogrid('grid').datagrid('reload');
+                        $(this).combogrid('setValue', keyword);
+                        }}
+                    }}">零件编号</th>*@
+                <th field="PartCode" sortable="true" align="left" width="150" editor="text">零件编号</th>
+
+                <th field="PartName" sortable="true" align="left" width="150" editor="text">零件名称</th>
+
+                <th field="VersionCode" sortable="true" align="left" width="100" editor="text">版本号</th>
+
+                <th field="IsEnable" sortable="true" align="left" width="70" hidden="hidden"  data-options="formatter:function(value,row){ return value == 1 ? '是':'否';}" editor="{type:'combobox',
+            options:{data:[{value:1,text:'是'},{value:0,text:'否'}],panelWidth:70,panelHeight: 50,valueField: 'value',textField: 'text'}}">
+                    是否可用
+                </th>
+
+
+            </tr>
+        </thead>
+    </table>
+</div>
+
+<div id="tt" class="easyui-tabs" hidden>
+    <div title="项目生产明细计划">
+        <table data-bind="datagrid:grid0">
+            <thead>
+                <tr>
+                    <th field="ID" sortable="true" align="left" width="80" editor="text" hidden="hidden"></th>
+                    <th field="ContractCode" sortable="true" align="left" width="80">合同号</th>
+                    <th field="ProductPlanMainID" sortable="true" align="left" width="80" hidden="hidden">主计划ID</th>
+                    <th field="PartCode" sortable="true" align="left" width="150">零件编码</th>
+                    <th field="ProcessCode" sortable="true" align="left" width="80">工序编码</th>
+                    <th field="WorkshopID" sortable="true" align="left" width="80">车间ID</th>
+                    <th field="EquipmentID" sortable="true" align="left" width="80">设备ID</th>
+                    <th field="WorkGroupID" sortable="true" align="left" width="80">班组ID</th>
+                    <th field="Quantity" sortable="true" align="left" width="80">生产数量</th>
+                    <th field="PlanedStartTime" sortable="true" align="left" width="110" formatter="com.formatDate">计划开始时间</th>
+                    <th field="PlanedFinishTime" sortable="true" align="left" width="110" formatter="com.formatDate">计划结束时间</th>
+                    <th field="ActualStartTime" sortable="true" align="left" width="110" formatter="com.formatDate">实际开始时间</th>
+                    <th field="ActualFinishTime" sortable="true" align="left" width="110" formatter="com.formatDate">实际结束时间</th>
+                    
+                </tr>
+            </thead>
+        </table>
+    </div>
+
+</div>

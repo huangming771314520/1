@@ -1,0 +1,284 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{A65F9261-F4E9-4452-8451-833AB6285262}</ProjectGuid>
+    <OutputType>WinExe</OutputType>
+    <RootNamespace>MesWpfClient</RootNamespace>
+    <AssemblyName>MesWpfClient</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <WarningLevel>4</WarningLevel>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <Deterministic>true</Deterministic>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>favicon_64.ico</ApplicationIcon>
+  </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject>MesWpfClient.Program</StartupObject>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="AxInterop.MxDrawXLib, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>MxDraw\AxInterop.MxDrawXLib.dll</HintPath>
+    </Reference>
+    <Reference Include="Interop.MxDrawXLib, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <EmbedInteropTypes>True</EmbedInteropTypes>
+      <HintPath>MxDraw\Interop.MxDrawXLib.dll</HintPath>
+    </Reference>
+    <Reference Include="O2S.Components.PDFRender4NET, Version=2.0.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>OtherDll\O2S.Components.PDFRender4NET.dll</HintPath>
+    </Reference>
+    <Reference Include="PresentationFramework.Aero, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>PresentationDll\PresentationFramework.Aero.dll</HintPath>
+    </Reference>
+    <Reference Include="PresentationFramework.Aero2" />
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Xaml">
+      <RequiredTargetFramework>4.0</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="WindowsBase" />
+    <Reference Include="PresentationCore" />
+    <Reference Include="PresentationFramework" />
+    <Reference Include="WindowsFormsIntegration" />
+  </ItemGroup>
+  <ItemGroup>
+    <ApplicationDefinition Include="App.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </ApplicationDefinition>
+    <Compile Include="API\PageManager.cs" />
+    <Compile Include="API\WindowHelper.cs" />
+    <Compile Include="AppStart\SerialPortScanCode.cs" />
+    <Compile Include="Common\ConvertCommon.cs" />
+    <Compile Include="Common\CsBarCodePrint.cs" />
+    <Compile Include="Common\Execute.cs" />
+    <Compile Include="Helpers\LogHelper.cs" />
+    <Compile Include="Models\BlankingRecordModel.cs" />
+    <Compile Include="Models\DrawingModel.cs" />
+    <Compile Include="Models\MaintainPlanModel.cs" />
+    <Compile Include="Models\MaterialModel.cs" />
+    <Compile Include="Models\MaterialScanModel.cs" />
+    <Compile Include="Models\OperatorModel.cs" />
+    <Compile Include="Models\ProducePlanModel.cs" />
+    <Compile Include="Models\WorkStepsModel.cs" />
+    <Compile Include="Program.cs" />
+    <Compile Include="ViewModels\BlankingRecordViewModel.cs" />
+    <Compile Include="ViewModels\LoginViewModel.cs" />
+    <Compile Include="ViewModels\MaintainPlanViewModel.cs" />
+    <Compile Include="ViewModels\MainViewModel.cs" />
+    <Compile Include="ViewModels\MaterialScanViewModel.cs" />
+    <Compile Include="ViewModels\OperatorStatisticalViewModel.cs" />
+    <Compile Include="ViewModels\ProceStateViewModel.cs" />
+    <Compile Include="ViewModels\ProducePlanViewModel.cs" />
+    <Compile Include="ViewModels\ProduceProceViewModel.cs" />
+    <Compile Include="Views\PageBlankingRecord.xaml.cs">
+      <DependentUpon>PageBlankingRecord.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\PageLogin.xaml.cs">
+      <DependentUpon>PageLogin.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\PageMaintainPlan.xaml.cs">
+      <DependentUpon>PageMaintainPlan.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\PageOperatorStatistical.xaml.cs">
+      <DependentUpon>PageOperatorStatistical.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\PageProducePlan.xaml.cs">
+      <DependentUpon>PageProducePlan.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\PageProduceProce.xaml.cs">
+      <DependentUpon>PageProduceProce.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\WinViews\WindowMaterialScan.xaml.cs">
+      <DependentUpon>WindowMaterialScan.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\WinViews\WindowProceState.xaml.cs">
+      <DependentUpon>WindowProceState.xaml</DependentUpon>
+    </Compile>
+    <Page Include="MainWindow.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Compile Include="App.xaml.cs">
+      <DependentUpon>App.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Commands\DelegateCommand.cs" />
+    <Compile Include="MainWindow.xaml.cs">
+      <DependentUpon>MainWindow.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Page Include="Styles\Border.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Styles\Button.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Styles\DataGrid.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Styles\Label.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Styles\ListBox.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Styles\ListBoxItem.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Styles\RadioButton.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Styles\ScrollViewerControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Styles\TextBlock.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Styles\TextBox.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\PageBlankingRecord.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\PageLogin.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\PageMaintainPlan.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\PageOperatorStatistical.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\PageProducePlan.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\PageProduceProce.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\WinViews\WindowMaterialScan.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\WinViews\WindowProceState.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Commands\ViewModelBase.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+    </Compile>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <None Include="packages.config" />
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="UserControl\" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\BLL\BLL.csproj">
+      <Project>{6ac3f57b-e41b-4095-a9fe-071f8552c65c}</Project>
+      <Name>BLL</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Model\Model.csproj">
+      <Project>{0a8a7842-793b-4e83-b799-542d068d8326}</Project>
+      <Name>Model</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="HoneywellPrintDll\x32\HoneywellPrint.dll" />
+    <Content Include="HoneywellPrintDll\x64\HoneywellPrint.dll" />
+    <Resource Include="HoneywellPrintDll\请复制【x32】中的dll文件至程序执行目录.txt" />
+    <Resource Include="Images\bg.png" />
+    <Content Include="MxDraw\AxInterop.MxDrawXLib.dll" />
+    <Content Include="MxDraw\Interop.MxDrawXLib.dll" />
+    <Content Include="MxDraw\MxDrawX.ocx" />
+    <Content Include="OtherDll\O2S.Components.PDFRender4NET.dll" />
+    <Content Include="PresentationDll\PresentationFramework.Aero.dll" />
+    <Content Include="PresentationDll\PresentationFramework.Aero2.dll" />
+    <Content Include="PresentationDll\PresentationFramework.dll" />
+    <Resource Include="Images\00_湖北洪城宣传图片1.jpg" />
+    <Resource Include="Images\00_湖北洪城宣传图片2.jpg" />
+    <Resource Include="Images\00_湖北洪城宣传图片3.jpg" />
+    <Resource Include="Images\00_湖北洪城宣传图片4.jpg" />
+    <Resource Include="Images\favicon_64.ico" />
+    <Resource Include="Images\logo.png" />
+    <Resource Include="favicon_64.ico" />
+    <Content Include="MxDraw\WindowsFormsIntegration.dll" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>

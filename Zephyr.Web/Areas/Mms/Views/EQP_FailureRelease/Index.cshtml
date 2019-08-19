@@ -1,0 +1,203 @@
+﻿
+@{
+    ViewBag.Title = "EQP_FailureRelease";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@section scripts{
+<script src="/Content/js/viewModel/com.viewModel.searchEdit.js"></script>
+<script type="text/javascript">
+    using(['validatebox', 'combobox','lookup','datebox','datetimebox','combogrid','combotree','extend','menu'],easyuifix.datagrid_editor_extend);
+
+    using(['datebox']);
+    var myself;
+    var viewModel = function(data){ 
+        var self = this;
+        com.viewModel.searchEdit.apply(self,arguments);
+        myself=self;
+        this.SearchDialog = function () {
+            var setting = {
+                type: this.type,
+                targetField: this.targetField,
+                sourceField: this.sourceField,
+                settingArray: this.settingArray
+            }
+            //settingArray 0:width 1:height 2:xmlName
+            var target = parent.$('#CommonSearchDialog').length ? parent.$('#CommonSearchDialog') : parent.$('<div id="CommonSearchDialog"></div>').appendTo('body');
+            utils.clearIframe(target);
+            var opt;
+            
+            opt = { title: '列表', width: setting.settingArray[0], height: setting.settingArray[1], modal: true, collapsible: false, minimizable: false, maximizable: true, closable: true };
+            opt.content = "<iframe src='/mms/home/CommonDialog2?xmlName=" + setting.settingArray[2]+ "&parm=FailReportState:"+2+ "' style='height:100%;width:100%;border:0;' frameborder='0'></iframe>";  //frameborder="0" for ie7
+            params = { xmlName: setting.settingArray[2] };
+            opt.paramater = params;
+            opt.onSelect = function (data) {
+               
+                self.grid.datagrid('loadData',{total:0,rows:[]});
+               
+                var jsonstr= new Object();
+                var failureRemoveCode="";
+               
+                com.ajax({
+                    type:'GET',
+                    url:'/api/Mms/EQP_FailureRelease/GetFailureRemoveCode',
+                    async:false,
+                    success:function(d){
+                        failureRemoveCode=d
+                    }
+                });
+           
+               
+                jsonstr.FailureRemoveCode=failureRemoveCode
+                jsonstr.FailureReportID=data[0].ID;
+                jsonstr.FailRemoveMan=self.dataSource.user;
+                jsonstr.FailureState=1;
+                jsonstr.IsEnable=true;
+                jsonstr.ID="";
+                self.grid.datagrid('appendRow', jsonstr);
+                com.ajax({
+                    type:'POST',
+                    url:'/api/Mms/EQP_FailureRelease/PostAcceptReportState?id='+data[0].ID,
+                    async:false,
+                    success:function(d){
+                        com.message('success',d);
+                        self.saveClick();
+                        self.searchClick();
+                    }
+                });
+            };
+            target.window(opt);
+        }
+        this.StartWorkClick=function(){
+            var crow = myself.grid.datagrid('getSelected');
+          
+            if (crow==null) {
+                com.message('success', "请选择需要处理报障单据！");
+                return;
+            }
+            else{
+                com.ajax({
+                    type:'POST',
+                    url:'/api/Mms/EQP_FailureRelease/PostChangeFailureState?id='+crow.ID,
+                    success:function(d){
+                        com.message('success',d);
+                        window.location.reload();
+                       
+                    }
+                });
+               
+                self.searchClick();
+                
+            }
+        }
+        this.searchClick=function(){
+            myself.grid.url="/api/Mms/EQP_FailureRelease/Get";
+            myself.grid.queryParams({});
+        }
+        this.FinishWorkClick=function(){
+            var crow = myself.grid.datagrid('getSelected');
+          
+            if (crow==null) {
+                com.message('success', "请选择处理完毕的单据！");
+                return;
+            }
+            else{
+                com.ajax({
+                    type:'POST',
+                    url:'/api/Mms/EQP_FailureRelease/PostRemoveFailureState?id='+crow.ID,
+                    success:function(d){
+                        com.message('success',d);
+                        loadTabsData();
+                        window.location.reload();
+                       
+                    }
+                });
+               
+                self.searchClick();
+                
+            }
+        }
+       
+    } 
+    var data = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model));
+    ko.bindingViewModel(new viewModel(data));
+    $(document).ready(function () {
+        
+            loadTabsData();
+            
+        
+    });
+    function loadTabsData()
+    {
+        myself.grid.url="/api/Mms/EQP_FailureRelease/GetLoadData";
+        myself.grid.queryParams({});
+           
+    }
+</script>
+}
+<div class="z-toolbar">
+    <a href="#" plain="true" class="easyui-linkbutton" icon="icon-arrow_refresh" title="刷新" data-bind="click:refreshClick">刷新</a>
+    @*<a href="#" plain="true" class="easyui-linkbutton" icon="icon-add" title="新增" data-bind="click:addClick">新增</a>*@
+    <a href="#" plain="true" class="easyui-linkbutton" icon="icon-edit" title="编辑" data-bind="click:editClick">编辑</a>
+    @*<a href="#" plain="true" class="easyui-linkbutton" icon="icon-cross" title="删除" data-bind="click:deleteClick">删除</a>*@
+   
+    <a href="#" plain="true" class="easyui-linkbutton" icon="icon-save" title="保存" data-bind="click:saveClick">保存</a>
+    <a href="#" plain="true" class="easyui-splitbutton" data-options="menu:'#dropdown',iconCls:'icon-download'">导出</a>
+    <a id="a_add" href="#" class="easyui-linkbutton" data-options="iconCls:'icon-search',plain:true" data-bind="event: { click: function(data, event) {SearchDialog.call({type:'form',targetField:'Name',sourceField:'Name','settingArray':['800','400','ChooseFailureReport']})}}">选择故障报告单</a>
+
+    <a href="#" plain="true" class="easyui-linkbutton" icon="icon-save" title="确认处理" data-bind="click:StartWorkClick">确认处理</a>
+    <a href="#" plain="true" class="easyui-linkbutton" icon="icon-save" title="处理完成" data-bind="click:FinishWorkClick">处理完成</a>
+
+</div>
+
+<div id="dropdown" style="width:100px; display:none;">
+    <div data-options="iconCls:'icon-ext-xls'" suffix="xls" data-bind="click:downloadClick">Excel2003   </div>
+    <div data-options="iconCls:'icon-page_excel'" suffix="xlsx" data-bind="click:downloadClick">Excel2007   </div>
+    <div data-options="iconCls:'icon-ext-doc'" suffix="doc" data-bind="click:downloadClick">Word2003    </div>
+</div>
+
+<div class="container_12" style="position:relative;">
+        <div class="grid_1 lbl">解除时间</div>
+        <div class="grid_2 val"><input type="text" data-bind="value:form.ReleaseTime" class="z-txt easyui-daterange"  /></div>
+        <div class="grid_1 lbl">故障状态</div>
+        @*<div class="grid_2 val"><input type="text" data-bind="comboboxValue:form.FailureState" class="z-txt easyui-combobox"  /></div>*@
+
+    <div class="grid_2 val">
+        <input type="text" data-bind="comboboxValue:form.FailureState" data-options="url:'/Commons/GetComboboxList?CodeType=FailureState',valueField:'value',textField:'text'" class="z-txt easyui-combobox" />
+    </div>
+
+
+        <div class="clear"></div>
+        <div class="grid_1 lbl">&nbsp;</div>
+        <div class="grid_2 val">&nbsp;</div>
+    <div class="clear"></div>
+
+    <div class="prefix_9" style="position:absolute;top:5px;height:0;">
+        <a id="a_search" href="#" class="buttonHuge button-blue" data-bind="click:searchClick" style="margin:0 15px;">查询</a>
+        <a id="a_reset" href="#" class="buttonHuge button-blue" data-bind="click:clearClick">清空</a>
+    </div>
+</div>
+
+<table data-bind="datagrid:grid" style="display:none">
+    <thead>
+        <tr>
+            <th field="ID" 	 hidden="true" 	 sortable="true" 	 align="left" 	 width="80" editor="text" >主键ID</th>
+            <th field="FailureRemoveCode" sortable="true" align="left" width="150">故障处理单号</th>
+            <th field="FailureReportID" 	 hidden="true" 	 sortable="true" 	 align="left" 	 width="80" editor="text" >故障报告ID</th>
+            <th field="ReleaseTime" 	  	 sortable="true" 	 align="left" 	 width="150" editor="datebox" formatter="com.formatDate">解除时间</th>
+            <th field="FailRemoveDescription" 	  	 sortable="true" 	 align="left" 	 width="300" editor="text" >排障方法描述</th>
+            <th field="FailRemoveMan" 	  	 sortable="true" 	 align="left" 	 width="80" editor="text" >排障人</th>
+            @*<th field="FailureState" 	  	 sortable="true" 	 align="left" 	 width="80" editor="{type:'combobox',options:{}}" >故障状态</th>*@
+            <th field="FailureState" sortable="true" align="left" width="100" data-options="formatter:function(value,row){return com.formatCombobox('FailureState',value);}"
+                editor="{type:'combobox',options:{required:true,url:'/Commons/GetComboboxList?CodeType=FailureState',method:'GET',panelWidth:100,panelHeight:100,valueField:'value',textField:'text'}}">故障状态</th>
+            <th field="IsEnable" sortable="true" align="left" width="70" data-options="formatter:function(value,row){ return (value == true || value == 'true') ? '是':'否';}" editor="{type:'combobox',
+            options:{data:[{value:true,text:'是'},{value:false,text:'否'}],panelWidth:100,panelHeight: 100,valueField: 'value',textField: 'text'}}">
+                是否可用
+            </th>
+            <th field="CreatePerson" 	 hidden="true" 	 sortable="true" 	 align="left" 	 width="80" editor="text" >创建人</th>
+            <th field="CreateTime" 	 hidden="true" 	 sortable="true" 	 align="left" 	 width="80" editor="text" >创建时间</th>
+            <th field="ModifyPerson" 	 hidden="true" 	 sortable="true" 	 align="left" 	 width="80" editor="text" >更新人</th>
+            <th field="ModifyTime" 	 hidden="true" 	 sortable="true" 	 align="left" 	 width="80" editor="text" >更新时间</th>
+        </tr>
+    </thead>
+</table> 

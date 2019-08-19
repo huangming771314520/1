@@ -1,0 +1,6 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<RootLocal>
+  <Version no="1.0.0.0"></Version>
+  <ServerDownUrl url="http://120.79.95.158:8012/update.zip"></ServerDownUrl>
+  <XmlDownUrl url="http://120.79.95.158:8012/update.xml"></XmlDownUrl>
+</RootLocal>

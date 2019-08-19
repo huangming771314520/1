@@ -1,0 +1,128 @@
+﻿
+@{
+    ViewBag.Title = "WMS_BN_RealStock";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var Cols = new Zephyr.Models.sys_roleMenuColumnMapService().GetCurrentUserMenuColumns();
+}
+
+@section scripts{
+    <script src="/Content/js/viewModel/com.viewModel.search.js"></script>
+    <script type="text/javascript">
+        var myself;
+        var data = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model));
+        var viewModel = function () { 
+            var self = this;
+            com.viewModel.search.apply(this, arguments);
+            myself = self;
+        }
+        ko.bindingViewModel(new viewModel(data));
+    </script>
+}
+
+    @Html.RenderToolbar()
+
+    <div class="container_12" style="position:relative;">
+        <div class="grid_1 lbl">物料编号</div>
+        <div class="grid_2 val">
+            <input type="text" data-bind="combogridValue:form.InventoryCode" class=" z-txt easyui-combogrid" data-options="url:'/Commons/GetCommonSearchList',
+                queryParams : {
+                     tableName:'[WMS_BN_RealStock]',
+                         searchField:'[InventoryCode],[InventoryName]',
+                         firstFightField:'[InventoryName]',
+                         CacheTime:'480',
+                         connName:'Mms'
+                },
+                method: 'GET',
+                panelWidth:250,
+                fit:true,
+                delay: 1000,
+                mode: 'remote',
+                value: 'InventoryCode',
+                idField: 'InventoryCode',
+                textField: 'InventoryName',
+                columns:[[
+                { field: 'InventoryCode',title: '存货编码',width: 100 },
+                { field: 'InventoryName',title:'存货名称',width:150 }
+                    ]],
+            keyHandler:{
+            query:function(keyword) {
+           var queryParams=$(this).combogrid('grid').datagrid('options').queryParams;
+           queryParams.keyword=keyword;
+           $(this).combogrid('grid').datagrid('options').queryParams=queryParams;
+           $(this).combogrid('grid').datagrid('reload');
+           }}" />
+        </div>
+        <div class="grid_1 lbl">仓库编号</div>
+        <div class="grid_3 val">
+            <input type="text" data-bind="combogridValue:form.WarehouseCode" class="z-txt easyui-combogrid" data-options="url:'/Commons/GetCommonSearchList',
+                        queryParams : {
+                             tableName:'[SYS_BN_Warehouse]',
+                                 searchField:'[WarehouseCode],[WarehouseName]',
+                                 firstFightField:'[WarehouseCode]',
+                                 CacheKey:'SYS_BN_Warehouse',
+                                 CacheTime:'480',
+                                 connName:'Mms'
+                        },
+                        method: 'GET',
+                        panelWidth:250,
+                        fit:true,
+                        delay: 1000,
+                        mode: 'remote',
+                        value: 'WarehouseCode',
+                        idField: 'WarehouseCode',
+                        textField: 'WarehouseName',
+                        columns:[[
+                        { field: 'WarehouseCode',title: '仓库编码',width: 100 },
+                        { field: 'WarehouseName',title:'仓库名称',width:150 }
+                            ]],
+
+                    onSelect: function (rowIndex, rowData) {
+                          myself.form.WarehouseName(rowData['WarehouseName']);
+                        },
+                    keyHandler:{
+                    query:function(keyword) {
+                   var queryParams=$(this).combogrid('grid').datagrid('options').queryParams;
+                   queryParams.keyword=keyword;
+                   $(this).combogrid('grid').datagrid('options').queryParams=queryParams;
+                   $(this).combogrid('grid').datagrid('reload');
+                   }}" />
+        </div>
+       
+
+        <div class="clear"></div>
+        <div class="grid_1 lbl">批次号</div>
+        <div class="grid_2 val"><input type="text" data-bind="value:form.BatchCode" class="z-txt " /></div>
+       
+        <div class="clear"></div>
+        
+        <div class="clear"></div>
+
+        <div class="prefix_9" style="position:absolute;top:5px;height:0;">  
+            <a id="a_search" href="#" class="buttonHuge button-blue" data-bind="click:searchClick" style="margin:0 15px;">查询</a> 
+            <a id="a_reset"  href="#" class="buttonHuge button-blue" data-bind="click:clearClick">清空</a>
+        </div>
+    </div>
+ 
+    <table data-bind="datagrid:grid">
+            <thead>  
+            <tr>  
+                <th field="ID"    sortable="true" align="left"    width="80" hidden="hidden"    @Html.HideColumn(Cols,"ID") ></th>
+                <th field="InventoryCode" sortable="true" align="left" width="120" @Html.HideColumn(Cols, "InventoryCode")>物料编号</th>
+                <th field="InventoryName" sortable="true" align="left" width="120" @Html.HideColumn(Cols, "InventoryName")>物料名称</th>
+                <th field="Model" sortable="true" align="left" width="120" @Html.HideColumn(Cols, "Model")>型号规格</th>
+                <th field="TotalStock"    sortable="true" align="left"    width="80"     @Html.HideColumn(Cols,"TotalStock") >总库存</th>
+                <th field="RealStock"    sortable="true" align="left"    width="80"     @Html.HideColumn(Cols,"RealStock") >可用库存</th>
+                @*<th field="LockStock"    sortable="true" align="left"    width="80"     @Html.HideColumn(Cols,"LockStock") >锁定库存</th>*@
+                <th field="WarehouseCode"    sortable="true" align="left"    width="80"     @Html.HideColumn(Cols,"WarehouseCode") >仓库编号</th>
+                <th field="WarehouseName"    sortable="true" align="left"    width="150"     @Html.HideColumn(Cols,"WarehouseName") >仓库名称</th>
+                <th field="BatchCode"    sortable="true" align="left"    width="80"     @Html.HideColumn(Cols,"BatchCode") >批次号</th>
+                <th field="Unit"    sortable="true" align="left"    width="80"     @Html.HideColumn(Cols,"Unit") >单位</th>
+                <th field="Remark"    sortable="true" align="left"    width="80"     @Html.HideColumn(Cols,"Remark") >备注信息</th>
+                <th field="CreatePerson" sortable="true" align="left" width="80" hidden="hidden" @Html.HideColumn(Cols, "CreatePerson")>创建人</th>
+                <th field="CreateTime" sortable="true" align="left" width="80" hidden="hidden" @Html.HideColumn(Cols, "CreateTime")>创建时间</th>
+                <th field="ModifyPerson" sortable="true" align="left" width="80" hidden="hidden" @Html.HideColumn(Cols, "ModifyPerson")>修改人</th>
+                <th field="ModifyTime" sortable="true" align="left" width="80" hidden="hidden" @Html.HideColumn(Cols, "ModifyTime")>修改时间</th>
+            </tr>                            
+        </thead>      
+    </table>
+ 

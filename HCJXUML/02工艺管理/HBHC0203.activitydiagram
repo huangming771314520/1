@@ -1,0 +1,265 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<activityRootModel xmlns:dm0="http://schemas.microsoft.com/VisualStudio/2008/DslTools/Core" xmlns:dm1="http://schemas.microsoft.com/dsltools/Kernel" xmlns:dm2="http://schemas.microsoft.com/dsltools/Component" xmlns:dm3="http://schemas.microsoft.com/dsltools/UseCase" xmlns:dm4="http://schemas.microsoft.com/dsltools/Activity" xmlns:dm5="http://schemas.microsoft.com/dsltools/Interaction" xmlns:dm6="http://schemas.microsoft.com/dsltools/UmlModelLibrary" xmlns:dm7="http://schemas.microsoft.com/dsltools/UmlDiagrams" xmlns:dm8="http://schemas.microsoft.com/dsltools/ModelStore" xmlns:dm9="http://schemas.microsoft.com/dsltools/SimpleShapesModel" dslVersion="1.0.0.0" Id="ddd63bc6-6de5-4d07-b379-88bbc6a165fc" name="0203工艺BOM" linkedPackageId="6fa1b910-bf6f-496e-a2ee-fb90ffc6bd95" xmlns="http://schemas.microsoft.com/VisualStudio/TeamArchitect/ActivityDesigner">
+  <ownedCommentsInternal>
+    <comment Id="43f6ba2f-15b3-4e8a-914c-94b47ba5ee3a">
+      <elementDefinition Id="e33ad3e1-17d7-493e-a7cf-e8f1b3217a25" />
+      <body>SELECT
+    --合同编号
+    A.ContractCode,
+    --工程项目
+    A.ProjectName,
+    --产品名称
+    B.ProductName,
+    --产品类型
+    C.Text ProductType,
+    --型号
+    B.Model,
+    --规格
+    B.Specifications,
+    --合同数量
+    B.Quantity,
+    --零件图号
+    E.PartFigureCode,
+    --零件名称
+    E.PartName
+FROM [dbo].[PMS_BN_Project] A
+    LEFT JOIN [dbo].[PMS_BN_ProjectDetail] B
+        ON A.ProjectID = B.MainID
+           AND B.IsEnable = '1'
+    LEFT JOIN [HBHC_Sys].[dbo].[sys_code] C
+        ON C.CodeType = 'ProductType'
+           AND B.ProductType = C.Value
+           AND C.IsEnable = '1'
+    LEFT JOIN [dbo].[PMS_DesignTaskDetail] D
+        ON B.ID = D.ProductID
+           AND D.IsEnable = '1'
+    LEFT JOIN [dbo].[SYS_BOM] E
+        ON D.PartCode = E.PartCode
+           AND E.IsEnable = '1'
+WHERE A.IsEnable = '1'
+      --合同编号
+      AND A.ContractCode = '';</body>
+      <annotatedElements>
+        <opaqueActionMoniker Id="968f0196-d204-482a-8a0c-78579914cd67" LastKnownName="选择项目、产品、零件" />
+      </annotatedElements>
+    </comment>
+    <comment Id="f4763ffe-6772-4108-b890-02d142535e9b">
+      <elementDefinition Id="8043e6f8-d997-4e1f-b3b8-692ec2859a1c" />
+      <body>根据零件ID判断工艺BOM数据是否存在，如果存在，作废所有的子零件，然后逐个根据零件ID判断，如果有，根据设计BOM的信息更新，如果没有，根据设计BOM的信息新增</body>
+      <annotatedElements>
+        <opaqueActionMoniker Id="c4a7d224-0d6e-463a-92c9-0a3de9023020" LastKnownName="生成工艺BOM" />
+      </annotatedElements>
+    </comment>
+    <comment Id="7107f7d4-3353-4d62-924a-326cbce40e68">
+      <elementDefinition Id="55e556a0-f149-46f6-9625-85834c2cd5d8" />
+      <body>SELECT --零件图号
+    A.[PartFigureCode],
+    --零件名称
+    A.[PartName],
+    --是否有效
+    A.[IsEnable]
+FROM [dbo].[PRS_Process_BOM] A
+WHERE A.[PartCode] = '';</body>
+      <annotatedElements>
+        <opaqueActionMoniker Id="c478620c-462c-4aa5-86f6-b20b9a50010a" LastKnownName="查询工艺BOM" />
+      </annotatedElements>
+    </comment>
+    <comment Id="d8d369ba-b60e-4fef-8213-71c76a2a07dc">
+      <elementDefinition Id="9ba80a97-50a8-4030-ac2e-239071daedbe" />
+      <body>1、可以选择零件后新增子件；
+2、工艺BOM只能新增、修改子件；
+3、子件的图号、编码、名称、零件类型、数量、重量不能为空</body>
+      <annotatedElements>
+        <opaqueActionMoniker Id="10f984fc-c45f-423f-a665-885e54f110eb" LastKnownName="编制工艺BOM" />
+      </annotatedElements>
+    </comment>
+    <comment Id="0e8720f2-eb36-4354-af6f-f38d59693f45">
+      <elementDefinition Id="193c146e-9998-427b-98c2-2d5f41311a9b" />
+      <body>如果零件已有工艺路线模型则删除(提示工艺路线已编制，是否重新编制？)后重新增加</body>
+      <annotatedElements>
+        <opaqueActionMoniker Id="26f77573-fa4d-4476-8721-7f13c5b99ef7" LastKnownName="选择工艺路线模型" />
+      </annotatedElements>
+    </comment>
+    <comment Id="ecb7feb8-cfca-4e20-8195-28f9442368c7">
+      <elementDefinition Id="e2e035cc-500d-41f5-89e5-8211c299146b" />
+      <body>根据零件编号、版本号查询设计BOM</body>
+      <annotatedElements>
+        <opaqueActionMoniker Id="57e7e8fd-e6f4-4a0a-9245-804ee537c326" LastKnownName="查询设计BOM" />
+      </annotatedElements>
+    </comment>
+    <comment Id="bbcc92af-fa94-49aa-963a-bf9b330e92c4">
+      <elementDefinition Id="b83be668-a4cc-4117-bc44-5f186859e40c" />
+      <body>提示是否确认删除？</body>
+      <annotatedElements>
+        <opaqueActionMoniker Id="098d85a0-354b-4fca-8b4e-487f55a26d4b" LastKnownName="删除工序" />
+      </annotatedElements>
+    </comment>
+    <comment Id="3f80a978-c795-4002-9d5e-f495b39d352a">
+      <elementDefinition Id="4a9e30e8-a17c-41ce-8e05-96040ca41917" />
+      <body>1、工序行号从1开始自动+1，可修改；
+2、工序从标准工序中添加有效工序；
+3、支持上传多张图纸；
+4、从车间列表中选择加工车间；
+5、选择加工车间中有效的班组；非必填；
+6、选择与工序一致工艺类型的设备；支持选择多台设备；
+7、工时定额必须是整数，必填，单位默认为分钟；</body>
+      <annotatedElements>
+        <opaqueActionMoniker Id="7b7cee7d-822d-459f-b7c2-55df2a5e81f9" LastKnownName="新增工序" />
+      </annotatedElements>
+    </comment>
+  </ownedCommentsInternal>
+  <packagedElements>
+    <activityRootModelHasActivity>
+      <activity Id="8326ff9a-cc55-401b-930c-02a8b54228a8" name="0203工艺BOM" isAbstract="false" isLeaf="false" isActiveClass="false" isReentrant="false" isReadOnly="false" isSingleExecution="false">
+        <elementDefinition Id="2ec1e25d-bca2-4a8b-add6-6177e5c1f0e0" />
+        <nodes>
+          <initialNode Id="869649f3-8132-407b-b5dd-6171139e75ea" name="Initial1" isLeaf="false">
+            <elementDefinition Id="69c214dd-9267-4f35-b065-27d6634638bd" />
+            <flowNodeTargets>
+              <controlFlow Id="3ec42af9-0a44-486f-b64d-f8cc4370e020" isLeaf="false">
+                <opaqueActionMoniker Id="968f0196-d204-482a-8a0c-78579914cd67" LastKnownName="选择项目、产品、零件" />
+                <elementDefinition Id="5632dc3b-1ea0-424f-b323-f9beb8e0fb22" />
+              </controlFlow>
+            </flowNodeTargets>
+          </initialNode>
+          <opaqueAction Id="968f0196-d204-482a-8a0c-78579914cd67" name="选择项目、产品、零件" isLeaf="false">
+            <elementDefinition Id="8e0b80f5-b9ef-4286-912a-e58114a2fd72" />
+            <flowNodeTargets>
+              <controlFlow Id="0c64439e-af3b-4520-8381-4be19c53f470" isLeaf="false">
+                <opaqueActionMoniker Id="57e7e8fd-e6f4-4a0a-9245-804ee537c326" LastKnownName="查询设计BOM" />
+                <elementDefinition Id="f0ebcb67-6cca-400e-8faf-9166467e94e4" />
+              </controlFlow>
+            </flowNodeTargets>
+          </opaqueAction>
+          <opaqueAction Id="57e7e8fd-e6f4-4a0a-9245-804ee537c326" name="查询设计BOM" isLeaf="false">
+            <elementDefinition Id="aa568130-a3c8-460f-972b-07a662f4b258" />
+            <flowNodeTargets>
+              <controlFlow Id="c5e287a0-7a64-4fb0-bf61-43e52b125e41" isLeaf="false">
+                <opaqueActionMoniker Id="c4a7d224-0d6e-463a-92c9-0a3de9023020" LastKnownName="生成工艺BOM" />
+                <elementDefinition Id="1c4b93fa-c99e-4c68-98e2-933eac9bd6f1" />
+              </controlFlow>
+            </flowNodeTargets>
+          </opaqueAction>
+          <opaqueAction Id="c4a7d224-0d6e-463a-92c9-0a3de9023020" name="生成工艺BOM" isLeaf="false">
+            <elementDefinition Id="8c83c070-c8d0-433d-8af9-939984708afd" />
+            <flowNodeTargets>
+              <controlFlow Id="9d90870c-6dc2-4390-a23d-4fc733daf97c" isLeaf="false">
+                <opaqueActionMoniker Id="c478620c-462c-4aa5-86f6-b20b9a50010a" LastKnownName="查询工艺BOM" />
+                <elementDefinition Id="67dbdb39-e60e-439d-9a85-dd2870e64229" />
+              </controlFlow>
+            </flowNodeTargets>
+          </opaqueAction>
+          <opaqueAction Id="c478620c-462c-4aa5-86f6-b20b9a50010a" name="查询工艺BOM" isLeaf="false">
+            <elementDefinition Id="022f58ee-7b3a-4005-af47-260612bfaea3" />
+            <flowNodeTargets>
+              <controlFlow Id="edd53bcd-438f-45dd-b206-0f91823fd1f6" isLeaf="false">
+                <opaqueActionMoniker Id="10f984fc-c45f-423f-a665-885e54f110eb" LastKnownName="编制工艺BOM" />
+                <elementDefinition Id="29fb0349-20f9-4c92-8a24-476808c163c0" />
+              </controlFlow>
+            </flowNodeTargets>
+          </opaqueAction>
+          <opaqueAction Id="10f984fc-c45f-423f-a665-885e54f110eb" name="编制工艺BOM" isLeaf="false">
+            <elementDefinition Id="00b61467-f0a3-4046-902d-fd5891737f98" />
+            <flowNodeTargets>
+              <controlFlow Id="979e06a8-e4b5-48e9-b2c9-aeffe8bbcc1d" isLeaf="false">
+                <opaqueActionMoniker Id="26f77573-fa4d-4476-8721-7f13c5b99ef7" LastKnownName="选择工艺路线模型" />
+                <elementDefinition Id="7365beb5-5606-4da6-bac0-ccc649ae088f" />
+              </controlFlow>
+            </flowNodeTargets>
+          </opaqueAction>
+          <opaqueAction Id="26f77573-fa4d-4476-8721-7f13c5b99ef7" name="选择工艺路线模型" isLeaf="false">
+            <elementDefinition Id="3bc19d15-57ad-4e64-8a39-1dac3bedb9fe" />
+            <flowNodeTargets>
+              <controlFlow Id="cfc774d8-33e9-41ce-8071-f9c00754470a" isLeaf="false">
+                <forkNodeMoniker Id="0d1a81eb-1a46-4949-8516-a98c2f364185" LastKnownName="Fork1" />
+                <elementDefinition Id="87abe989-a092-45eb-88e9-8803195484b9" />
+              </controlFlow>
+            </flowNodeTargets>
+          </opaqueAction>
+          <forkNode Id="0d1a81eb-1a46-4949-8516-a98c2f364185" name="Fork1" isLeaf="false">
+            <elementDefinition Id="a85ba025-7927-4bfc-91e7-75fb20422ff2" />
+            <flowNodeTargets>
+              <controlFlow Id="06ce1e4b-a7e1-4ef8-beb6-36a0e092f7e4" isLeaf="false">
+                <opaqueActionMoniker Id="7b7cee7d-822d-459f-b7c2-55df2a5e81f9" LastKnownName="新增工序" />
+                <elementDefinition Id="35396f9b-814d-42b9-85a3-196dd90ae21a" />
+              </controlFlow>
+              <controlFlow Id="ad7980ea-9c3c-48cf-9682-0ab038e4073e" isLeaf="false">
+                <opaqueActionMoniker Id="2ddeefaa-b96e-4ea6-8938-d2dc6d9e1230" LastKnownName="修改工序" />
+                <elementDefinition Id="67a0a768-537c-4154-805a-095553ef4694" />
+              </controlFlow>
+              <controlFlow Id="16cfde66-d1d2-41c8-a0ea-b19a31c06c0e" isLeaf="false">
+                <opaqueActionMoniker Id="098d85a0-354b-4fca-8b4e-487f55a26d4b" LastKnownName="删除工序" />
+                <elementDefinition Id="9157dfc2-1724-4032-9b80-c9f57c83235f" />
+              </controlFlow>
+            </flowNodeTargets>
+          </forkNode>
+          <opaqueAction Id="7b7cee7d-822d-459f-b7c2-55df2a5e81f9" name="新增工序" isLeaf="false">
+            <elementDefinition Id="d6301600-9d06-49e2-a98d-e626d9f38ba8" />
+            <flowNodeTargets>
+              <controlFlow Id="fa00028b-f71e-4105-9e1c-ff733826c529" isLeaf="false">
+                <joinNodeMoniker Id="90a282db-df26-487d-8bf7-2f56030233f7" LastKnownName="Join1" />
+                <elementDefinition Id="7076c48f-bf87-4712-9590-4bd3ed2ea549" />
+              </controlFlow>
+            </flowNodeTargets>
+          </opaqueAction>
+          <opaqueAction Id="2ddeefaa-b96e-4ea6-8938-d2dc6d9e1230" name="修改工序" isLeaf="false">
+            <elementDefinition Id="4d6cf57e-a29c-443c-a46b-9eac0859004d" />
+            <flowNodeTargets>
+              <controlFlow Id="cc888610-d936-47d9-b06b-91adc87535ee" isLeaf="false">
+                <joinNodeMoniker Id="90a282db-df26-487d-8bf7-2f56030233f7" LastKnownName="Join1" />
+                <elementDefinition Id="f6bacc39-1ab4-42de-b970-5b42fdb54283" />
+              </controlFlow>
+            </flowNodeTargets>
+          </opaqueAction>
+          <opaqueAction Id="098d85a0-354b-4fca-8b4e-487f55a26d4b" name="删除工序" isLeaf="false">
+            <elementDefinition Id="76544c46-de23-4401-b660-59f17ea89927" />
+            <flowNodeTargets>
+              <controlFlow Id="e9e6a491-89ec-4ae1-89ce-87aa207217be" isLeaf="false">
+                <joinNodeMoniker Id="90a282db-df26-487d-8bf7-2f56030233f7" LastKnownName="Join1" />
+                <elementDefinition Id="2d56fe75-8cd6-4d54-9625-9a7077241d08" />
+              </controlFlow>
+            </flowNodeTargets>
+          </opaqueAction>
+          <joinNode Id="90a282db-df26-487d-8bf7-2f56030233f7" name="Join1" isLeaf="false">
+            <elementDefinition Id="b751e03e-4d87-444b-b955-e5b1e63b47cb" />
+            <flowNodeTargets>
+              <controlFlow Id="f71c9eda-f4bc-4953-b3d1-e048227e10c9" isLeaf="false">
+                <opaqueActionMoniker Id="9020890e-dc74-4ba6-b121-d389894135e3" LastKnownName="审核工艺BOM" />
+                <elementDefinition Id="75f45847-2a07-4d3d-baab-27a0bb8ac836" />
+              </controlFlow>
+            </flowNodeTargets>
+          </joinNode>
+          <activityFinalNode Id="31a101d9-6c0b-4219-acf5-671ebe3bf560" name="ActivityFinal1" isLeaf="false">
+            <elementDefinition Id="188c70aa-8462-4fa3-ac76-318cb7ad15b5" />
+          </activityFinalNode>
+          <opaqueAction Id="9020890e-dc74-4ba6-b121-d389894135e3" name="审核工艺BOM" isLeaf="false">
+            <elementDefinition Id="64614d0b-22e8-430f-b646-a99523a11359" />
+            <flowNodeTargets>
+              <controlFlow Id="6fb72661-6f5f-471f-84c4-614234e67426" isLeaf="false">
+                <activityFinalNodeMoniker Id="31a101d9-6c0b-4219-acf5-671ebe3bf560" LastKnownName="ActivityFinal1" />
+                <elementDefinition Id="f3e5b71f-700d-4405-9087-7355cf584301" />
+              </controlFlow>
+            </flowNodeTargets>
+          </opaqueAction>
+        </nodes>
+      </activity>
+    </activityRootModelHasActivity>
+  </packagedElements>
+  <package Id="6fa1b910-bf6f-496e-a2ee-fb90ffc6bd95" name="HCJXUML">
+    <elementDefinition Id="6348ac1d-75ba-4a39-8ebf-237333c18d4f" />
+    <profileInstances>
+      <packageHasProfileInstances Id="bd59c646-0b82-4cbb-a0f3-eb9a1abc90ee">
+        <profileInstance Id="eb8d2460-fc14-4859-bb15-0107bb994515" name="StandardProfileL2">
+          <elementDefinition Id="e34d544e-0fea-4ed6-ac5e-1b74119ac791" />
+        </profileInstance>
+        <elementDefinition Id="0caec977-1f8c-4ba3-a7db-8cc9ad9cc73b" />
+      </packageHasProfileInstances>
+      <packageHasProfileInstances Id="99a5e99a-3f46-4978-ac97-861ce129a9f2">
+        <profileInstance Id="67d4d805-cc38-4752-a80b-31bff90572df" name="StandardProfileL3">
+          <elementDefinition Id="532ea607-fb19-44b8-8502-3351b05452be" />
+        </profileInstance>
+        <elementDefinition Id="29349502-908c-4fda-9054-c48619c59ed0" />
+      </packageHasProfileInstances>
+    </profileInstances>
+  </package>
+</activityRootModel>

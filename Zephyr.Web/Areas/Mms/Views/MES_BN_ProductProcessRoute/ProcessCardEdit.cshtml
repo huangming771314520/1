@@ -1,0 +1,127 @@
+﻿<link href="~/Content/js/jquery-easyui-1.7.0/themes/icon.css" rel="stylesheet" />
+<link href="~/Content/js/jquery-easyui-1.7.0/themes/default/easyui.css" rel="stylesheet" />
+<style type="text/css">
+
+    body {
+        margin: 2px;
+    }
+
+    #z-toolbar {
+        background-color: #F4F4F4;
+        padding: 2px;
+        border: 1px #D3D3D3 solid;
+        margin-bottom: 2px;
+    }
+
+    #tt a {
+        text-decoration: none;
+        color: #333333;
+    }
+</style>
+
+<input id="topContCode" style="display: none;" />
+<input id="topProjectName" style="display: none;" />
+<input id="topPartCode" style="display: none;" />
+<div id="z-toolbar">
+    <a class="easyui-linkbutton" plain="true" onclick="SearchDialog()" icon="icon-search">选择项目零件</a>
+</div>
+<table id="tt" style="height: 92%;"></table>
+
+<script src="~/Content/js/jquery-easyui-1.7.0/jquery.min.js"></script>
+<script src="~/Content/js/jquery-easyui-1.7.0/jquery.easyui.min.js"></script>
+<script src="~/Content/js/core/utils.js"></script>
+<script src="~/Content/js/core/common.js"></script>
+
+<script type="text/javascript">
+
+    $().ready(function () {
+
+        var cmbData = [{ "value": "1", "text": "加工件" }, { "value": "0", "text": "成品件" }];
+        var editRow = undefined;
+
+        $('#tt').treegrid({
+            //queryParams: { PartCode: '3030JA000000000493', VersionCode: '1', ContractCode: '160802' },
+            queryParams: { PartCode: '0', VersionCode: '1', ContractCode: '0' },
+            url: '/api/Mms/MES_BN_ProductProcessRoute/GetProcessCardEditBomTree',
+            method: 'get',
+            toolbar: '#z-toolbar',
+            animate: true,
+            rownumbers: true,
+            striped: true,
+            singleSelect: true,
+            idField: 'PartCode',
+            treeField: 'Text',
+            columns: [[
+                //{ title: 'PartCode', field: 'PartCode', width: 300 },
+                //{ field: 'ParentCode', title: 'ParentCode', width: 200 },
+                { title: ' ', field: 'Text', width: 400 },
+                { title: 'ID', field: 'ID', hidden: 'true', width: 60 },
+                { title: '备料', field: 'XLNum', width: 80, align: 'center', formatter: function (value, row, index) { return GetCellHtml(value, row, index, 1); } },
+                { title: '焊接', field: 'HJNum', width: 80, align: 'center', formatter: function (value, row, index) { return GetCellHtml(value, row, index, 2); } },
+                { title: '机加工', field: 'JJGNum', width: 80, align: 'center', formatter: function (value, row, index) { return GetCellHtml(value, row, index, 3); } },
+                { title: '装配', field: 'ZPNum', width: 80, align: 'center', formatter: function (value, row, index) { return GetCellHtml(value, row, index, 4); } }
+            ]],
+            loadFilter: function (d) {
+                if (d != null && d.length > 0) {
+                    var jsonData = eval(d);
+                    return utils.toTreeData(jsonData, 'PartCode', 'ParentCode', "children");
+                }
+                else {
+                    return '';
+                }
+            }
+        });
+
+        function GetCellHtml(value, row, index, type) {
+            if (value < 0) {
+                return '<font style="color:#dedede;">无</font>';
+            } else {
+                return '<a href="javascript:void(0)" style="text-decoration:none;color:#333333;" onMouseOver="this.style.color=\'#FF4500\'" onMouseOut="this.style.color=\'#333333\'" onClick="TargetPage(' + type + ',\'' + row.FigureCode + '\',\'' + row.PartCode + '\')">' + value + '</a>';
+            }
+        }
+
+    })
+
+    //跳转页面
+    function TargetPage(type, figureCode, pCode) {
+        var cCode = $("#topContCode").val();
+        var pName = $("#topProjectName").val();
+
+        com.openTab("工序工步编辑", '/mms/MES_BN_ProductProcessRoute/ProcessRouteEditTest?cCode=' + cCode + '&pName=' + pName + '&figureCode=' + figureCode + '&pCode=' + pCode + '&type=' + type);
+        //window.location.href = '/mms/MES_BN_ProductProcessRoute/ProcessRouteEditTest?cCode=' + cCode + '&pName=' + pName + '&figureCode=' + figureCode + '&pCode=' + pCode + '&type=' + type;
+    }
+
+    //查询工艺bom树
+    function SearchDialog() {
+        var target = parent.$('#CommonSearchDialog').length ? parent.$('#CommonSearchDialog') : parent.$('<div id="CommonSearchDialog"></div>').appendTo('body');
+        utils.clearIframe(target);
+        var opt;
+        opt = { title: '列表', width: 800, height: 650, modal: true, collapsible: false, minimizable: false, maximizable: true, closable: true };
+        opt.content = "<iframe src='/mms/home/CommonDialog?xmlName=ChooseProjectPart' style='height:100%;width:100%;border:0;' frameborder='0'></iframe>";  //frameborder="0" for ie7
+        params = { xmlName: 'ChooseProjectPart' };
+        opt.paramater = params;
+        opt.onSelect = function (data) {
+            $("#topContCode").val(data[0].ContractCode);
+            $("#topProjectName").val(data[0].ProjectName);
+            $("#topPartCode").val(data[0].PartCode);
+            var params = {
+                ContractCode: data[0].ContractCode,
+                PartCode: data[0].PartCode,
+                VersionCode: data[0].VersionCode
+            };
+            $('#tt').treegrid("options").queryParams = params;
+            $('#tt').treegrid('reload');//重新加载树
+            $('#tt').treegrid('collapseAll');//默认折叠所有节点
+        };
+        target.window(opt);
+    };
+</script>
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,23 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<root>
+  <searchDialog name="ChooseWorkGroup">
+    <!--配置datagrid的数据绑定以及查询功能-->
+    <settings defaultOrderBy='temp.CreateTime'>
+      <module>Mms</module>
+      <select>*</select>
+      <from>
+        (select ID,TeamCode,TeamName,IsEnable,CreateTime from SYS_WorkGroup where IsEnable='1') as temp
+      </from>
+      <where defaultForAll='true' defaultCp='equal' defaultIgnoreEmpty='true' >
+        <field name='temp.TeamName' cp='like'></field>
+      </where>
+    </settings>
+    <!--配置datagrid的列属性-->
+    <ColumnList>
+      <column title='主键ID' field='ID' align='left' sortable='true' width='100' checkbox='true'></column>
+      <column title='班组编码' field='TeamCode' align='left' sortable='true' width='100' searchType ='text' ></column>
+      <column title='班组名称' field='TeamName' align='left' sortable='true' width='100' searchType='text' ></column>
+      <column title='是否可用' field='IsEnable' align='left' sortable='true' width='100' ></column>
+    </ColumnList>
+  </searchDialog>
+</root>

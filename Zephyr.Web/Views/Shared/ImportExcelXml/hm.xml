@@ -1,0 +1,32 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Root>
+  <Excel name="Board_MaterialNeed_OnWaySet">
+    <tableName>Board_MaterialNeed_OnWaySet</tableName>
+    <FieldList>
+      <ExcelFields>
+        [DateNow]
+        ,[MaterialCode]
+        ,[OnWayNum]
+      </ExcelFields>
+      <ConvertFields>
+
+      </ConvertFields>
+    </FieldList>
+  </Excel>
+
+  <Excel name="WMS_BD_MaterialEarlyStage">
+    <tableName>WMS_BD_MaterialEarlyStage</tableName>
+    <FieldList>
+      <ExcelFields>
+        [MateCode]
+      ,[MateName]
+      ,[WarehouseNum]
+      ,[EarlyStageDate]
+      </ExcelFields>
+      <ConvertFields>
+
+      </ConvertFields>
+    </FieldList>
+  </Excel>
+
+</Root>

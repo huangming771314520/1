@@ -1,0 +1,20 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<settings lookupType="MaterialDictionaryList" defaultOrderBy='temp.Material_No'>
+  <module>Mms</module>
+  <select>
+    temp.[Material_No]
+    ,temp.[Material_Name]
+    ,isnull(temp.[Model],'') as Model
+    ,isnull(temp.[Unit],'') as Unit
+    ,isnull(temp.[Material_Tu],'') as Material_Tu
+    ,temp.[Material_No] as ITEM_NO
+    ,temp.[Material_Name] as ITEM_NAME
+  </select>
+  <from>
+    (select * from [QHD_Mes].dbo.ERP_MaterialDictionary where Material_No is not null) as temp
+  </from>
+  <where defaultForAll='true' defaultCp='equal' defaultIgnoreEmpty='true' >
+    <field name='temp.Material_No'         cp='like'  ></field>
+    <field name='temp.Material_Name'         cp='like'       ></field>
+  </where>
+</settings>

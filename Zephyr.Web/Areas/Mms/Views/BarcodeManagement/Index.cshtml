@@ -1,0 +1,351 @@
+﻿<link href="~/Content/js/jquery-easyui-1.7.0/themes/icon.css" rel="stylesheet" />
+<link href="~/Content/js/jquery-easyui-1.7.0/themes/default/easyui.css" rel="stylesheet" />
+<style type="text/css">
+
+    * {
+        font-family: "微软雅黑";
+    }
+
+    body {
+        margin: 2px;
+    }
+</style>
+
+<div id="tt" class="easyui-tabs" style="width:calc(100% - 4px);height:98%;">
+    <div title="人员条码管理" style="padding:20px;display:none;">
+        <div style="display:flex;flex-direction:column;height:98%;">
+            <div style="height:auto;">
+                <input id="u_UserName" class="easyui-textbox" label="用户名:" style="width:300px">
+                <input id="u_DepartMent" />
+                <a id="u_search" class="easyui-linkbutton" icon="icon-search" style="width:80px">查询</a>
+                <a id="u_clear" class="easyui-linkbutton" icon="icon-clear" style="width:80px">清空</a>
+                <a id="u_barcode" class="easyui-linkbutton" icon="icon-filter" style="width:120px;display:none;">生成条码</a>
+                <a id="u_print" class="easyui-linkbutton" icon="icon-filter" style="width:120px">打印条码</a>
+            </div>
+            <div style="flex:auto;margin-top:10px;">
+                <table id="u_table" class="easyui-datagrid" style="width:100%;height:99%;"></table>
+            </div>
+        </div>
+    </div>
+    <div title="零件条码管理" style="padding:20px;display:none;">
+        <div style="display:flex;flex-direction:column;height:98%;">
+            <div style="height:auto;">
+                <input id="p_Name" class="easyui-textbox" label="零件名称:" prompt="" style="width:300px">
+                <input id="p_FigureNo" class="easyui-textbox" label="零件图号:" prompt="" style="width:300px">
+                <a id="p_search" class="easyui-linkbutton" icon="icon-search" style="width:80px">查询</a>
+                <a id="p_clear" class="easyui-linkbutton" icon="icon-clear" style="width:80px">清空</a>
+                <a id="p_barcode" class="easyui-linkbutton" icon="icon-filter" style="width:120px;display:none;">生成条码</a>
+                <a id="p_print" class="easyui-linkbutton" icon="icon-filter" style="width:120px">打印条码</a>
+            </div>
+            <div style="flex:auto;margin-top:10px;">
+                <table id="p_table" class="easyui-datagrid" style="width:100%;height:99%;"></table>
+            </div>
+        </div>
+    </div>
+    <div title="单据条码管理" style="padding:20px;display:none;">
+
+    </div>
+</div>
+<script src="~/Content/js/jquery-easyui-1.7.0/jquery.min.js"></script>
+<script src="~/Content/js/jquery-easyui-1.7.0/jquery.easyui.min.js"></script>
+<script src="~/Content/js/jquery-easyui-1.7.0/locale/easyui-lang-zh_CN.js"></script>
+<script src="~/Content/js/core/common.js"></script>
+<script type="text/javascript">
+    $().ready(function () {
+        var ws = null;
+        if ("WebSocket" in window) {
+            //打印服务的端口,打印前请开启打印服务
+            ws = new WebSocket("ws://localhost:45000");
+            ws.onopen = function () {
+
+            };
+            ws.onmessage = function (evt) {
+                var obj = JSON.parse(evt.data);
+                console.log(obj);
+                switch (obj.code) {
+                    case "info":
+                        console.log(obj.msg);
+                        break;
+                    case "error":
+                        alert(obj.msg);
+                        break;
+                    case "prompt":
+                        alert(obj.msg);
+                        break;
+                    default:
+                        alert(obj);
+                        break;
+                }
+            };
+            ws.onclose = function () {
+                alert("打印服务已关闭，请开启打印服务并重新打开该页面");
+                ws.close();
+                ws = null;
+                return;
+            };
+        } else {
+            alert("浏览器不支持WebSocket通讯");
+            return;
+        }
+
+        $('#u_DepartMent').combogrid({
+            value: '',
+            width: '300',
+            panelWidth: 220,
+            label: '所属部门：',
+            labelPosition: 'left',
+            url: '/api/Mms/BarcodeManagement/GetDepartmentList',
+            method: 'get',
+            idField: 'DepartmentCode',
+            treeField: 'DepartmentName',
+            textField: 'DepartmentName',
+            columns: [[
+                { field: 'DepartmentCode', title: '部门编号', width: 100 },
+                { field: 'DepartmentName', title: '部门名称', width: 150 }
+            ]]
+        });
+
+        //*****************************************************************************************************************//
+        //----  人员条码
+
+        LoadUserTableData();
+
+        $("#u_search").click(function () {
+            LoadUserTableData();
+        })
+
+        $("#u_clear").click(function () {
+            $("#u_UserName").textbox("setValue", "");
+            $('#u_DepartMent').combogrid("setValue", "");
+            LoadUserTableData();
+        })
+
+        $("#u_barcode").click(function () {
+            var rows = $('#u_table').datagrid('getSelections');
+
+            if (rows.length <= 0) {
+                com.message("success", "请选择要生成条码的人员！");
+                return;
+            }
+
+            var uIDs = [];
+            for (var i = 0; i < rows.length; i++) {
+                uIDs.push(rows[i].ID);
+            }
+
+            $.ajax({
+                url: "/api/Mms/BarcodeManagement/PostBatchBarcodeToUser",
+                type: "post",
+                data: { uIDs: uIDs.join(',') },
+                async: false,
+                success: function (result) {
+                    if (result.Result) {
+                        com.message("success", "生成条码成功！");
+                    }
+                    else {
+                        com.message("success", result.Msg);
+                    }
+                    LoadUserTableData();
+                }
+            })
+        })
+
+        $("#u_print").click(function () {
+
+            var rows = $('#u_table').datagrid('getSelections');
+
+            if (rows.length <= 0) {
+                com.message("success", "请选择要打印条码的人员！");
+                return;
+            }
+
+            var uPrintInfos = [];
+            for (var i = 0; i < rows.length; i++) {
+                uPrintInfos.push({
+                    BarCode: rows[i].UserBarcode,
+                    DeptName: rows[i].DepartmentName,
+                    PersonCode: rows[i].UserCode,
+                    PersonName: rows[i].UserName
+                });
+            }
+
+            var params = {
+                PrintType: 1,
+                Data: uPrintInfos
+            };
+
+            if (ws != null) {
+                ws.send("print_" + JSON.stringify(params));
+            } else {
+                alert("未连接打印服务")
+                return;
+            }
+
+        })
+
+        //*****************************************************************************************************************//
+        //----  零件条码
+
+        LoadPartTableData();
+
+        $("#p_search").click(function () {
+            LoadPartTableData();
+        })
+
+        $("#p_clear").click(function () {
+            $("#p_Name").textbox("setValue", "");
+            $('#p_FigureNo').textbox("setValue", "");
+            LoadPartTableData();
+        })
+
+        $("#p_barcode").click(function () {
+            var rows = $('#p_table').datagrid('getSelections');
+
+            if (rows.length <= 0) {
+                com.message("success", "请选择要生成条码的零件！");
+                return;
+            }
+
+            var pIDs = [];
+            for (var i = 0; i < rows.length; i++) {
+                pIDs.push(rows[i].ID);
+            }
+
+            $.ajax({
+                url: "/api/Mms/BarcodeManagement/PostBatchBarcodeToPart",
+                type: "post",
+                data: { pIDs: pIDs.join(',') },
+                async: false,
+                success: function (result) {
+                    if (result.Result) {
+                        com.message("success", "生成条码成功！");
+                    }
+                    else {
+                        com.message("success", result.Msg);
+                    }
+                    LoadPartTableData();
+                }
+            })
+        })
+
+        $("#p_print").click(function () {
+
+            var rows = $('#p_table').datagrid('getSelections');
+
+            if (rows.length <= 0) {
+                com.message("success", "请选择要打印条码的零件！");
+                return;
+            }
+
+            var pPrintInfos = [];
+            for (var i = 0; i < rows.length; i++) {
+                var cName = "";
+                if ((rows[i].ContractCode == "" || rows[i].ContractCode == null) && (rows[i].ProjectName == "" || rows[i].ProjectName == null)) {
+
+                } else if ((rows[i].ContractCode == "" || rows[i].ContractCode == null) && (rows[i].ProjectName != "" && rows[i].ProjectName != null)) {
+                    cName = rows[i].ProjectName;
+                } else if ((rows[i].ContractCode != "" && rows[i].ContractCode != null) && (rows[i].ProjectName == "" || rows[i].ProjectName == null)) {
+                    cName = rows[i].ContractCode;
+                } else {
+                    cName = "(" + rows[i].ContractCode + ")" + rows[i].ProjectName;
+                }
+
+                pPrintInfos.push({
+                    ContractName: cName,
+                    ProductName: rows[i].ProductName,
+                    PartFigureNo: rows[i].PartFigureCode,
+                    PartName: rows[i].PartName,
+                    MaterialName: rows[i].MaterialCode,
+                    BarCode: rows[i].MateBarCode
+                });
+            }
+
+            var params = {
+                PrintType: 2,
+                Data: pPrintInfos
+            };
+
+            if (ws != null) {
+                ws.send("print_" + JSON.stringify(params));
+            } else {
+                alert("未连接打印服务")
+                return;
+            }
+
+        })
+
+        //*****************************************************************************************************************//
+        //----  单据条码
+
+    })
+
+    function LoadUserTableData() {
+        var uName = $("#u_UserName").textbox("getValue");
+        var uDepartMentCode = $('#u_DepartMent').combogrid("getValue");
+
+        $('#u_table').datagrid({
+            method: 'get',
+            url: "/api/Mms/BarcodeManagement/GetUserList",
+            queryParams: {
+                uName: uName,
+                dCode: uDepartMentCode
+            },
+            striped: true,
+            //singleSelect: true,
+            selectOnCheck: true,
+            rownumbers: true,
+            pagination: true,
+            pageList: [5, 10, 20, 50, 100, 200, 500, 1000],
+            columns: [[
+                { field: '', title: '', checkbox: true },
+                { field: 'ID', title: 'ID', width: 45, hidden: true },
+                { field: 'UserBarcode', title: '对应条码', width: 120 },
+                { field: 'UserCode', title: '员工编号', width: 160 },
+                { field: 'UserName', title: '用户名', width: 200 },
+                { field: 'DepartmentName', title: '所属部门', width: 200 },
+                { field: 'DepartmentCode', title: '部门编号', width: 160 },
+                { field: 'IsEnable', title: '是否有效', width: 80, formatter: function (value) { return value == 1 ? '有效' : "无效" } }
+            ]]
+        });
+    }
+
+    function LoadPartTableData() {
+        var pName = $("#p_Name").textbox("getValue");
+        var pFigureNo = $("#p_FigureNo").textbox("getValue");
+
+        $('#p_table').datagrid({
+            method: 'get',
+            url: "/api/Mms/BarcodeManagement/GetPartByPCodeAndPType",
+            queryParams: {
+                pName: pName,
+                pFigureNo: pFigureNo
+            },
+            striped: true,
+            //singleSelect: true,
+            selectOnCheck: true,
+            rownumbers: true,
+            pagination: true,
+            pageList: [5, 10, 20, 50, 100, 200, 500, 1000],
+            columns: [[
+                { field: '', title: '', checkbox: true },
+                { field: 'ID', title: 'ID', width: 45, hidden: true },
+                { field: 'MateBarCode', title: '物料条码', width: 120 },
+                { field: 'InventoryCode', title: '存货编码', width: 120 },
+                { field: 'InventoryName', title: '存货名称', width: 120 },
+                { field: 'PartCode', title: '零件编码', width: 160 },
+                { field: 'PartName', title: '零件名称', width: 160 },
+                { field: 'PartFigureCode', title: '零件图号', width: 200 },
+                { field: 'ContractCode', title: '合同号', width: 120 },
+                { field: 'ProductID', title: '产品ID', width: 60, hidden: true },
+                { field: 'MaterialCode', title: '材质', width: 120 },
+                { field: 'InnerFactoryBatch', title: '厂内批次', width: 140 },
+                { field: 'OuterFactoryBatch', title: '厂外批次', width: 140 },
+
+                { field: 'ProjectName', title: '项目名称', width: 180 },
+                { field: 'ProductName', title: '产品名称', width: 180 }
+            ]]
+        });
+    }
+
+</script>
+

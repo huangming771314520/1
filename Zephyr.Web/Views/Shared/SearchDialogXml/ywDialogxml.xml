@@ -1,0 +1,42 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Root>
+  <searchDialog name='BD_MaterialNew'>
+    <!--配置datagrid的数据绑定以及查询功能-->
+    <settings defaultOrderBy='CreateTime desc'>
+      <module>Mms</module>
+      <select>
+        [MaterialNo]
+        ,[MaterialName]
+        ,[BarCode]
+        ,[TypeNo]
+        ,[PlaceNo]
+        ,[UseDepartment]
+        ,[MaterialType]
+        ,[OriginalCost]
+        ,[Salvage]
+      </select>
+      <from>
+        [EQP_BD_Material]
+      </from>
+      <where defaultForAll='true' defaultCp='equal' defaultIgnoreEmpty='true' >
+        <field name='MaterialNo' cp='like'></field>
+        <field name='MaterialName' cp='like'></field>
+        <field name='BarCode' cp='like'></field>
+        <field name='TypeNo' cp='like'></field>
+        <field name='PlaceNo' cp='like'></field>
+      </where>
+    </settings>
+    <!--配置datagrid的列属性-->
+    <ColumnList>
+      <column title='设备编号' field='MaterialNo' align='left' sortable='true' width='100' searchType='text'></column>
+      <column title='设备名称' field='MaterialName' align='left' sortable='true' width='100' searchType='text'></column>
+      <column title='条形码' field='BarCode' align='left' sortable='true' width='100' searchType='text'></column>
+      <column title='设备分类' field='TypeNo' align='left' sortable='true' width='100' searchType='text'></column>
+      <column title='存放地点' field='PlaceNo' align='left' sortable='true' width='100' searchType='text'></column>
+      <column title='使用部门' field='UseDepartment' align='left' sortable='true' width='100' searchType='text'></column>
+      <column title='设备类型' field='MaterialType' align='left' sortable='true' width='100' searchType='text'></column>
+      <column title='设备原值' field='OriginalCost' align='left' sortable='true' width='100' searchType='text'></column>
+      <column title='残值' field='Salvage' align='left' sortable='true' width='100' searchType='text'></column>
+    </ColumnList>
+  </searchDialog>
+</Root>

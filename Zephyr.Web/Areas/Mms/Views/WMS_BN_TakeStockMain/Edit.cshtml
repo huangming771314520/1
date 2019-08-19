@@ -1,0 +1,147 @@
+﻿@{
+    ViewBag.Title = "TakeStockMain";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@section scripts{
+    <script src="/Content/js/viewModel/com.viewModel.edit.js"></script>
+    <script type="text/javascript">
+        using(['validatebox','combotree','numberspinner','combobox','lookup','datebox','datetimebox','combogrid'],easyuifix.datagrid_editor_extend);
+        using(['numberbox','datebox']);
+        var myself;
+        var viewModel = function(data){
+            var self = this;
+            com.viewModel.edit.apply(self,arguments);
+            this.grid0.size={w:8,h:125};
+            myself=self;
+            this.ImportExcelClick = function (xmlName, className) {
+                var target = parent.$('#CommonImportExcelPage').length ? parent.$('#CommonImportExcelPage') : parent.$('<div id="CommonImportExcelPage"></div>').appendTo('body');
+                utils.clearIframe(target);
+                var opt;
+                opt = { title: '选择Excel文件', width: 400, height: 200, modal: true, collapsible: false, minimizable: false, maximizable: true, closable: true };
+                opt.content = "<iframe src='/mms/home/CommonImportExcel' style='height:100%;width:100%;border:0;' frameborder='0'></iframe>";  //frameborder="0" for ie7
+                param = { xmlName: xmlName, className: className };
+                opt.paramater = param;
+                opt.OnSelect=function(data){
+                    window.location.reload();
+                }
+                target.window(opt);
+
+                //$('#year').textbox({
+                //    onChange: function(value) {
+                //        alert(1);
+                //    }
+                //});
+            }
+          
+            this.BuildBillClick=function () {
+                self.saveClick();
+                com.ajax({
+                    type:'POST',
+                    url:"/api/Mms/WMS_BN_TakeStockMain/PostBuildBill?billCode="+myself.dataSource.pageData.form.BillCode,
+                    success:function(d){
+                        com.message('success',d);
+                    }
+                });
+            }
+           
+            this.downloadClick = function (vm, event) {
+                self.grid0.url="/api/Mms/WMS_BN_TakeStockDetail";
+                self.grid0.urlParams={BillCode:self.pageData.form.BillCode()};
+                com.exporter(self.grid0).download($(event.currentTarget).attr("suffix"));
+            };
+        }
+        var data = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model));
+        ko.bindingViewModel(new viewModel(data));
+        myself.grid0.onAfterEdit = function(editors){
+            //mms.com.bindCalcTotalMoneyPutoff(self, "In_Num","Plan_Price", "Plan_Money", "True_Price", "True_Money")(editors);
+            //$('#tt').datagrid('getEditor',{index:editors,field:'DValue'}).target.val(10);
+
+            var row = $('#tt').datagrid('getData').rows[editors];
+            var tr = $(this).prev().find('div.datagrid-body').find('tr')[editors]
+            row.DValue=row.RealNum-row.TakeStockNum;
+            tr.cells[8].firstChild.innerHTML=row.DValue;
+            //myself.grid0.datagrid('getEditor',{index:editors,field:'DValue'}).target.val(10);
+        };
+        function yearChange (){
+            //myself.pageData.form.TakeStockMonth($("#month").val()+"&");
+            myself.dataSource.pageData.form.TakeStockMonth=0
+            myself.dataSource.pageData.form.TakeStockYear=0
+        }
+    </script>
+}
+
+<div class="z-toolbar">
+    <a id="a_save" href="#" plain="true" class="easyui-linkbutton" icon="icon-save" data-bind="click:readonly()?null:saveClick,linkbuttonDisable:readonly" title="保存">保存</a>
+    @*<a id="a_undo" href="#" plain="true" class="easyui-linkbutton" icon="icon-undo" data-bind="click:readonly()?null:rejectClick,linkbuttonDisable:readonly" title="撤消">撤消</a>
+    <a id="a_audit" href="#" plain="true" class="easyui-linkbutton" icon="icon-user-accept" data-bind="click:auditClick,easyuiLinkbutton:approveButton" title="审核">审核</a>
+    <a id="a_printer" href="#" plain="true" class="easyui-linkbutton" icon="icon-printer" title="打印" data-bind="click:printClick">打印</a>*@
+    <a href="#" plain="true" class="easyui-splitbutton" data-options="menu:'#dropdown',iconCls:'icon-download'">导出</a>
+    <a href="#" plain="true" class="easyui-linkbutton" data-options="iconCls:'icon-bullet_tick',plain:true" data-bind="click:BuildBillClick">生成出入库单</a>
+</div>
+
+<div id="dropdown" style="width:100px; display:none;">
+    <div data-options="iconCls:'icon-ext-xls'" suffix="xls" data-bind="click:downloadClick">Excel2003   </div>
+    @*<div data-options="iconCls:'icon-page_excel'" suffix="xlsx" data-bind="click:downloadClick">Excel2007   </div>*@
+    <div data-options="iconCls:'icon-ext-doc'" suffix="doc" data-bind="click:downloadClick">Word2003    </div>
+</div>
+<div id="divother" style="width:100px; display:none;">
+    <div data-options="iconCls:'icon-add'">新增</div>
+    <div data-options="iconCls:'icon-cross'">删除</div>
+    <div data-options="iconCls:'icon-arrow_refresh'">刷新</div>
+</div>
+
+<div id="master" class="container_12" data-bind="inputwidth:0.9">
+    <div class="grid_1 lbl">盘点单号</div>
+    <div class="grid_3 val"><input type="text" data-bind="value:pageData.form.BillCode" readonly="readonly" class="z-txt " /></div>
+    <div class="grid_1 lbl">年份</div>
+    <div class="grid_3 val"><input id="year" onchange="yearChange()" type="text" data-bind="value:pageData.form.TakeStockYear ,readOnly:readonly" class="z-txt " /></div>
+    <div class="grid_1 lbl">月份</div>
+    <div class="grid_3 val"><input id="month" onchange="yearChange()" type="text" data-bind="value:pageData.form.TakeStockMonth ,readOnly:readonly" class="z-txt " /></div>
+
+    <div class="clear"></div>
+
+    <div class="grid_1 lbl">盘点类型</div>
+    <div class="grid_3 val"><input type="text" data-bind="comboboxValue:pageData.form.TakeStockType,datasource:dataSource.takeStockType ,readOnly:readonly" class="z-txt easyui-combobox" /></div>
+    <div class="grid_1 lbl">单据状态</div>
+    <div class="grid_3 val"><input type="text" data-bind="comboboxValue:pageData.form.BillState,datasource:dataSource.tackStockState,readOnly:readonly" class="z-txt easyui-combobox" /></div>
+
+    <div class="clear"></div>
+    <div class="grid_1 lbl">备注信息</div>
+    <div class="grid_3 val"><textarea type="text" data-bind="value:pageData.form.Remark ,readOnly:readonly" style="width: 500px; height: 50px;"></textarea></div>
+
+    <div class="clear"></div>
+</div>
+<div id="tabs" class="easyui-tabs">
+    <div title="盘点明细">
+        <table data-bind="datagrid:grid0" id="tt">
+            <thead>
+                <tr>
+                    <th field="ID" hidden="hidden" sortable="true" align="left" width="80" editor="text">主键</th>
+                    <th field="BillCode"  sortable="true" align="left" width="80" >单号</th>
+                    <th field="BatchCode" sortable="true" align="left" width="100" >批次号</th>
+                    <th field="InventoryCode" sortable="true" align="left" width="100" >物料编号</th>
+                    <th field="InventoryName" sortable="true" align="left" width="120" >物料名称</th>
+                    <th field="WarehouseCode" sortable="true" align="left" width="100">仓库编码</th>
+                    <th field="WarehouseName" sortable="true" align="left" width="120">仓库名称</th>
+                    <th field="RealNum" sortable="true" align="center" width="80" editor="{type: 'numberbox',options:{precision:2}  }">实盘数量</th>
+                    <th field="TakeStockNum" hidden sortable="true" align="center" width="80" >系统数量</th>
+                    <th field="DValue" hidden sortable="true" align="center" width="80">差值</th>
+                   
+                    <th field="Remark" sortable="true" align="left" width="150" hidden editor="text">备注信息</th>
+                </tr>
+            </thead>
+           
+        </table>
+
+        <div id="gridtb0">
+            <a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-search',plain:true" data-bind="click:readonly()?null:grid0.addRowClick,linkbuttonDisable:readonly">新增</a>
+            <a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-edit',plain:true" data-bind="click:readonly()?null:grid0.onClickRow,linkbuttonDisable:readonly">编辑</a>
+            @*<a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-remove',plain:true" data-bind="click:readonly()?null:grid0.removeRowClick,linkbuttonDisable:readonly">删除</a>*@
+            <a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-page_white_excel',plain:true" title="导入" data-bind="event: { click: function(data, event) {ImportExcelClick('TakeStockDetail','WMS_BN_TakeStockDetailService', data, event) }}">导入</a>
+
+        </div>
+    </div>
+  
+</div>
+

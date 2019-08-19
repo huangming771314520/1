@@ -1,0 +1,198 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<activityRootModel xmlns:dm0="http://schemas.microsoft.com/VisualStudio/2008/DslTools/Core" xmlns:dm1="http://schemas.microsoft.com/dsltools/Kernel" xmlns:dm2="http://schemas.microsoft.com/dsltools/Component" xmlns:dm3="http://schemas.microsoft.com/dsltools/UseCase" xmlns:dm4="http://schemas.microsoft.com/dsltools/Activity" xmlns:dm5="http://schemas.microsoft.com/dsltools/Interaction" xmlns:dm6="http://schemas.microsoft.com/dsltools/UmlModelLibrary" xmlns:dm7="http://schemas.microsoft.com/dsltools/UmlDiagrams" xmlns:dm8="http://schemas.microsoft.com/dsltools/ModelStore" xmlns:dm9="http://schemas.microsoft.com/dsltools/SimpleShapesModel" dslVersion="1.0.0.0" Id="18f36e2c-a305-4c3a-ba7b-be13975bd7a8" name="0202工艺路线模板" linkedPackageId="4c4ca33e-3218-421f-bfe7-fc517afbb8ac" xmlns="http://schemas.microsoft.com/VisualStudio/TeamArchitect/ActivityDesigner">
+  <ownedCommentsInternal>
+    <comment Id="4c99d825-5963-4701-86d3-3385deaa00bf">
+      <elementDefinition Id="d5ccd544-fdb2-44a0-8e18-d3b4e34095ff" />
+      <body>1、新增，进入明细页面；
+2、工艺路线编码自动生成；
+3、工艺路线名称必填；做校验，已存在有效的工艺路线提示“该工艺路线已存在”；</body>
+      <annotatedElements>
+        <opaqueActionMoniker Id="bf73cf8c-8502-439a-a42d-457ea65bcf9d" LastKnownName="新增工艺路线模板" />
+      </annotatedElements>
+    </comment>
+    <comment Id="d8c56ab2-b956-4a34-b3c6-341b741765d2">
+      <elementDefinition Id="d724dae7-15ab-4c0b-b62d-13b4297b680f" />
+      <body>1、只能修改/删除未审核的工艺路线模板
+UPDATE A
+SET A.IsEnable = '0'
+FROM [dbo].[PRS_ProcessRouteModelMain] A
+WHERE A.BillState = '1'
+      AND A.IsEnable = '1';
+2、删除工艺路线模板时提示“请确认是否删除？”</body>
+      <annotatedElements>
+        <opaqueActionMoniker Id="8862eb9b-3a97-4b67-be78-c9d6aa135e11" LastKnownName="修改/删除工艺路线模板" />
+      </annotatedElements>
+    </comment>
+    <comment Id="8e8d82e5-e667-4d97-a5c5-2bfd7ffad02f">
+      <elementDefinition Id="1be3be7e-fed7-49fa-9754-4211dc462ae6" />
+      <body>1、工序行号从1开始自动+1，可修改
+SELECT
+    --主键
+    A.ID,
+    --工序编码
+    A.ProcessCode,
+    --工序名称
+    A.ProcessName,
+    --工序类型
+    B.Text
+FROM [dbo].[PRS_BD_StandardProcess] A
+    LEFT JOIN [HBHC_Sys].[dbo].[sys_code] B
+        ON A.ProcessType = B.Value
+           AND B.CodeType = 'ProcessType'
+           AND B.IsEnable = '1'
+WHERE A.IsEnable = '1';</body>
+      <annotatedElements>
+        <opaqueActionMoniker Id="54e65ebf-d03a-47c4-b2cb-1b05c454f4d4" LastKnownName="新增工序" />
+      </annotatedElements>
+    </comment>
+    <comment Id="976532b1-e4aa-43a1-974f-e9854f4efebf">
+      <elementDefinition Id="46cd58ce-5f16-461c-8b0c-e15a9a7c3466" />
+      <body>SELECT
+    --工艺路线编码
+    A.ProcessRouteCode,
+    --工艺路线名称
+    A.ProcessRouteName,
+    --工序行号
+    B.ProcessLineCode,
+    --工序编码
+    B.ProcessCode,
+    --工序名称
+    B.ProcessName,
+    --备注
+    B.Remark
+FROM [dbo].[PRS_ProcessRouteModelMain] A
+    INNER JOIN [dbo].[PRS_ProcessRouteModelDetail] B
+        ON A.ID = B.MainID
+           AND B.IsEnable = '1'
+WHERE A.IsEnable = '1';</body>
+      <annotatedElements>
+        <opaqueActionMoniker Id="b7aff862-e8bf-4fb8-8610-6e3fa736be78" LastKnownName="查询标准工艺路线工序" />
+      </annotatedElements>
+    </comment>
+    <comment Id="5622c208-656d-40b9-9951-38aa4dc4aa2a">
+      <elementDefinition Id="9198b0e4-be49-4601-bb4f-40bcfb2d8f4f" />
+      <body>可以修改行号、工序、备注</body>
+      <annotatedElements>
+        <opaqueActionMoniker Id="c3b7c3a9-3a79-4095-9060-f8e471932bd4" LastKnownName="修改工序" />
+      </annotatedElements>
+    </comment>
+  </ownedCommentsInternal>
+  <packagedElements>
+    <activityRootModelHasActivity>
+      <activity Id="c473639a-d783-4b7b-9211-4a520b2f9491" name="0202工艺路线模板" isAbstract="false" isLeaf="false" isActiveClass="false" isReentrant="false" isReadOnly="false" isSingleExecution="false">
+        <elementDefinition Id="450bc69f-c128-46d2-af71-a36c41355057" />
+        <nodes>
+          <initialNode Id="780aca63-b339-4f45-9a34-741c9c0bc03a" name="Initial1" isLeaf="false">
+            <elementDefinition Id="7cb5e8e2-8d88-466e-8380-2606725b05e6" />
+            <flowNodeTargets>
+              <controlFlow Id="1f8b1552-e9e5-4f73-8068-6473e04a5480" isLeaf="false">
+                <opaqueActionMoniker Id="bf73cf8c-8502-439a-a42d-457ea65bcf9d" LastKnownName="新增工艺路线模板" />
+                <elementDefinition Id="375a2116-4bdd-41c1-b9af-f13a84f68027" />
+              </controlFlow>
+            </flowNodeTargets>
+          </initialNode>
+          <opaqueAction Id="bf73cf8c-8502-439a-a42d-457ea65bcf9d" name="新增工艺路线模板" isLeaf="false">
+            <elementDefinition Id="f41c301b-c69b-49ba-8858-6c0920b1ce12" />
+            <flowNodeTargets>
+              <controlFlow Id="b9f70ec7-6ca9-4cbc-855b-6aa40427afe6" isLeaf="false">
+                <opaqueActionMoniker Id="8862eb9b-3a97-4b67-be78-c9d6aa135e11" LastKnownName="修改/删除工艺路线模板" />
+                <elementDefinition Id="370f506f-2381-45a9-abe4-b6ecbe119029" />
+              </controlFlow>
+            </flowNodeTargets>
+          </opaqueAction>
+          <activityFinalNode Id="ab09bebd-611c-456a-9355-476bb0b8515a" name="ActivityFinal1" isLeaf="false">
+            <elementDefinition Id="2698d2e2-ba3a-48f5-b64a-05389b28202a" />
+          </activityFinalNode>
+          <opaqueAction Id="8862eb9b-3a97-4b67-be78-c9d6aa135e11" name="修改/删除工艺路线模板" isLeaf="false">
+            <elementDefinition Id="b66ab3bb-1db8-4e6e-b8c4-19d5e8357409" />
+            <flowNodeTargets>
+              <controlFlow Id="4d3320ac-4c34-491f-836b-5a9e047b65ef" isLeaf="false">
+                <forkNodeMoniker Id="a79f3e74-9035-48c1-9a6b-175c9581b1b9" LastKnownName="Fork1" />
+                <elementDefinition Id="66459896-6c7f-4daa-b9be-cc5828dabd64" />
+              </controlFlow>
+            </flowNodeTargets>
+          </opaqueAction>
+          <forkNode Id="a79f3e74-9035-48c1-9a6b-175c9581b1b9" name="Fork1" isLeaf="false">
+            <elementDefinition Id="db56f86f-a730-41d6-9c77-251f34536e5b" />
+            <flowNodeTargets>
+              <controlFlow Id="bf4f314e-767f-4065-8533-76a93def26cf" isLeaf="false">
+                <opaqueActionMoniker Id="54e65ebf-d03a-47c4-b2cb-1b05c454f4d4" LastKnownName="新增工序" />
+                <elementDefinition Id="b54bb5a7-a1a6-44a8-a997-51e81a290847" />
+              </controlFlow>
+              <controlFlow Id="776b5895-2492-4647-a3cf-64678a352d61" isLeaf="false">
+                <opaqueActionMoniker Id="c3b7c3a9-3a79-4095-9060-f8e471932bd4" LastKnownName="修改工序" />
+                <elementDefinition Id="ff1af963-b260-413a-addf-50f4a0b3358f" />
+              </controlFlow>
+              <controlFlow Id="d583e189-b6cf-4417-8455-49c523b79aa7" isLeaf="false">
+                <opaqueActionMoniker Id="e221e27e-c705-4929-9ced-c0627cbc2168" LastKnownName="删除工序" />
+                <elementDefinition Id="b4344e58-db42-4119-b3b2-d667d591c4ef" />
+              </controlFlow>
+            </flowNodeTargets>
+          </forkNode>
+          <opaqueAction Id="54e65ebf-d03a-47c4-b2cb-1b05c454f4d4" name="新增工序" isLeaf="false">
+            <elementDefinition Id="6e2d88de-8cff-4288-be0c-39f3be2c77de" />
+            <flowNodeTargets>
+              <controlFlow Id="7f295871-8fab-4e7a-8259-1e4012f78413" isLeaf="false">
+                <joinNodeMoniker Id="63cfd288-4cda-44df-89b7-f5d78bbc6f44" LastKnownName="Join1" />
+                <elementDefinition Id="212b028a-d720-4dca-976f-ca2873f09485" />
+              </controlFlow>
+            </flowNodeTargets>
+          </opaqueAction>
+          <opaqueAction Id="c3b7c3a9-3a79-4095-9060-f8e471932bd4" name="修改工序" isLeaf="false">
+            <elementDefinition Id="6214a319-3e79-4226-a678-e5bc520d7a24" />
+            <flowNodeTargets>
+              <controlFlow Id="fcd1dea3-6c58-4d14-a183-c4d714829fcd" isLeaf="false">
+                <joinNodeMoniker Id="63cfd288-4cda-44df-89b7-f5d78bbc6f44" LastKnownName="Join1" />
+                <elementDefinition Id="6c3433f7-b706-447a-bc65-2e9aa094c4ab" />
+              </controlFlow>
+            </flowNodeTargets>
+          </opaqueAction>
+          <opaqueAction Id="e221e27e-c705-4929-9ced-c0627cbc2168" name="删除工序" isLeaf="false">
+            <elementDefinition Id="1760617a-a12b-41d0-8079-c91fa129a4b0" />
+            <flowNodeTargets>
+              <controlFlow Id="d23273fb-f36c-42ed-adda-a59288572062" isLeaf="false">
+                <joinNodeMoniker Id="63cfd288-4cda-44df-89b7-f5d78bbc6f44" LastKnownName="Join1" />
+                <elementDefinition Id="8d9154ad-c526-43d8-ab8a-7a3e885f6177" />
+              </controlFlow>
+            </flowNodeTargets>
+          </opaqueAction>
+          <joinNode Id="63cfd288-4cda-44df-89b7-f5d78bbc6f44" name="Join1" isLeaf="false">
+            <elementDefinition Id="3b8b4a5f-adaa-43d3-a4b5-a7029a80814c" />
+            <flowNodeTargets>
+              <controlFlow Id="2e4a5aca-3a46-45f2-8580-0323e9b6f552" isLeaf="false">
+                <opaqueActionMoniker Id="b7aff862-e8bf-4fb8-8610-6e3fa736be78" LastKnownName="查询标准工艺路线工序" />
+                <elementDefinition Id="594cb824-e99d-4158-8f9c-9f662f4dac30" />
+              </controlFlow>
+            </flowNodeTargets>
+          </joinNode>
+          <opaqueAction Id="b7aff862-e8bf-4fb8-8610-6e3fa736be78" name="查询标准工艺路线工序" isLeaf="false">
+            <elementDefinition Id="64d70e62-6687-4740-83a7-a115df62be62" />
+            <flowNodeTargets>
+              <controlFlow Id="884b54de-61a3-4506-997b-6f1a69b7d365" isLeaf="false">
+                <activityFinalNodeMoniker Id="ab09bebd-611c-456a-9355-476bb0b8515a" LastKnownName="ActivityFinal1" />
+                <elementDefinition Id="2e7b8880-7f72-4ce0-95fe-51f989436a6b" />
+              </controlFlow>
+            </flowNodeTargets>
+          </opaqueAction>
+        </nodes>
+      </activity>
+    </activityRootModelHasActivity>
+  </packagedElements>
+  <package Id="4c4ca33e-3218-421f-bfe7-fc517afbb8ac" name="HCJXUML">
+    <elementDefinition Id="6348ac1d-75ba-4a39-8ebf-237333c18d4f" />
+    <profileInstances>
+      <packageHasProfileInstances Id="98733b2e-7197-4081-b9b9-de7ac2087c45">
+        <profileInstance Id="3eb0646e-b92f-4de5-91dc-c3ab69b3f650" name="StandardProfileL2">
+          <elementDefinition Id="e34d544e-0fea-4ed6-ac5e-1b74119ac791" />
+        </profileInstance>
+        <elementDefinition Id="0caec977-1f8c-4ba3-a7db-8cc9ad9cc73b" />
+      </packageHasProfileInstances>
+      <packageHasProfileInstances Id="7f41fdfb-da0e-4518-888c-d43e3464e81c">
+        <profileInstance Id="20bf5d31-f253-4e6a-a3e4-250c97727a1a" name="StandardProfileL3">
+          <elementDefinition Id="532ea607-fb19-44b8-8502-3351b05452be" />
+        </profileInstance>
+        <elementDefinition Id="29349502-908c-4fda-9054-c48619c59ed0" />
+      </packageHasProfileInstances>
+    </profileInstances>
+  </package>
+</activityRootModel>

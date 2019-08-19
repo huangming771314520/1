@@ -1,0 +1,122 @@
+﻿
+@{
+    ViewBag.Title = "SYS_CreateSysPart";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@section scripts{
+    <script src="/Content/js/viewModel/com.viewModel.searchEdit.js"></script>
+    <script type="text/javascript">
+    using(['validatebox','combotree','numberspinner','combobox','lookup','datebox','datetimebox','combogrid'],easyuifix.datagrid_editor_extend);
+    var viewModel = function(data){
+        var self = this;
+        com.viewModel.searchEdit.apply(self,arguments);
+
+        this.saveClick = function () {
+            var row = self.grid.datagrid('getSelected');
+            self.gridEdit.ended(); //结束grid编辑状态
+
+            var post = {};
+            post.list = self.gridEdit.getChanges(self.setting.postListFields);
+            post.referenceCode = row.ReferenceCode;
+
+            if (self.gridEdit.ended() && post.list._changed) {
+                com.ajax({
+                    url: self.urls.edit,
+                    data: ko.toJSON(post),
+                    success: function (d) {
+                        com.message('success', d.msg);
+                        self.gridEdit.accept();
+                        self.searchClick();
+                    }
+                });
+            }
+        };
+    }
+    var data = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model));
+    ko.bindingViewModel(new viewModel(data));
+    </script>
+}
+<div class="z-toolbar">
+    <a href="#" plain="true" class="easyui-linkbutton" icon="icon-arrow_refresh" title="刷新" data-bind="click:refreshClick">刷新</a>
+    <a href="#" plain="true" class="easyui-linkbutton" icon="icon-edit" title="编辑" data-bind="click:editClick">编辑</a>
+    <a href="#" plain="true" class="easyui-linkbutton" icon="icon-cross" title="删除" data-bind="click:deleteClick">删除</a>
+    <a href="#" plain="true" class="easyui-linkbutton" icon="icon-save" title="保存" data-bind="click:saveClick">保存</a>
+</div>
+
+
+<div class="container_12" style="position:relative;">
+    <div class="grid_1 lbl">名称</div>
+    <div class="grid_2 val"><input type="text" data-bind="value:form.InventoryName" class="z-txt " /></div>
+    <div class="grid_1 lbl">型号</div>
+    <div class="grid_2 val"><input type="text" data-bind="value:form.Model" class="z-txt " /></div>
+    <div class="grid_1 lbl">规格</div>
+    <div class="grid_2 val"><input type="text" data-bind="value:form.Spec" class="z-txt " /></div>
+
+    <div class="clear"></div>
+    <div class="grid_1 lbl">&nbsp;</div>
+    <div class="grid_2 val">&nbsp;</div>
+    <div class="clear"></div>
+
+    <div class="prefix_9" style="position:absolute;top:5px;height:0;">
+        <a id="a_search" href="#" class="buttonHuge button-blue" data-bind="click:searchClick" style="margin:0 15px;">查询</a>
+        <a id="a_reset" href="#" class="buttonHuge button-blue" data-bind="click:clearClick">清空</a>
+    </div>
+</div>
+
+<table data-bind="datagrid:grid" style="display:none" id="dg">
+    <thead>
+        <tr>
+            <th field="ID" sortable="true" hidden="hidden" align="left" width="180">ID</th>
+            <th field="InventoryCode" sortable="true" align="left" width="180" editor="{type:'validatebox',options:{required:true}}">材料编号(新)</th>
+            <th field="InventoryName" sortable="true" align="left" width="180">材料名称(新)</th>
+            <th field="Model" sortable="true" align="left" width="180">型号规格(新)</th>
+            <th field="Spec" sortable="true" align="left" width="180" hidden>规格(新)</th>
+            <th field="ReferenceCode" sortable="true" align="left" width="180">参考物料编码</th>
+            <th field="ReferenceName" sortable="true" align="left" width="180">参考物料名称</th>
+            <th field="ReferenceModel" sortable="true" align="left" width="180">参考物料型号规格</th>
+            <th field="text" sortable="true" align="left" width="180">所属功能</th>
+            <th field="PartType" sortable="true" align="left" hidden width="180" @*data-options="formatter:function(value,row){ return value == 'MES_WorkshopPurchaseDetail' ? '生产车间请购':value == 'PRS_BoardCreateMate'?'板材报料':value == 'PRS_Process_BOM'?'工艺订料';}"*@
+                editor='{ type: "combobox", options: { data: [{ "value": "MES_WorkshopPurchaseDetail", "text": "生产车间请购" }, { "value": "PRS_BoardCreateMate", "text": "板材报料" }, { "value": "PRS_Process_BOM", "text": "工艺订料" }], valueField: "value", textField: "text" } }'>所属业务</th>
+            <th field="WarehouseCode" sortable="true" align="left" width="80" editor="text" hidden></th>
+            <th field="WarehouseName" sortable="true" align="left" width="120" editor="{type:'combogrid',options:{
+                    url:'/Commons/GetCommonSearchList',
+                    queryParams : {
+                         tableName:'dbo.SYS_BN_Warehouse',
+                         searchField : '[WarehouseCode],[WarehouseName]',
+                         firstFightField:'[WarehouseName]',
+                         CacheTime:'480',
+                         connName:'Mms'
+                    },
+                    method: 'GET',
+                    panelWidth:400,
+                    fit:true,
+                    delay: 1000,
+                    mode: 'remote',
+                    value: 'WarehouseCode',
+                    idField: 'WarehouseName',
+                    textField: 'WarehouseName',
+                    columns:[[
+                    { field: 'WarehouseCode',title: '仓库编码',width: 150 },
+                    { field: 'WarehouseName' , title: '仓库名称',width: 250,sortable:true }
+                     ]],
+                    onSelect: function (rowIndex, rowData) {
+                        var index =  $('#dg').datagrid('getRowIndex',$('#dg').datagrid('getSelected'));
+                        $('#dg').datagrid('getEditor',{index:index,field:'WarehouseCode'}).target.val(rowData['WarehouseCode']);
+                        $('#dg').datagrid('getEditor',{index:index,field:'WarehouseName'}).target.val(rowData['WarehouseName']);
+                    },
+                    keyHandler:{
+                    query:function(keyword) {
+                    var queryParams=$(this).combogrid('grid').datagrid('options').queryParams;
+                    queryParams.keyword=keyword;
+                    $(this).combogrid('grid').datagrid('options').queryParams=queryParams;
+                    $(this).combogrid('grid').datagrid('reload');
+                    $(this).combogrid('setValue', keyword);
+                    }}
+                }}">仓库</th>
+
+            <th field="QuantityUnit" sortable="true" align="left" width="120" editor="{type:'combobox',options:{
+                data: data.dataSource.QuantityUnit,valueField: 'text',textField: 'text'}}">单位</th>
+        </tr>
+    </thead>
+</table>

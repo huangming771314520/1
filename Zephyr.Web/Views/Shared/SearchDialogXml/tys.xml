@@ -1,0 +1,43 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Root>
+
+  
+   <searchDialog name='ChooseLLDD'>
+    <!--配置datagrid的数据绑定以及查询功能-->
+    <settings defaultOrderBy='temp.CreateTime desc'>
+      <module>Mms</module>
+      <select>*</select>
+      <from>
+        (select LineCode,WorkNo,WorkDescription,ProcedureNo,ProcedureName,CreateTime from dbo.MES_BD_Technology) as temp
+      </from>
+      <where defaultForAll='true' defaultCp='equal' defaultIgnoreEmpty='true' >
+        <field name='temp.Linecode' cp='like'></field>
+
+      </where>
+    </settings>
+    <!--配置datagrid的列属性-->
+    <ColumnList>
+      <column title='主键ID' field='ck' align='left' sortable='true' width='100' checkbox='true'></column>
+      <column title='生产线' field='LineCode' align='left' sortable='true' width='100' searchType ='text' ></column>
+      <column title='工位编码' field='WorkNo' align='left' sortable='true' width='100' searchType='text' ></column>
+      <column title='工位描述' field='WorkDescription' align='left' sortable='true' width='100' ></column>
+      <column title='工序编码' field='ProcedureNo' align='left' sortable='true' width='100' ></column>
+      <column title='工序名称' field='ProcedureName' align='left' sortable='true' width='100' ></column>
+    </ColumnList>
+  </searchDialog>
+
+
+
+
+
+
+  
+    
+   
+  
+  
+  
+</Root>
+
+
+

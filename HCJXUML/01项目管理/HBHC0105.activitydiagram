@@ -1,0 +1,50 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<activityRootModel xmlns:dm0="http://schemas.microsoft.com/VisualStudio/2008/DslTools/Core" xmlns:dm1="http://schemas.microsoft.com/dsltools/Kernel" xmlns:dm2="http://schemas.microsoft.com/dsltools/Component" xmlns:dm3="http://schemas.microsoft.com/dsltools/UseCase" xmlns:dm4="http://schemas.microsoft.com/dsltools/Activity" xmlns:dm5="http://schemas.microsoft.com/dsltools/Interaction" xmlns:dm6="http://schemas.microsoft.com/dsltools/UmlModelLibrary" xmlns:dm7="http://schemas.microsoft.com/dsltools/UmlDiagrams" xmlns:dm8="http://schemas.microsoft.com/dsltools/ModelStore" xmlns:dm9="http://schemas.microsoft.com/dsltools/SimpleShapesModel" dslVersion="1.0.0.0" Id="ddb223ac-10b4-4222-a70d-775da6d49f41" name="0105项目任务报表" linkedPackageId="a59f92e0-4a60-4bee-baa7-f556f875375f" xmlns="http://schemas.microsoft.com/VisualStudio/TeamArchitect/ActivityDesigner">
+  <profileInstances>
+    <packageHasProfileInstances Id="9a697851-caef-4b38-8a1e-987f26267391">
+      <profileInstance Id="b29040a9-d68b-4853-adae-7940cf1a4cba" name="StandardProfileL2">
+        <elementDefinition Id="e34d544e-0fea-4ed6-ac5e-1b74119ac791" />
+      </profileInstance>
+      <elementDefinition Id="0caec977-1f8c-4ba3-a7db-8cc9ad9cc73b" />
+    </packageHasProfileInstances>
+    <packageHasProfileInstances Id="27c8b557-ce42-4c20-986d-aaaca54d468b">
+      <profileInstance Id="13e7bd77-8e0c-4cec-82ca-bd77128c77c1" name="StandardProfileL3">
+        <elementDefinition Id="532ea607-fb19-44b8-8502-3351b05452be" />
+      </profileInstance>
+      <elementDefinition Id="29349502-908c-4fda-9054-c48619c59ed0" />
+    </packageHasProfileInstances>
+  </profileInstances>
+  <packagedElements>
+    <activityRootModelHasActivity>
+      <activity Id="eb688160-6156-4f12-86eb-6eac8dfdb565" name="0105项目任务报表" isAbstract="false" isLeaf="false" isActiveClass="false" isReentrant="false" isReadOnly="false" isSingleExecution="false">
+        <elementDefinition Id="0a22284a-81bb-42fb-9343-518b5b13bed5" />
+        <nodes>
+          <initialNode Id="7ba02884-9d6f-4d34-8ad7-d8b959f645b0" name="Initial1" isLeaf="false">
+            <elementDefinition Id="5ee64b04-577e-4bbe-8f51-bf6a266c740f" />
+            <flowNodeTargets>
+              <controlFlow Id="dce011dc-7a29-4136-969f-e84313e3c700" isLeaf="false">
+                <opaqueActionMoniker Id="a31e491e-b3b5-4ebf-9e4a-32aa046edcbf" LastKnownName="查询项目任务" />
+                <elementDefinition Id="b5bf7b52-7662-4311-a71b-c3b4a9f39183" />
+              </controlFlow>
+            </flowNodeTargets>
+          </initialNode>
+          <opaqueAction Id="a31e491e-b3b5-4ebf-9e4a-32aa046edcbf" name="查询项目任务" isLeaf="false">
+            <elementDefinition Id="d1e996fb-e898-4d7e-8df3-3ac43c3b0163" />
+            <flowNodeTargets>
+              <controlFlow Id="27516a53-849c-456b-97aa-c16545da6d96" isLeaf="false">
+                <activityFinalNodeMoniker Id="ad5f2f89-6f9f-4287-9f53-30672dd1281f" LastKnownName="ActivityFinal1" />
+                <elementDefinition Id="a0ebe08d-fe63-478a-9a6f-007971e0e518" />
+              </controlFlow>
+            </flowNodeTargets>
+          </opaqueAction>
+          <activityFinalNode Id="ad5f2f89-6f9f-4287-9f53-30672dd1281f" name="ActivityFinal1" isLeaf="false">
+            <elementDefinition Id="1490ed59-9ee9-45cf-befc-d2ad76d8fa25" />
+          </activityFinalNode>
+        </nodes>
+      </activity>
+    </activityRootModelHasActivity>
+  </packagedElements>
+  <package Id="a59f92e0-4a60-4bee-baa7-f556f875375f" name="HCJXUML">
+    <elementDefinition Id="6348ac1d-75ba-4a39-8ebf-237333c18d4f" />
+  </package>
+</activityRootModel>

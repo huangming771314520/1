@@ -1,0 +1,271 @@
+﻿
+@{
+    ViewBag.Title = "PRS_ProcessRouteModelMainDetail";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@section scripts{
+    <script src="/Content/js/viewModel/com.viewModel.edit.js"></script>
+    <script type="text/javascript">
+    using(['validatebox', 'combobox','lookup','datebox','numberbox','datetimebox','combogrid','combotree','extend','menu'],easyuifix.datagrid_editor_extend);
+    var myself;
+    var viewModel = function(data){
+        var self = this;
+        com.viewModel.edit.apply(self,arguments);
+        myself=self;
+        var tab_height=($(window).height()/2)+50;
+        this.grid0.size={w:8,h:tab_height};
+        this.grid1.size={w:5,h:tab_height};
+
+        this.grid0.onClickRow = function(){
+            self.gridEdit0.ended();
+            self.gridEdit1.ended();
+            loadTabsData();
+        }
+
+        this.grid1 = {
+            //url: self.urls.query,
+            queryParams: ko.observable(),
+            pagination: true,
+            checkOnSelect: true,
+            selectOnCheck: false,
+            singleSelect: true,
+            width:1000,
+            fitColumns:false,
+            toolbar:"gridtb1"
+        };
+        this.grid1.nowrap = false;
+        //this.gridEdit = new com.editGridViewModel(this.grid);
+
+
+        this.gridEdit0 = new com.editGridViewModel(self.grid0);
+        //this.grid0.onDblClickRow = this.gridEdit0.begin;
+
+        this.grid0.onDblClickRow = this.gridEdit0.begin;
+        this.addClick_one=function(){
+            var row = $.extend({}, self.tabs[0].defaults);
+            var crow = $("#tt").datagrid("getRows");
+            if (crow.length<=0) {
+                row.ProcessLineCode=1;
+            }else
+            {
+                var p=crow[crow.length-1].ProcessLineCode+1;
+                row.ProcessLineCode=p;
+            }
+            row.IsEnable=1;
+            self.gridEdit0.addnew(row);
+        }
+
+        this.gridEdit1 = new com.editGridViewModel(self.grid1);
+        this.grid1.onClickRow = this.gridEdit1.begin;
+        this.grid1.addRowClick=function(){
+            var row = $.extend(true,{}, {});
+            self.gridEdit1.addnew(row);
+        }
+
+
+        this.StorageClick=function(){
+            var post = {
+                ID:self.dataSource.pageData.form.ID,
+            };
+            com.ajax({
+                type:'POST',
+                url:self.urls.storageSave,
+                data:JSON.stringify(post),
+                success:function(d){
+                    com.message('success',d);
+                    window.location.reload();
+                }
+            });
+        }
+
+        this.saveClick1 = function () {
+
+            self.gridEdit0.ended();
+            self.gridEdit1.ended(); //结束grid编辑状态
+            self.gridEdit0.endAllLine();
+            self.gridEdit1.endAllLine();
+
+            var tbRows = $("#tt").datagrid("getRows");
+            for (var i = 0; i < tbRows.length; i++) {
+                if (tbRows[i].ProcessCode == "" || tbRows[i].ProcessName == "") {
+                    com.message('success', "模型下工序不能为空！");
+                    return;
+                }
+            }
+
+            if (self.pageData.form.ProcessRouteName()=="") {
+                com.message('success',"工艺路线模型名称不可为空！");
+                return;
+            }
+            //数据验证
+            var validMessage = self.fnIsPageValid();
+            if (validMessage) {
+                com.message('warning', validMessage);
+                return;
+            }
+
+            //取得数据
+            var post = self.fnIsPageChanged();
+            if (!post._changed) {
+                com.message('success', '页面没有数据被修改！');
+                return;
+            }
+
+
+
+
+            //数据提交
+            com.ajax({
+                url: self.urls.edit,
+                data: ko.toJSON(post),
+                success: function (d) {
+
+                            com.message('success', self.resx.editSuccess);
+                            self.grid0.queryParams({ContractCode:self.form.ContractCode,PartCode:self.form.ChoosePartCode});
+                            window.location.reload();
+                }
+            });
+
+
+
+        }
+        this.gridEdit0 = new com.editGridViewModel(this.grid0);
+        this.addClick_one=function(){
+            var row = $.extend({}, self.tabs[0].defaults);
+            var crow = $("#tt").datagrid("getRows");
+            if (crow.length<=0) {
+                row.ProcessLineCode=1;
+            }else
+            {
+                var p=crow[crow.length-1].ProcessLineCode+1;
+                row.ProcessLineCode=p;
+            }
+            row.IsEnable=1;
+            self.gridEdit0.addnew(row);
+        }
+
+    }
+    var data = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model));
+    ko.bindingViewModel(new viewModel(data));
+    function loadTabsData()
+    {
+        var row = myself.grid0.datagrid('getSelected');
+        if (row==null) {
+            return;
+        }
+        myself.grid1.url="/api/Mms/PRS_ProcessRouteModelDetail/GetStepsData/";
+            myself.grid1.queryParams({id:row.ID});
+    }
+    </script>
+}
+
+<div class="z-toolbar">
+    <a id="a_save" href="#" plain="true" class="easyui-linkbutton" icon="icon-save" data-bind="click:readonly()?null:saveClick1,linkbuttonDisable:readonly" title="保存">保存</a>
+    @*<a id="a_undo" href="#" plain="true" class="easyui-linkbutton" icon="icon-undo" data-bind="click:readonly()?null:rejectClick,linkbuttonDisable:readonly" title="撤消">撤消</a>*@
+    <a id="a_audit" href="#" plain="true" class="easyui-linkbutton" icon="icon-user-accept" data-bind="click:StorageClick" title="发布">发布</a>
+    @*<a id="a_printer" href="#" plain="true" class="easyui-linkbutton" icon="icon-printer" title="打印" data-bind="click:printClick">打印</a>*@
+    @*<div class="datagrid-btn-separator"></div>
+        <a id="a_other" href="#" class="easyui-splitbutton" data-options="menu:'#divother',iconCls:'icon-application_go'" title="其他">其他</a>
+        <div class="datagrid-btn-separator"></div>
+        <a id="a_first" href="#" plain="true" class="easyui-linkbutton" icon="icon-resultset_first" data-bind="click:firstClick,linkbuttonEnable:pageData.scrollKeys.firstEnable" title="第一条"></a>
+        <a id="a_previous" href="#" plain="true" class="easyui-linkbutton" icon="icon-resultset_previous" data-bind="click:previousClick,linkbuttonEnable:pageData.scrollKeys.previousEnable" title="上一条"></a>
+        <a id="a_next" href="#" plain="true" class="easyui-linkbutton" icon="icon-resultset_next" data-bind="click:nextClick,linkbuttonEnable:pageData.scrollKeys.nextEnable" title="下一条"></a>
+        <a id="a_last" href="#" plain="true" class="easyui-linkbutton" icon="icon-resultset_last" data-bind="click:lastClick,linkbuttonEnable:pageData.scrollKeys.lastEnable" title="最后一条"></a>*@
+</div>
+<div id="master" class="container_12" data-bind="inputwidth:0.9">
+    <div class="grid_1 lbl">工艺路线编码</div>
+    <div class="grid_3 val"><input type="text" data-bind="value:pageData.form.ProcessRouteCode ,readOnly:false" class="z-txt " /></div>
+    <div class="grid_1 lbl">工艺路线名称</div>
+    <div class="grid_3 val"><input type="text" data-bind="value:pageData.form.ProcessRouteName ,readOnly:false" class="z-txt " /></div>
+
+    <div class="clear"></div>
+    <div class="grid_1 lbl">合同号</div>
+    <div class="grid_3 val"><input type="text" data-bind="value:pageData.form.ContractCode ,readOnly:true" class="z-txt " /></div>
+    <div class="grid_1 lbl">零件号</div>
+    <div class="grid_3 val"><input type="text" data-bind="value:pageData.form.PartCode ,readOnly:true" class="z-txt " /></div>
+    <div class="grid_1 lbl">图号</div>
+    <div class="grid_3 val"><input type="text" data-bind="value:pageData.form.PartFigure ,readOnly:true" class="z-txt " /></div>
+    <div class="clear"></div>
+</div>
+<div class="easyui-panel" title="工序明细" style="background:#fafafa; " data-options="collapsible:true,collapsed:false,height:($(window).height()/2)-20">
+    <table data-bind="datagrid:grid0" id="tt">
+        <thead>
+            <tr>
+                <th field="ID" sortable="true" align="left" width="80" editor="text" hidden>主键ID</th>
+                <th field="ProcessLineCode" sortable="true" align="left" width="80" editor="text">工序行号</th>
+
+                <th field="ProcessName" sortable="true" align="left" width="100" editor="{type:'combogrid',options:{
+                        url:'/Commons/GetCommonSearchList',
+                    queryParams : {
+                     tableName:'[PRS_BD_StandardProcess]',
+                         searchField:'[ProcessCode],[ProcessName]',
+                        whereSql:' IsEnable=1 ',
+                         firstFightField:'[ProcessCode]',
+                                     connName:'Mms'
+                            },
+                            method: 'GET',
+                            panelWidth:400,
+                            fit:true,
+                            delay: 1000,
+                            mode: 'remote',
+                            value: 'ProcessCode',
+                            idField: 'ProcessName',
+                            textField: 'ProcessName',
+                            columns:[[
+                            { field: 'ProcessCode',title: '工序编码',width: 200 },
+                            { field: 'ProcessName',title: '工序名称',width: 200 }
+                                ]],
+                    onSelect: function (rowIndex, rowData) {
+                           var index =  $('#tt').datagrid('getRowIndex',$('#tt').datagrid('getSelected'));
+                           $('#tt').datagrid('getEditor',{index:index,field:'ProcessCode'}).target.val(rowData['ProcessCode']);
+                         $('#tt').datagrid('getEditor',{index:index,field:'ProcessName'}).target.val(rowData['ProcessName']);
+
+                },
+
+                 keyHandler:{
+                   query:function(keyword) {
+                   var queryParams=$(this).combogrid('grid').datagrid('options').queryParams;
+                   queryParams.keyword=keyword;
+                   $(this).combogrid('grid').datagrid('options').queryParams=queryParams;
+                   $(this).combogrid('grid').datagrid('reload');
+                  $(this).combogrid('setValue', keyword);
+                }}
+                }}">标准工序</th>
+                <th field="ProcessCode" sortable="true" align="left" width="80" editor="text" hidden></th>
+                <th field="Remark" sortable="true" align="left" width="80" editor="text">备注</th>
+            </tr>
+        </thead>
+    </table>
+
+    <div id="gridtb0">
+        <a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-add',plain:true" data-bind="click:addClick_one,linkbuttonDisable:readonly">新增</a>
+        <a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-edit',plain:true" data-bind="click:readonly()?null:grid0.onDblClickRow,linkbuttonDisable:readonly">编辑</a>
+        <a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-remove',plain:true" data-bind="click:readonly()?null:grid0.removeRowClick,linkbuttonDisable:readonly">删除</a>
+    </div>
+</div>
+
+<div class="easyui-tabs">
+    <div title="工步明细">
+        <table data-bind="datagrid:grid1">
+            <thead>
+                <tr>
+
+                    <th field="ID" sortable="true" align="left" width="80" editor="text" hidden="hidden"></th>
+                    <th field="MainID" sortable="true" align="left" width="80" editor="text" hidden="hidden">工序ID</th>
+                    <th field="WorkStepsLineCode" sortable="true" align="left" width="80">工步行号</th>
+                    <th field="WorkStepsName" sortable="true" align="left" width="80">工步名称</th>
+                    <th field="WorkStepsContent" sortable="true" align="left" width="350">工步描述</th>
+                    <th field="ManHours" sortable="true" align="left" width="80">工时定额</th>
+                </tr>
+            </thead>
+            @*<div id="gridtb1">
+                    <a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-search',plain:true" data-bind="click:readonly()?null:grid1.addRowClick,linkbuttonDisable:readonly">新增</a>
+                    <a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-edit',plain:true" data-bind="click:readonly()?null:grid1.onClickRow,linkbuttonDisable:readonly">编辑</a>
+                    <a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-remove',plain:true" data-bind="click:readonly()?null:grid1.removeRowClick,linkbuttonDisable:readonly">删除</a>
+                </div>*@
+        </table>
+
+
+    </div>
+</div>

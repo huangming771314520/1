@@ -1,0 +1,62 @@
+﻿@{
+    ViewBag.Title = "PMS_ProjectPlanSearch";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var Cols = new Zephyr.Models.sys_roleMenuColumnMapService().GetCurrentUserMenuColumns();
+}
+
+@section scripts{
+    <script src="/Content/js/viewModel/com.viewModel.search.js"></script>
+    <script type="text/javascript">
+        var myself;
+        var data = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model));
+        var viewModel = function(){
+            var self = this;
+            com.viewModel.search.apply(this,arguments);
+            myself=self;
+            
+            this.searchClick=function () {
+                com.ajax({
+                    type:'POST',
+                    async:false,
+                    url:"/api/Mms/PMS_ProjectPlanSearch/PostGetColumns",
+                    success:function(d){
+                        myself.grid.columns=JSON.parse(d.replace(/#/g,"\""));
+                    }
+                });
+                param = ko.toJS(this.form);
+                myself.grid.queryParams(param);
+            }
+            myself.searchClick();
+
+        }
+        ko.bindingViewModel(new viewModel(data));
+
+        //$(document).ready(function(){
+        //    myself.searchClick();
+        //});
+    </script>
+}
+
+
+<div class="container_12" style="position:relative;">
+    <div class="grid_1 lbl">合同编号</div>
+    <div class="grid_2 val"><input type="text" data-bind="value:form.ContractCode" class="z-txt " /></div>
+
+    <div class="clear"></div>
+    <div class="grid_1 lbl">&nbsp;</div>
+    <div class="grid_2 val">&nbsp;</div>
+    <div class="clear"></div>
+
+    <div class="prefix_9" style="position:absolute;top:5px;height:0;">
+        <a id="a_search" href="#" class="buttonHuge button-blue" data-bind="click:searchClick" style="margin:0 15px;">查询</a>
+        <a id="a_reset" href="#" class="buttonHuge button-blue" data-bind="click:clearClick">清空</a>
+    </div>
+</div>
+
+<table data-bind="datagrid:grid">
+    @*<thead>
+        <tr>
+            
+        </tr>
+    </thead>*@
+</table>

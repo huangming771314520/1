@@ -1,0 +1,122 @@
+﻿@{
+
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title></title>
+
+    <link href="~/Content/js/jquery-easyui-1.7.0/themes/icon.css" rel="stylesheet" />
+    <link href="~/Content/js/jquery-easyui-1.7.0/themes/default/easyui.css" rel="stylesheet" />
+    <style type="text/css">
+        * {
+            font-family: "微软雅黑";
+        }
+    </style>
+
+</head>
+
+<body>
+    <div class="easyui-panel" title="入库单报表" style="padding:20px;">
+        <div style="margin-bottom:10px;">
+            <label class="tile-content">入库日期：</label>
+            <input id="storageInDate" class="easyui-datebox" prompt="" style="width:150px">
+            <input  class="easyui-textbox" label="库管员:" id="storeKeeper" prompt="" style="width:200px">
+            <input class="easyui-textbox" label="供应商:" id="supplierName" prompt="" style="width:200px">
+            <input class="easyui-textbox" label="入库仓库:" id="warehouseName" prompt="" style="width:200px">
+            <a id="search" href="#" class="easyui-linkbutton" icon="icon-search"><span style="font-size:16px">查询</span></a>
+        </div>
+        <hr style=" height:1px;border:none;border-top:1px solid #efefef;margin:20px 0px;" />
+        <table id="DataShow" rownumbers="true" class="easyui-datagrid" style="width:100%;height:300px;"></table>
+    </div>
+
+
+    <script src="~/Content/js/jquery-easyui-1.7.0/jquery.min.js"></script>
+    <script src="~/Content/js/jquery-easyui-1.7.0/jquery.easyui.min.js"></script>
+    <script src="~/Content/js/jquery-easyui-1.7.0/locale/easyui-lang-zh_CN.js"></script>
+    <script type="text/javascript">
+        $().ready(function () {
+            //@*DateTime? storageInDate, string supplierName, string warehouseName,string storeKeeper*@
+            $("#search").click(function () {
+                $('#DataShow').datagrid({
+                    queryParams: {
+                        storageInDate: $("#storageInDate").datebox("getValue"),
+                        supplierName: $("#supplierName").textbox("getValue"),
+                        warehouseName: $("#warehouseName").textbox("getValue"),
+                        storeKeeper: $("#storeKeeper").textbox("getValue"),
+                    }
+                });
+            })
+            $('#DataShow').datagrid({
+                method: 'get',
+                url: "/api/Mms/WMS_BN_BillDetail/GetSearchInWarehouseData",
+                queryParams: {
+                    storageInDate: "",
+                    supplierName: "",
+                    warehouseName: "",
+                    storeKeeper: "",
+                },
+
+                /*
+t1.BillCode,
+t1.ContractCode,
+t1.ProjectName,
+t1.SupplierCode,
+t1.SupplierName,
+t1.WarehouseCode,
+t1.WarehouseName,
+t3.UserCode,
+t3.StoreKeeper
+t1.ApproveState,
+t1.ApprovePerson,
+t1.ApproveDate,
+t2.InventoryCode,
+t2.InventoryName,
+t2.Specs,
+t2.Unit,
+t2.MateNum,
+t2.ConfirmNum,
+t2.UnitPrice,
+t2.TotalPrice,
+t2.BatchCode,
+
+                */
+                columns: [[
+                    { field: 'BillCode', title: '入库单号', width: 150 },
+                    { field: 'ContractCode', title: '合同编号', width: 120 },
+                    { field: 'ProjectName', title: '工程项目', width: 200 },
+                    { field: 'WarehouseCode', title: '仓库编码', width: 100, hidden: true },
+                    { field: 'WarehouseName', title: '仓库名称', width: 100 },
+                    { field: 'SupplierCode', title: '供应商编码', width: 100, hidden: true },
+                    { field: 'SupplierName', title: '供应商名称', width: 100 },
+                    { field: 'UserCode', title: '库管员编码', width: 100, hidden: true },
+                    { field: 'StoreKeeper', title: '库管员名称', width: 100 },
+                    {
+                        field: 'ApproveState', title: '单据状态', width: 100, formatter: function (value) {
+                            return value == 2 ? '已审核' : '未审核';
+                        }
+                    },
+                     { field: 'ApprovePerson', title: '审批人', width: 100 },
+                      { field: 'ApproveDate', title: '审批时间', width: 100 },
+                    { field: 'InventoryCode', title: '存货编码', width: 100 },
+                    { field: 'InventoryName', title: '存货名称', width: 150 },
+                    { field: 'MateNum', title: '物料数量', width: 150 },
+                    { field: 'ConfirmNum', title: '确认数量', width: 120 },
+                    { field: 'Specs', title: '型号规格', width: 120 },
+                    { field: 'Unit', title: '单位', width: 60 },
+                    { field: 'UnitPrice', title: '单价', width: 120 },
+                    { field: 'TotalPrice', title: '总价', width: 200 },
+                    {
+                        field: 'BatchCode', title: '批次号', width: 200
+                    },
+
+                ]]
+            });
+        })
+    </script>
+
+</body>
+</html>

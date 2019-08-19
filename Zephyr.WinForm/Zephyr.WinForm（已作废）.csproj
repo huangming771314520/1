@@ -1,0 +1,162 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{AC15258C-C7FE-4F9E-BC2E-4789FA924CE3}</ProjectGuid>
+    <OutputType>WinExe</OutputType>
+    <RootNamespace>Zephyr.WinForm</RootNamespace>
+    <AssemblyName>Zephyr.WinForm</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <Deterministic>true</Deterministic>
+    <SccProjectName>SAK</SccProjectName>
+    <SccLocalPath>SAK</SccLocalPath>
+    <SccAuxPath>SAK</SccAuxPath>
+    <SccProvider>SAK</SccProvider>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>favicon_64.ico</ApplicationIcon>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Newtonsoft.Json, Version=4.5.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.5.0.6\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="SkinH_CS, Version=1.0.7.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>Skin\SkinH_CS.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Deployment" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Content\ConfirmMaterialForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Content\ConfirmMaterialForm.Designer.cs">
+      <DependentUpon>ConfirmMaterialForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Content\DrawingsShowForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Content\DrawingsShowForm.Designer.cs">
+      <DependentUpon>DrawingsShowForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Content\EquipmentMaintenanceForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Content\EquipmentMaintenanceForm.Designer.cs">
+      <DependentUpon>EquipmentMaintenanceForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Content\LoginForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Content\LoginForm.Designer.cs">
+      <DependentUpon>LoginForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Content\PrintBarcodeForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Content\PrintBarcodeForm.Designer.cs">
+      <DependentUpon>PrintBarcodeForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Content\ProducePlanForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Content\ProducePlanForm.Designer.cs">
+      <DependentUpon>ProducePlanForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Helpers\HttpHelper.cs" />
+    <Compile Include="Models\EquipmentMaintenancePlanModel.cs" />
+    <Compile Include="Models\MaterialDetailModel.cs" />
+    <Compile Include="Models\PartInfoModel.cs" />
+    <Compile Include="Models\ProducePlanInfoModel.cs" />
+    <Compile Include="Models\WorkGroupInfoModel.cs" />
+    <Compile Include="Program.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <EmbeddedResource Include="Content\ConfirmMaterialForm.resx">
+      <DependentUpon>ConfirmMaterialForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Content\DrawingsShowForm.resx">
+      <DependentUpon>DrawingsShowForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Content\EquipmentMaintenanceForm.resx">
+      <DependentUpon>EquipmentMaintenanceForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Content\LoginForm.resx">
+      <DependentUpon>LoginForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Content\PrintBarcodeForm.resx">
+      <DependentUpon>PrintBarcodeForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Content\ProducePlanForm.resx">
+      <DependentUpon>ProducePlanForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Resources.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <None Include="packages.config" />
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+    </Compile>
+    <None Include="Skin\grape.she" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config">
+      <SubType>Designer</SubType>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\favicon_64.ico" />
+    <None Include="Resources\favicon_128.ico" />
+    <None Include="Resources\logo.png" />
+    <None Include="Resources\favicon_32.ico" />
+    <Content Include="favicon_64.ico" />
+    <Content Include="Skin\SkinH_CS.dll" />
+    <Content Include="Skin\SkinH_Net.dll" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>

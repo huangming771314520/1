@@ -1,0 +1,161 @@
+﻿@{
+    ViewBag.Title = "APS_ProjectProduceDetial";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@section scripts{
+    <script src="/Content/js/viewModel/com.viewModel.searchEdit.js"></script>
+    @*<script src="~/Content/Highcharts/highcharts.js"></script>*@
+    <script src="~/Content/Highcharts/highstock.js"></script>
+    <script src="~/Content/Highcharts/modules/exporting.js"></script>
+    <script type="text/javascript">
+        using(['validatebox', 'combobox','lookup','numberbox','datebox','datetimebox','combogrid','combotree','extend','menu'],easyuifix.datagrid_editor_extend);
+        var myself;
+        var viewModel = function(data){
+            var self = this;
+            com.viewModel.searchEdit.apply(self,arguments);
+        }
+        var data = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model));
+        ko.bindingViewModel(new viewModel(data));
+
+        showPic();
+
+        function showPic(){
+            var PlanedStartTime;
+            var PlanedFinishTime;
+            var time = new Date();
+            try{
+                PlanedStartTime=$("#PlanedStartTime").datebox("getValue");
+                PlanedFinishTime=$("#PlanedFinishTime").datebox("getValue");
+            }catch(e){
+                PlanedStartTime=com.formatTime(time); //显示系统时间
+                PlanedFinishTime=com.formatTime(time);
+            }
+            var minDate=new Date(PlanedStartTime);
+            var maxDate=new Date(PlanedFinishTime);
+            com.ajax({
+                type: 'GET',
+                url: "/api/mms/APS_ProjectProduceDetial/GetProduceInfo",
+                data:{PlanedStartTime:PlanedStartTime,PlanedFinishTime:PlanedFinishTime},
+                success: function (d) {
+                    var chart = Highcharts.chart('container', {
+                        chart: {
+                            type: 'bar',
+                            //zoomType: 'xy'
+                        },
+                        title: {
+                            text: '生产计划图表'
+                        },                       
+                        xAxis: {
+                            min: 0,
+                            max: 4,
+                            tickLength: 0,
+                            categories: d.ydata,
+                            scrollbar: {
+                                enabled: true,
+                            }
+                        },
+                        yAxis: {
+                            type: 'datetime',
+                            min:Date.UTC(minDate.getFullYear(), minDate.getMonth(), minDate.getDate(),0,0,0), 
+                            max:Date.UTC(minDate.getFullYear(), minDate.getMonth(), minDate.getDate()+5,0,0,0), 
+                            tickInterval:  24 * 3600 * 1000,
+                            //格式化时间，day,week....
+                            dateTimeLabelFormats: {
+                                day: '%Y-%m-%d'
+                            }, 
+                            title: {
+                                text: '生产计划'
+                            },
+                            scrollbar: {
+                                enabled: true,
+                            }
+                        },
+                        legend: {
+                            /* 图例显示顺序反转
+                             * 这是因为堆叠的顺序默认是反转的，可以设置 
+                             * yAxis.reversedStacks = false 来达到类似的效果 
+                             */
+                            reversed: false,
+                            enabled:false
+                        },
+                        plotOptions: {
+                            series: {
+                                stacking: 'normal'
+                            },
+                            bar:{
+                                colorByPoint:true
+                            }
+                        },
+                        series: [
+                       {
+                            name:'工序3',
+                            colors:d.colora,
+                            data:d.cdata,
+                            stack: 'plan'
+                        },{
+                            name:'工序2',
+                            colors:d.colorb,
+                            data:d.bdata,
+                            stack: 'plan'
+                        },{
+                            name:'工序1', 
+                            colors:d.colorc,
+                            data:d.adata,
+                            stack: 'plan'
+                        }, {
+                            name:'工序6', 
+                            colors:d.colord,
+                            data:d.fdata,
+                            stack: 'actual'
+                        },
+                        {
+                            name:'工序5',
+                            //colors:['red','red','red','red','red'],
+                            colors:d.colore,
+                            data:d.edata,
+                            stack: 'actual'
+                        },
+                        {
+                            name:'工序4',
+                            colors:d.colorf,
+                            data:d.ddata,
+                            stack: 'actual'
+                        }
+                        ]
+                    });
+                }
+            });
+        }
+    </script>
+}
+<div class="z-toolbar">
+    <a href="#" plain="true" class="easyui-linkbutton" icon="icon-arrow_refresh" title="刷新" data-bind="click:refreshClick">刷新</a>
+    @*<a href="#" plain="true" class="easyui-linkbutton" icon="icon-add" title="新增" data-bind="click:addClick">新增</a>
+    <a href="#" plain="true" class="easyui-linkbutton" icon="icon-edit" title="编辑" data-bind="click:editClick">编辑</a>
+    <a href="#" plain="true" class="easyui-linkbutton" icon="icon-save" title="保存" data-bind="click:saveClick">保存</a>
+    <a href="#" plain="true" class="easyui-splitbutton" data-options="menu:'#dropdown',iconCls:'icon-download'">导出</a>*@
+
+</div>
+
+<div id="dropdown" style="width:100px; display:none;">
+    <div data-options="iconCls:'icon-ext-xls'" suffix="xls" data-bind="click:downloadClick">Excel2003   </div>
+    <div data-options="iconCls:'icon-page_excel'" suffix="xlsx" data-bind="click:downloadClick">Excel2007   </div>
+    <div data-options="iconCls:'icon-ext-doc'" suffix="doc" data-bind="click:downloadClick">Word2003    </div>
+</div>
+
+<div class="container_12" style="position:relative;">
+    <div class="grid_1 lbl">计划开始时间</div>
+    <div class="grid_2 val"><input type="text" id="PlanedStartTime" data-bind="dateboxValue:form.PlanedStartTime" class="z-txt easyui-datebox" /></div>
+    <div class="grid_1 lbl">计划结束时间</div>
+    <div class="grid_2 val"><input type="text" id="PlanedFinishTime" data-bind="dateboxValue:form.PlanedFinishTime" class="z-txt easyui-datebox" /></div>
+    
+    <div class="clear"></div>
+    <div class="prefix_9" style="position:absolute;top:-1px;height:0;">
+        <a id="a_search" href="#" class="buttonHuge button-blue" data-bind="click:searchClick" style="margin:0 15px;" onclick="showPic()">查询</a>
+        <a id="a_reset" href="#" class="buttonHuge button-blue" data-bind="click:clearClick">清空</a>
+    </div>
+</div>
+ 
+<div id="container" style="height:400px; width:90%"></div>
+

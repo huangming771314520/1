@@ -1,0 +1,129 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<activityRootModel xmlns:dm0="http://schemas.microsoft.com/VisualStudio/2008/DslTools/Core" xmlns:dm1="http://schemas.microsoft.com/dsltools/Kernel" xmlns:dm2="http://schemas.microsoft.com/dsltools/Component" xmlns:dm3="http://schemas.microsoft.com/dsltools/UseCase" xmlns:dm4="http://schemas.microsoft.com/dsltools/Activity" xmlns:dm5="http://schemas.microsoft.com/dsltools/Interaction" xmlns:dm6="http://schemas.microsoft.com/dsltools/UmlModelLibrary" xmlns:dm7="http://schemas.microsoft.com/dsltools/UmlDiagrams" xmlns:dm8="http://schemas.microsoft.com/dsltools/ModelStore" xmlns:dm9="http://schemas.microsoft.com/dsltools/SimpleShapesModel" dslVersion="1.0.0.0" Id="cb6ea771-6456-4422-935a-ed2b5fab0058" name="0201标准工序" linkedPackageId="636f1870-0cb7-48b9-bc9b-1a1386392121" xmlns="http://schemas.microsoft.com/VisualStudio/TeamArchitect/ActivityDesigner">
+  <ownedCommentsInternal>
+    <comment Id="4b78d46b-a893-4f0a-b2aa-d02beda8edce">
+      <elementDefinition Id="f1594eed-f9e4-4315-b8cd-7040a975028c" />
+      <body>1、工序编号自动生成；
+2、工序名称必填，做校验，已存在有效的工序提示“该工序已存在”；
+3、工序类型必选；</body>
+      <annotatedElements>
+        <opaqueActionMoniker Id="8b96de1e-71ef-4e8f-aa9c-31b09cfa0947" LastKnownName="新增工序" />
+      </annotatedElements>
+    </comment>
+    <comment Id="db2619c3-35b1-4661-b290-2a1f3aa15ea3">
+      <elementDefinition Id="dd6bcf6d-6833-4dc0-8067-4bf66635fcef" />
+      <body>SELECT
+    --主键
+    A.ID,
+    --工序编号
+    A.ProcessCode,
+    --工序名称
+    A.ProcessName,
+    --工序说明
+    A.Instracutions,
+    --工序类型
+    B.Text,
+    --是否有效
+    A.IsEnable
+FROM [dbo].[PRS_BD_StandardProcess] A
+    LEFT JOIN [HBHC_Sys].[dbo].[sys_code] B
+        ON A.ProcessType = B.Value
+           AND B.CodeType = 'ProcessType'
+           AND B.IsEnable = '1';</body>
+      <annotatedElements>
+        <opaqueActionMoniker Id="06c6d585-3e47-4c33-820d-d2314d493c9a" LastKnownName="查询工序" />
+      </annotatedElements>
+    </comment>
+    <comment Id="8f65ba8c-3c36-4b21-8835-5d727aa2cce5">
+      <elementDefinition Id="4752a83d-0079-4fdb-b258-0f98d665344b" />
+      <body>1、只能修改可用的工序，如果修改无效的工序，提示“无效工序不可修改，请选择有效工序”
+2、可以修改工序名称，工序名称必填，做校验，已存在有效的工序提示“该工序已存在”；
+3、可以修改工序说明；
+4、可以修改工序类型，必选；</body>
+      <annotatedElements>
+        <opaqueActionMoniker Id="f15a775d-e3bb-448e-adac-b36c79068186" LastKnownName="修改工序" />
+      </annotatedElements>
+    </comment>
+    <comment Id="86c917dd-4f33-4c69-9328-d481f8d667fb">
+      <elementDefinition Id="20f53b38-48b6-48b0-908e-8d0d93016a95" />
+      <body>提示“请确认是否删除？”</body>
+      <annotatedElements>
+        <opaqueActionMoniker Id="4042f547-ec1c-45d0-bc35-0553ea7c377b" LastKnownName="删除工序" />
+      </annotatedElements>
+    </comment>
+  </ownedCommentsInternal>
+  <packagedElements>
+    <activityRootModelHasActivity>
+      <activity Id="cb4c5e66-c760-4f68-8b84-4e2cfcbb5968" name="0201标准工序" isAbstract="false" isLeaf="false" isActiveClass="false" isReentrant="false" isReadOnly="false" isSingleExecution="false">
+        <elementDefinition Id="1496879b-dddf-4c82-9b88-bb9620706eda" />
+        <nodes>
+          <initialNode Id="16797e7b-ba67-456c-9579-f9b5b712ed34" name="Initial1" isLeaf="false">
+            <elementDefinition Id="ae6521f7-a111-446a-b6f1-6e2f4cef1cd5" />
+            <flowNodeTargets>
+              <controlFlow Id="0427e1ae-72da-4947-ae8d-522d57ed2701" isLeaf="false">
+                <opaqueActionMoniker Id="8b96de1e-71ef-4e8f-aa9c-31b09cfa0947" LastKnownName="新增工序" />
+                <elementDefinition Id="b327156b-8245-44f2-81d5-964ca4c3cd19" />
+              </controlFlow>
+            </flowNodeTargets>
+          </initialNode>
+          <opaqueAction Id="8b96de1e-71ef-4e8f-aa9c-31b09cfa0947" name="新增工序" isLeaf="false">
+            <elementDefinition Id="4039133c-7c01-492f-a6ef-1c34b950a789" />
+            <flowNodeTargets>
+              <controlFlow Id="c8d3e47a-b789-4e28-a870-6c655ee27524" isLeaf="false">
+                <opaqueActionMoniker Id="f15a775d-e3bb-448e-adac-b36c79068186" LastKnownName="修改工序" />
+                <elementDefinition Id="7ed879d9-c6c6-4f44-bb62-2a58a78f4658" />
+              </controlFlow>
+            </flowNodeTargets>
+          </opaqueAction>
+          <activityFinalNode Id="9603a298-2877-4f90-93e1-4fcaab87412a" name="ActivityFinal1" isLeaf="false">
+            <elementDefinition Id="36d8ee98-7ce7-4133-9493-df8a4af911c9" />
+          </activityFinalNode>
+          <opaqueAction Id="f15a775d-e3bb-448e-adac-b36c79068186" name="修改工序" isLeaf="false">
+            <elementDefinition Id="85eee4d2-566f-48df-b9da-2d9c0ba4de0b" />
+            <flowNodeTargets>
+              <controlFlow Id="c417230b-ece0-466c-a85a-2bbe84177134" isLeaf="false">
+                <opaqueActionMoniker Id="4042f547-ec1c-45d0-bc35-0553ea7c377b" LastKnownName="删除工序" />
+                <elementDefinition Id="a3a114b5-749e-42e8-a030-54f60489ec15" />
+              </controlFlow>
+            </flowNodeTargets>
+          </opaqueAction>
+          <opaqueAction Id="06c6d585-3e47-4c33-820d-d2314d493c9a" name="查询工序" isLeaf="false">
+            <elementDefinition Id="6f2189a3-f0e6-4f88-8a32-3664c0b18ee6" />
+            <flowNodeTargets>
+              <controlFlow Id="b79898c6-324d-4cf2-9cbb-b5bdea3fa31b" isLeaf="false">
+                <activityFinalNodeMoniker Id="9603a298-2877-4f90-93e1-4fcaab87412a" LastKnownName="ActivityFinal1" />
+                <elementDefinition Id="1244a5c1-66db-4ab9-bcdb-ee3620651247" />
+              </controlFlow>
+            </flowNodeTargets>
+          </opaqueAction>
+          <opaqueAction Id="4042f547-ec1c-45d0-bc35-0553ea7c377b" name="删除工序" isLeaf="false">
+            <elementDefinition Id="2c345481-052e-49b9-a2f1-9a5159f317b0" />
+            <flowNodeTargets>
+              <controlFlow Id="9c4e79e0-6728-4131-b65d-bb83d37295df" isLeaf="false">
+                <opaqueActionMoniker Id="06c6d585-3e47-4c33-820d-d2314d493c9a" LastKnownName="查询工序" />
+                <elementDefinition Id="1777018d-bbb8-4296-b69e-b27fc1f45f4f" />
+              </controlFlow>
+            </flowNodeTargets>
+          </opaqueAction>
+        </nodes>
+      </activity>
+    </activityRootModelHasActivity>
+  </packagedElements>
+  <package Id="636f1870-0cb7-48b9-bc9b-1a1386392121" name="HCJXUML">
+    <elementDefinition Id="6348ac1d-75ba-4a39-8ebf-237333c18d4f" />
+    <profileInstances>
+      <packageHasProfileInstances Id="448f5e7c-6057-4292-8199-3bf0fce8b731">
+        <profileInstance Id="86402721-bf85-4d0e-ab3d-49f73ca2cfc7" name="StandardProfileL2">
+          <elementDefinition Id="e34d544e-0fea-4ed6-ac5e-1b74119ac791" />
+        </profileInstance>
+        <elementDefinition Id="0caec977-1f8c-4ba3-a7db-8cc9ad9cc73b" />
+      </packageHasProfileInstances>
+      <packageHasProfileInstances Id="28802cfb-a6b5-4623-a428-4b1c152234a1">
+        <profileInstance Id="3b6c229e-710d-4e51-93dd-c7db3cbb9415" name="StandardProfileL3">
+          <elementDefinition Id="532ea607-fb19-44b8-8502-3351b05452be" />
+        </profileInstance>
+        <elementDefinition Id="29349502-908c-4fda-9054-c48619c59ed0" />
+      </packageHasProfileInstances>
+    </profileInstances>
+  </package>
+</activityRootModel>

@@ -1,0 +1,89 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<activityRootModel xmlns:dm0="http://schemas.microsoft.com/VisualStudio/2008/DslTools/Core" xmlns:dm1="http://schemas.microsoft.com/dsltools/Kernel" xmlns:dm2="http://schemas.microsoft.com/dsltools/Component" xmlns:dm3="http://schemas.microsoft.com/dsltools/UseCase" xmlns:dm4="http://schemas.microsoft.com/dsltools/Activity" xmlns:dm5="http://schemas.microsoft.com/dsltools/Interaction" xmlns:dm6="http://schemas.microsoft.com/dsltools/UmlModelLibrary" xmlns:dm7="http://schemas.microsoft.com/dsltools/UmlDiagrams" xmlns:dm8="http://schemas.microsoft.com/dsltools/ModelStore" xmlns:dm9="http://schemas.microsoft.com/dsltools/SimpleShapesModel" dslVersion="1.0.0.0" Id="fb82da1c-827f-4998-8602-95c82f04120d" name="0103合同信息查询" linkedPackageId="f076fc91-f5d1-4a35-ae7b-219b20c1acf5" xmlns="http://schemas.microsoft.com/VisualStudio/TeamArchitect/ActivityDesigner">
+  <ownedCommentsInternal>
+    <comment Id="8a1538b7-fa82-4580-8e20-d032e260eb1e">
+      <elementDefinition Id="3fb7ec7c-b392-4189-b856-1d7fbf9b1699" />
+      <body>SELECT
+    --合同编号
+    A.ContractCode,
+    --工程项目
+    A.ProjectName,
+    --产品名称
+    B.ProductName,
+    --规格
+    B.Model,
+    --型号
+    B.Specifications,
+    --合同数
+    B.Quantity,
+    --实需数
+    --重量
+    B.TotalWeight,
+    --计划价
+    B.PlanPrice,
+    --合同接收时间
+    A.ContractReceiveTime,
+    --到预付款时间
+    A.AdvancePaymentDate,
+    --合同交货期
+    B.DeliveryTime,
+    --是否有效
+    B.IsEnable
+FROM [dbo].[PMS_BN_Project] A
+    INNER JOIN [dbo].[PMS_BN_ProjectDetail] B
+        ON A.ProjectID = B.MainID
+           AND B.IsEnable = '1'
+WHERE A.ContractCode = '';</body>
+      <annotatedElements>
+        <opaqueActionMoniker Id="33a324a3-06ee-44fe-87d0-417f4f39f41f" LastKnownName="查询合同信息" />
+      </annotatedElements>
+    </comment>
+  </ownedCommentsInternal>
+  <packagedElements>
+    <activityRootModelHasActivity>
+      <activity Id="e37b6f2b-1204-44e8-8b7e-1e41a4b5f047" name="0103合同信息查询" isAbstract="false" isLeaf="false" isActiveClass="false" isReentrant="false" isReadOnly="false" isSingleExecution="false">
+        <elementDefinition Id="a5b2f546-5086-4fed-bc1c-161e7e4e0f39" />
+        <nodes>
+          <initialNode Id="6313afd6-ddc5-4a3f-9a7d-8a1231b97c8d" name="Initial1" isLeaf="false">
+            <elementDefinition Id="f93bac80-d7c0-4f68-a5b1-103e41af1686" />
+            <flowNodeTargets>
+              <controlFlow Id="af3900b3-a85c-4dc8-96b5-ce46ed76798c" isLeaf="false">
+                <opaqueActionMoniker Id="33a324a3-06ee-44fe-87d0-417f4f39f41f" LastKnownName="查询合同信息" />
+                <elementDefinition Id="91b2518a-2bd4-4484-a751-a99f130baecf" />
+              </controlFlow>
+            </flowNodeTargets>
+          </initialNode>
+          <opaqueAction Id="33a324a3-06ee-44fe-87d0-417f4f39f41f" name="查询合同信息" isLeaf="false">
+            <elementDefinition Id="3c5deda2-b5e4-4c7a-b61f-bd7256ae25c7" />
+            <flowNodeTargets>
+              <controlFlow Id="aa7d0ec7-cfa1-425d-a4d5-f15d545365b9" isLeaf="false">
+                <activityFinalNodeMoniker Id="9865875d-3201-48a5-88fd-d5a6980934b1" LastKnownName="ActivityFinal1" />
+                <elementDefinition Id="a6a9d3c5-a29c-4097-91af-8c3eca612ea2" />
+              </controlFlow>
+            </flowNodeTargets>
+          </opaqueAction>
+          <activityFinalNode Id="9865875d-3201-48a5-88fd-d5a6980934b1" name="ActivityFinal1" isLeaf="false">
+            <elementDefinition Id="0a48686d-7782-4f85-a717-bc0c0de8eb07" />
+          </activityFinalNode>
+        </nodes>
+      </activity>
+    </activityRootModelHasActivity>
+  </packagedElements>
+  <package Id="f076fc91-f5d1-4a35-ae7b-219b20c1acf5" name="HCJXUML">
+    <elementDefinition Id="6348ac1d-75ba-4a39-8ebf-237333c18d4f" />
+    <profileInstances>
+      <packageHasProfileInstances Id="790ab1a8-b723-4b49-bf4d-971238aed394">
+        <profileInstance Id="464b4790-a2a4-46fe-acef-359c186f71de" name="StandardProfileL2">
+          <elementDefinition Id="e34d544e-0fea-4ed6-ac5e-1b74119ac791" />
+        </profileInstance>
+        <elementDefinition Id="0caec977-1f8c-4ba3-a7db-8cc9ad9cc73b" />
+      </packageHasProfileInstances>
+      <packageHasProfileInstances Id="2add1d1e-04bd-41b7-9684-92520c8e4ba9">
+        <profileInstance Id="47d687c2-b2a2-4d24-a4bb-0b924fea71b4" name="StandardProfileL3">
+          <elementDefinition Id="532ea607-fb19-44b8-8502-3351b05452be" />
+        </profileInstance>
+        <elementDefinition Id="29349502-908c-4fda-9054-c48619c59ed0" />
+      </packageHasProfileInstances>
+    </profileInstances>
+  </package>
+</activityRootModel>

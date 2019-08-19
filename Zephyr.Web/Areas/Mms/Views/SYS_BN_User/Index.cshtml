@@ -1,0 +1,200 @@
+﻿
+@{
+    ViewBag.Title = "SYS_BN_User";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@section scripts{
+<script src="/Content/js/viewModel/com.viewModel.searchEdit.js"></script>
+<script type="text/javascript">
+    using(['validatebox','combotree','numberspinner','combobox','lookup','datebox','datetimebox','combogrid'],easyuifix.datagrid_editor_extend);
+
+    var viewModel = function(data){ 
+        
+        var self = this;
+        com.viewModel.searchEdit.apply(self,arguments);
+        this.addClick_One=function(){
+            var Code="";
+            com.ajax({
+                type:'GET',
+                url:'/api/Mms/SYS_BN_User/GetCode',
+                async:false,
+                success:function(d){
+                    var temp=parseInt(d)+1;
+                    if(temp<10){
+                        Code="00"+temp;
+                    }else if(temp<100){
+                        Code="0"+temp;
+                    }else{
+                        Code = temp;
+                    }
+                }
+            });
+            var row = $.extend({}, self.defaultRow,{UserCode:Code});
+            self.gridEdit.addnew(row);
+        }
+
+        this.ImportExcelClick = function (xmlName, className) {
+            var target = parent.$('#CommonImportExcelPage').length ? parent.$('#CommonImportExcelPage') : parent.$('<div id="CommonImportExcelPage"></div>').appendTo('body');
+            utils.clearIframe(target);
+            var opt;
+            opt = { title: '选择Excel文件', width: 400, height: 200, modal: true, collapsible: false, minimizable: false, maximizable: true, closable: true };
+            opt.content = "<iframe src='/mms/home/CommonImportExcel' style='height:100%;width:100%;border:0;' frameborder='0'></iframe>";  //frameborder="0" for ie7
+            param = { xmlName: xmlName, className: className };
+            opt.paramater = param;
+            opt.OnSelect=function(data){
+                self.refreshClick();
+            }
+            target.window(opt);
+
+            //$('#year').textbox({
+            //    onChange: function(value) {
+            //        alert(1);
+            //    }
+            //});
+        }
+    } 
+    
+    var data = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model));
+    ko.bindingViewModel(new viewModel(data));
+</script>
+}
+<div class="z-toolbar">
+    <a href="#" plain="true" class="easyui-linkbutton" icon="icon-arrow_refresh" title="刷新" data-bind="click:refreshClick">刷新</a>
+    @*<a href="#" plain="true" class="easyui-linkbutton" icon="icon-add" title="新增" data-bind="click:addClick_One">新增</a>*@
+    @*<a href="#" plain="true" class="easyui-linkbutton" icon="icon-edit" title="编辑" data-bind="click:editClick">编辑</a>*@
+    @*<a href="#" plain="true" class="easyui-linkbutton" icon="icon-cross" title="删除" data-bind="click:deleteClick">删除</a>*@
+    @*<a href="#" plain="true" class="easyui-linkbutton" icon="icon-save" title="保存" data-bind="click:saveClick">保存</a>*@
+    <a href="#" plain="true" class="easyui-splitbutton" data-options="menu:'#dropdown',iconCls:'icon-download'">导出</a>
+    <a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-page_white_excel',plain:true" title="导入" data-bind="event: { click: function(data, event) {ImportExcelClick('SYS_BN_User','SYS_BN_UserService', data, event) }}">导入</a>
+</div>
+
+<div id="dropdown" style="width:100px; display:none;">
+    <div data-options="iconCls:'icon-ext-xls'" suffix="xls" data-bind="click:downloadClick">Excel2003   </div>
+    <div data-options="iconCls:'icon-page_excel'" suffix="xlsx" data-bind="click:downloadClick">Excel2007   </div>
+    <div data-options="iconCls:'icon-ext-doc'" suffix="doc" data-bind="click:downloadClick">Word2003    </div>
+</div>
+
+
+    <div class="container_12" style="position:relative;">
+        <div class="grid_1 lbl">用户名</div>
+        <div class="grid_2 val"><input type="text" data-bind="value:form.UserName" class="z-txt " /></div>
+        <div class="grid_1 lbl">所属部门</div>
+        <div class="grid_2 val">
+            <input type="text" data-bind="combogridValue:form.DepartmentCode" class="z-txt easyui-combogrid" data-options="url:'/Commons/GetCommonSearchList',
+                queryParams : {
+                     tableName:'[SYS_BN_Department]',
+                         searchField:'[DepartmentCode],[DepartmentName]',
+                         firstFightField:'[DepartmentName]',
+                         CacheKey:'SYS_BN_Department',
+                         CacheTime:'480',
+                         connName:'Mms'
+                },
+                method: 'GET',
+                panelWidth:250,
+                fit:true,
+                delay: 1000,
+                mode: 'remote',
+                value: 'DepartmentCode',
+                idField: 'DepartmentCode',
+                textField: 'DepartmentName',
+                columns:[[
+                { field: 'DepartmentCode',title: '部门编号',width: 100 },
+                { field: 'DepartmentName',title:'部门名称',width:150 }
+                    ]],
+            keyHandler:{
+            query:function(keyword) {
+           var queryParams=$(this).combogrid('grid').datagrid('options').queryParams;
+           queryParams.keyword=keyword;
+           $(this).combogrid('grid').datagrid('options').queryParams=queryParams;
+           $(this).combogrid('grid').datagrid('reload');
+           }}" />
+        </div>
+
+
+
+        <div class="grid_1 lbl">是否有效</div>
+
+        <div class="grid_2 val"><input type="text" data-bind="comboboxValue:form.IsEnable" data-options="data:[{value:'',text:'所有'},
+                                       {value:1,text:'是'},{value:0,text:'否'}],valueField: 'value',textField: 'text'" class="z-txt easyui-combobox" /></div>
+
+
+        @*<div class="grid_2 val"><input type="text" data-bind="comboboxValue:form.IsEnable" class="z-txt easyui-combobox"  /></div>*@
+
+        <div class="clear"></div>
+        <div class="grid_1 lbl">&nbsp;</div>
+        <div class="grid_2 val">&nbsp;</div>
+        <div class="clear"></div>
+
+        <div class="prefix_9" style="position:absolute;top:5px;height:0;">
+            <a id="a_search" href="#" class="buttonHuge button-blue" data-bind="click:searchClick" style="margin:0 15px;">查询</a>
+            <a id="a_reset" href="#" class="buttonHuge button-blue" data-bind="click:clearClick">清空</a>
+        </div>
+    </div>
+
+
+<table data-bind="datagrid:grid" style="display:none" id="t">
+    <thead>
+        <tr>
+            <th field="ID" hidden sortable="true" align="left" width="80" editor="text">用户ID</th>
+            <th field="UserCode" sortable="true" align="left" width="150" >员工编号</th>
+            <th field="UserName" sortable="true" align="left" width="200" @*editor="{type:'validatebox',options:{required:true}}"*@>用户名</th>
+            
+
+            <th field="DepartmentName" sortable="true" align="left" width="150" @*editor="{type:'combogrid',options:{
+                        url:'/Commons/GetCommonSearchList',
+                    queryParams : {
+                     tableName:'[SYS_BN_Department]',
+                         searchField:'[DepartmentCode],[DepartmentName]',
+                         firstFightField:'[DepartmentName]',
+
+                                     CacheKey:'SYS_BN_Department',
+                                     CacheTime:'480',
+                                     connName:'Mms'
+                            },
+                            method: 'GET',
+                            panelWidth:400,
+                            fit:true,
+                            delay: 1000,
+                            mode: 'remote',
+                            value: 'DepartmentCode',
+                            idField: 'DepartmentName',
+                            textField: 'DepartmentName',
+                            columns:[[
+                            { field: 'DepartmentCode',title: '部门编码',width: 200 },
+                            { field: 'DepartmentName',title: '部门名称',width: 200 }
+                                ]],
+                    onSelect: function (rowIndex, rowData) {
+
+                           var index =  $('#t').datagrid('getRowIndex',$('#t').datagrid('getSelected'));
+                           $('#t').datagrid('getEditor',{index:index,field:'DepartmentName'}).target.val(rowData['DepartmentName']);
+                           $('#t').datagrid('getEditor',{index:index,field:'DepartmentCode'}).target.val(rowData['DepartmentCode']);
+
+                },
+
+                 keyHandler:{
+                   query:function(keyword) {
+                   var queryParams=$(this).combogrid('grid').datagrid('options').queryParams;
+                   queryParams.keyword=keyword;
+                   $(this).combogrid('grid').datagrid('options').queryParams=queryParams;
+                   $(this).combogrid('grid').datagrid('reload');
+                  $(this).combogrid('setValue', keyword);
+                }}
+                }}"*@>所属部门</th>
+            <th field="DepartmentCode" sortable="true" align="left" width="150" @*hidden editor="text"*@>部门编号</th>
+
+           
+            @*<th field="IsEnable" 	  	 sortable="true" 	 align="left" 	 width="200" editor="{type:'combobox',options:{}}" >是否有效</th>*@
+
+            <th field="IsEnable" sortable="true" align="left" width="70" data-options="formatter:function(value,row){ return (value == true || value == 'true') ? '是':'否';}" @*editor="{type:'combobox',
+            options:{data:[{value:true,text:'否'},{value:false,text:'是'}],panelWidth:100,panelHeight: 100,valueField: 'value',textField: 'text'}}"*@>
+                是否有效
+            </th>
+
+            <th field="CreatePerson" 	 hidden="true" 	 sortable="true" 	 align="left" 	 width="80" editor="text" >创建人</th>
+            <th field="CreateTime" 	 hidden="true" 	 sortable="true" 	 align="left" 	 width="80" editor="datebox" >创建时间</th>
+            <th field="ModifyPerson" 	 hidden="true" 	 sortable="true" 	 align="left" 	 width="80" editor="text" >更新人</th>
+            <th field="ModifyTime" 	 hidden="true" 	 sortable="true" 	 align="left" 	 width="80" editor="datebox" >更新时间</th>
+        </tr>
+    </thead>
+</table> 

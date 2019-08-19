@@ -1,0 +1,328 @@
+﻿
+@{
+    ViewBag.Title = "PRS_BlankingResult";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@section head{
+    <style type="text/css">
+        div#navigation {
+            background: white;
+        }
+
+        div#rightDiv {
+            float: left;
+            /*width: 69%;*/
+        }
+
+        div#navigation {
+            float: right;
+            /*width: 20%;*/
+        }
+
+        .btnTarget {
+            display: block;
+            width: 50px;
+            line-height: 20px;
+            border: 1px #cccccc solid;
+            background-color: #fafafa;
+            text-align: center;
+            text-decoration: none;
+            border-radius: 1px;
+            color: #666666;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+            .btnTarget:hover {
+                background-color: #e6e6e6;
+                color: #333333;
+            }
+    </style>
+}
+
+@section scripts{
+    <script src="/Content/js/viewModel/com.viewModel.edit.js"></script>
+    <script type="text/javascript">
+    var myself;
+    using(['validatebox','combotree','numberspinner','combobox','lookup','datebox','datetimebox','combogrid'],easyuifix.datagrid_editor_extend);
+    var viewModel = function(data){
+        var self = this;
+        myself = self;
+        com.viewModel.edit.apply(self, arguments);
+        var tab_width = $(window).width() / 3;
+        var tab_height = $(window).height() - 40;
+
+        this.grid0.onClickRow = function () {
+            loadTabsData();
+            self.gridEdit0.ended();
+        };
+
+        this.grid0.onDblClickRow  = function () {
+            self.gridEdit0.begin();
+        };
+
+        this.grid1 = {
+            queryParams: ko.observable(),
+            pagination: false,
+            checkOnSelect: true,
+            selectOnCheck: false,
+            singleSelect: true,
+            fitColumns: false,
+            toolbar: "gridtb1"
+        };
+        
+        this.gridEdit0 = new com.editGridViewModel(this.grid0);
+        this.gridEdit1 = new com.editGridViewModel(this.grid1);
+
+        this.grid1.onClickRow = function () {
+            self.gridEdit1.begin();
+        };
+
+        //this.grid1.onDblClickRow = function (index, row) {
+        //    var BlankingType = row.BlankingType;
+        //    com.ajax({
+        //        url: self.urls.change_BlankingType,
+        //        data: JSON.stringify({ BlankingType: BlankingType,ID:row.ID }),
+        //        async: false,
+        //        success: function (d) {
+        //            //myself.grid1.url = "/api/Mms/PRS_BlankingResult/GetPlateData/";
+        //            myself.grid1.queryParams({ id: row.BlankingResultID });
+        //        }
+        //    });
+        //}
+
+        this.grid0.addRowClick = function () {
+            var row = $.extend(true, {}, self.tabs[0].defaults);
+            self.gridEdit0.addnew(row);
+        };
+        this.grid1.addRowClick = function () {
+            var row = self.grid0.datagrid('getSelected');
+            if (row == null) {
+                com.message('success', '请先选择方案！');
+                return;
+            }
+            if (row.ID == "") {
+                com.message('success', '请先保存方案再维护拼板明细');
+                return;
+            }
+            self.gridEdit0.ended();
+            var row = $.extend(true, { BlankingResultID: row.ID, IsEnable: 1 }, {});
+            self.gridEdit1.addnew(row);
+        };
+        this.grid1.removeRowClick = function () {
+            self.gridEdit1.deleterow();
+        };
+        this.saveClick = function () {
+            //数据验证
+            var validMessage = self.fnIsPageValid();
+            if (validMessage) {
+                com.message('warning', validMessage);
+                return;
+            }
+
+            //取得数据
+            var post = self.fnIsPageChanged();
+            if (!post._changed) {
+                com.message('success', '页面没有数据被修改！');
+                return;
+            }
+            //获取维护的零件总数
+            var rows = self.grid0.datagrid("getRows");
+            var totalNumber = 0;
+            this.gridEdit0 = new com.editGridViewModel(self.grid0);
+            this.gridEdit0.ended;
+            for (var i = 0; i < rows.length; i++) {
+                totalNumber = totalNumber + parseInt(rows[i].PartBlankingQuntity);
+            }
+            //数据提交
+            com.ajax({
+                url: self.urls.edit,
+                data: ko.toJSON(post),
+                success: function (d) {
+                    if (d > 0) {
+                        com.message('success', self.resx.editSuccess);
+                        window.location.reload();
+                    }
+                    else {
+                        com.message('warning', "保存失败");
+                        //window.location.reload();
+                        return;
+                    }
+
+                }
+            });
+        };
+        this.StorageClick = function () {
+            var post = {
+                SavantCode: self.dataSource.SavantCode
+            };
+            com.ajax({
+                type: 'POST',
+                url: self.urls.storageSave,
+                data: JSON.stringify(post),
+                success: function (d) {
+                    if (d) {
+                        com.message('success', '提交成功');
+                        window.location.reload();
+                    }
+                }
+            });
+        };
+
+    }
+    var data = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model));
+        ko.bindingViewModel(new viewModel(data));
+        function loadTabsData() {
+            var row = myself.grid0.datagrid('getSelected');
+            if (row == null) {
+                return;
+            }
+            myself.grid1.url = "/api/Mms/PRS_BlankingResult/GetPlateData/";
+            myself.grid1.queryParams({ id: row.ID });
+        }
+
+        function SearchDetail(value, row, index) {
+            return '<a class="btnTarget" id="'+row.ID+'" href="javascript:void(0)" onclick="UploadFileClick.call(' + row.ID + ')">编辑</a>';
+            //return '<a class="btnTarget" href="javascript:com.openTab(\'拼板方案明细\', \'/Mms/PRS_BlankingPlateDetail/Index/' + row.SavantCode + '\');">编辑</a>';
+        }
+
+        function UploadFileClick() {
+
+            if (isNaN(Number(this))) {
+                alert("请保存后再做编辑！");
+                return;
+            }
+            var newPName =  '@ViewBag.NewPName';
+            var target = parent.$('#PRS_BlankingPlateDetailPage').length ? parent.$('#PRS_BlankingPlateDetailPage') : parent.$('<div id="PRS_BlankingPlateDetailPage"></div>').appendTo('body');
+            utils.clearIframe(target);
+            var opt = { title: '选择文件', width: 600, height: 500, modal: true, collapsible: false, minimizable: false, maximizable: true, closable: true };
+            opt.content = "<iframe src='/mms/PRS_BlankingPlateDetail/Index?id=" + this + "&newPName=" + newPName + "' style='height:100%;width:100%;border:0;' frameborder='0'></iframe>";
+            //opt.params = { BindTableName: BindTableName, BindCode: BindCode };;
+            target.window(opt);
+        }
+
+        var SelectBlankingType = function (BlankingType) {
+            var row = myself.grid1.datagrid('getSelected');
+            com.ajax({
+                url: myself.urls.change_BlankingType,
+                data: JSON.stringify({ BlankingType: BlankingType, ID: row.ID }),
+                async: false,
+                success: function (d) {
+                    myself.grid1.queryParams({ id: row.BlankingResultID });
+                }
+            });
+        }
+    </script>
+}
+
+<div class="z-toolbar">
+    <a id="a_save" href="#" plain="true" class="easyui-linkbutton" icon="icon-save" data-bind="click:readonly()?null:saveClick,linkbuttonDisable:readonly" title="保存">保存</a>
+    <a href="#" plain="true" class="easyui-linkbutton" icon="icon-user-accept" data-bind="click:StorageClick" title="生成小筋板">生成小筋板</a>
+</div>
+
+<div id="divother" style="width:100px; display:none;">
+    <div data-options="iconCls:'icon-add'">新增</div>
+    <div data-options="iconCls:'icon-cross'">删除</div>
+    <div data-options="iconCls:'icon-arrow_refresh'">刷新</div>
+</div>
+
+<div id="master" class="container_12" data-bind="inputwidth:0.9">
+    <div class="grid_1 lbl">中间件编码</div>
+    <div class="grid_3 val"><input type="text" data-bind="value:pageData.form.SavantCode ,readOnly:true" class="z-txt " /></div>
+    <div class="grid_1 lbl">备料尺寸</div>
+    <div class="grid_3 val"><input type="text" data-bind="value:pageData.form.SpareMateSize ,readOnly:true" class="z-txt " /></div>
+    <div class="grid_1 lbl">备料数量</div>
+    <div class="grid_3 val"><input type="text" data-bind="value:pageData.form.SpareMateNum ,readOnly:true" class="z-txt " /></div>
+    <div class="clear"></div>
+    <div class="grid_1 lbl">切分数量</div>
+    <div class="grid_3 val"><input type="text" data-bind="value:pageData.form.SplitNum ,readOnly:true" class="z-txt " /></div>
+    <div class="grid_1 lbl">备注</div>
+    <div class="grid_3 val"><input type="text" data-bind="value:pageData.form.Remark ,readOnly:readonly" class="z-txt " /></div>
+    <div class="clear"></div>
+</div>
+<div id="rightDiv">
+    <div class="easyui-panel" title="下料结果" style="background:#fafafa;" data-options="collapsible:true,collapsed:false,width:$(window).width()/2-6,height:$(window).height()-120">
+        <div title="下料结果表">
+            <table data-bind="datagrid:grid0" id="tt">
+                <thead>
+                    <tr>
+                        <th field="ID" sortable="true" align="left" hidden="hidden" width="80" editor="text">主键ID</th>
+                        <th field="SavantCode" sortable="true" align="left" width="80" editor="text" hidden="hidden">中间件编号</th>
+                        <th field="ResultSize" sortable="true" align="left" width="300" editor="text">下料尺寸方案</th>
+                        <th field="PartBlankingQuntity" sortable="true" align="left" width="80" editor="{type: 'numberbox',options:{min: 0}}"> 零件下料数量</th>
+                        <th field="Remark" sortable="true" align="left" width="80" editor="text">备注</th>
+                        <th field="IsEnable" hidden="hidden" sortable="true" align="left" width="80" editor="{type: 'text'}">是否可用</th>
+                        <th field="CZ" sortable="true" align="center" width="80" formatter="SearchDetail">操作</th>
+                    </tr>
+                </thead>
+            </table>
+
+            <div id="gridtb0">
+                <a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-search',plain:true" data-bind="click:readonly()?null:grid0.addRowClick,linkbuttonDisable:readonly">新增</a>
+                <a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-edit',plain:true" data-bind="click:readonly()?null:grid0.onClickRow,linkbuttonDisable:readonly">编辑</a>
+                <a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-remove',plain:true" data-bind="click:readonly()?null:grid0.removeRowClick,linkbuttonDisable:readonly">删除</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="navigation">
+    <div title="筋板明细" class="easyui-panel" data-options="title: '筋板明细',collapsible:true,collapsed:false, iconCls: 'icon-node_tree',width: $(window).width()/2,height:$(window).height()-120">
+        <div title="筋板明细">
+            <table data-bind="datagrid:grid1">
+                <thead>
+                    <tr>
+                        <th field="ID" sortable="true" align="left" width="80" editor="text" hidden="hidden"></th>
+                        <th field="BlankingResultID" sortable="true" align="left" width="80" editor="text" hidden="hidden">下料方案ID</th>
+                        <th field="BoardCode" sortable="true" align="left" width="120">筋板编码</th>
+                        <th field="BiankingSize" sortable="true" align="left" width="120">筋板尺寸</th>
+                        <th field="BlankingType" sortable="true" align="left" width="120"
+                            editor="{type: 'combobox', options:{
+                             data : [
+                            {value:'1',text:'大数控火焰切割'},
+                            {value:'2',text:'大数控等离子切割'},
+                            {value:'3',text:'小数控切割'},
+                            {value:'4',text:'剪板'},
+                            {value:'5',text:'半自动火焰切割'},
+                            {value:'6',text:'半自动等离子切割'},
+                            {value:'7',text:'手工切割'}
+                            ],
+                            onSelect:function(node){
+                            var typeid=node.value;
+                            
+                             SelectBlankingType(typeid);
+                            },
+                valueField : 'value',
+                textField : 'text',
+                panelHeight:'auto'}}"
+                            formatter="
+                            utils.fnValueToText([
+                            {value:'1',text:'大数控火焰切割'},
+                            {value:'2',text:'大数控等离子切割'},
+                            {value:'3',text:'小数控切割'},
+                            {value:'4',text:'剪板'},
+                            {value:'5',text:'半自动火焰切割'},
+                            {value:'6',text:'半自动等离子切割'},
+                            {value:'7',text:'手工切割'}
+                            ])">
+                            下料方式
+                        </th>
+                        <th field="IsEnable" hidden="hidden" sortable="true" align="left" width="80" editor="{type: 'text'}">是否可用</th>
+                        <th field="CreatePerson" sortable="true" align="left" hidden width="350">创建人</th>
+                        <th field="CreateTime" sortable="true" align="left" hidden width="80">创建时间</th>
+                        <th field="ModifyPerson" sortable="true" align="left" hidden width="350">更新人</th>
+                        <th field="ModifyTime" sortable="true" align="left" hidden width="80">更新时间</th>
+                    </tr>
+                </thead>
+                @*<div id="gridtb1">
+                        <a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-search',plain:true" data-bind="click:readonly()?null:grid1.addRowClick,linkbuttonDisable:readonly">新增</a>
+                        <a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-edit',plain:true" data-bind="click:readonly()?null:grid1.onClickRow,linkbuttonDisable:readonly">编辑</a>
+                        <a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-remove',plain:true" data-bind="click:readonly()?null:grid1.removeRowClick,linkbuttonDisable:readonly">删除</a>
+                    </div>*@
+            </table>
+        </div>
+    </div>
+</div>
+
+

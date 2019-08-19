@@ -1,0 +1,233 @@
+﻿@{
+    ViewBag.Title = "APS_ProjectProduceDetial";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@section scripts{
+    <script src="/Content/js/viewModel/com.viewModel.searchEdit.js"></script>
+
+    <script src="~/Content/Echarts/echarts.min.js"></script>
+
+    <script type="text/javascript">
+        using(['validatebox', 'combobox','lookup','numberbox','datebox','datetimebox','combogrid','combotree','extend','menu'],easyuifix.datagrid_editor_extend);
+        var myself;
+
+        var viewModel = function(data){
+            var self = this;
+            com.viewModel.searchEdit.apply(self,arguments);
+        }
+        var data = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model));
+        ko.bindingViewModel(new viewModel(data));
+        $().ready(function(){
+
+            //$("#PlanedStartTime").datebox("setValue","");
+            //$("#PlanedFinishTime").datebox("setValue","");
+            showPic("PartCode");
+        })
+
+
+        function showPic(PartCode){
+            var strArr=$("#"+PartCode).val();
+            var PlanedStartTime;
+            var PlanedFinishTime;
+            debugger;
+
+            var time = new Date();
+            try{
+                PlanedStartTime=$("#PlanedStartTime").datebox("getValue");
+                PlanedFinishTime=$("#PlanedFinishTime").datebox("getValue");
+            }catch(e){
+                debugger;
+                PlanedStartTime=com.formatTime(time); //显示系统时间
+                PlanedFinishTime=com.formatTime(time);
+            }
+            var minDate=new Date(PlanedStartTime);
+            var maxDate=new Date(PlanedFinishTime);
+            if(strArr!=null||strArr!="")
+            {
+                PlanedStartTime="";
+                PlanedFinishTime="";
+            }
+
+            com.ajax({
+                type: 'GET',
+                url: "/api/mms/APS_ProjectProduceDetial/GetPlanInfo",
+                data:{PlanedStartTime:PlanedStartTime,PlanedFinishTime:PlanedFinishTime,PartCode:strArr},
+                success: function (d) {
+                    var div = document.getElementById("container");
+                    div.style.height = d.rows*50+'px';
+                    //$("#container").setAttribute('height', d.rows*50);
+                    var i;
+                    var aa=new Array();
+                    var bb=new Array();
+                    var cc=new Array();
+                    var dd=new Array();
+                    var color=new Array();
+                    for (i = 0; i < d.rows; i++) {
+                        aa[i]=d.adata[i];
+                    }
+                    for (i = 0; i < d.rows; i++) {
+                        bb[i]=d.bdata[i];
+                    }
+                    for (i = 0; i < d.rows; i++) {
+                        cc[i]=d.cdata[i];
+                    }
+                    for (i = 0; i < d.rows; i++) {
+                        dd[i]=d.ddata[i];
+                    }
+                    for (i = 0; i < d.rows; i++) {
+                        color[i]=d.colordata[i];
+                    }
+                    var myChart = echarts.init(document.getElementById('container'));
+                    var option ={
+                        //dataZoom: [
+                        //   {
+                        //       id: 'dataZoomX',
+                        //       type: 'slider',
+                        //       xAxisIndex: [0],
+                        //       filterMode: 'filter'
+                        //   },
+                        //   {
+                        //       id: 'dataZoomY',
+                        //       type: 'slider',
+                        //       yAxisIndex: [0],
+                        //       filterMode: 'empty'
+                        //   }
+                        //],
+                        title: {
+                            text: '生产计划图表'
+                        },
+                        legend: {
+                            data: ['计划实施时间', '实际实施时间']
+
+                        },
+                        grid: {
+                            containLabel: true,
+                            left: 20
+                        },
+                        xAxis: {
+                            type: 'time'
+                        },
+                        yAxis: {
+                            data: d.ydata
+                        },
+                        tooltip: {
+                            trigger: 'axis',
+                            formatter: function(params) {
+                                var res = params[0].name + "</br>"
+
+                                if(params[0]!=null&&params[1]!=null)
+                                {
+                                    var date0 =new Date(params[0].data);
+                                    date0 = date0.getFullYear() + "/" + (date0.getMonth() + 1) + "/" + date0.getDate();
+                                    var date1 =new Date(params[1].data);
+                                    date1 = date1.getFullYear() + "/" + (date1.getMonth() + 1) + "/" + date1.getDate();
+                                    res += params[0].seriesName + "~" + params[1].seriesName + ":</br>" + date0 + "~" + date1 + "</br>"
+                                }
+
+                                if(params[2]!=null&&params[3]!=null)
+                                {
+                                    var date2 = new Date(params[2].data);
+                                    date2 = date2.getFullYear() + "/" + (date2.getMonth() + 1) + "/" + date2.getDate();
+                                    var date3 = new Date(params[3].data);
+                                    date3 = date3.getFullYear() + "/" + (date3.getMonth() + 1) + "/" + date3.getDate();
+                                    res += params[2].seriesName + "~" + params[3].seriesName + ":</br>" + date2 + "~" + date3 + "</br>"
+                                }
+                                console.log(params[0]);
+                                return res;
+                            }
+                        },
+                        series: [
+                            {
+                                name: '计划开始时间',
+                                type: 'bar',
+                                stack: 'test1',
+                                itemStyle: {
+                                    normal: {
+                                        color: 'rgba(0,0,0,0)'
+                                    }
+                                },
+                                data:
+                                    aa
+                            },
+                                {
+                                    name: '计划结束时间',
+                                    type: 'bar',
+                                    stack: 'test1',
+                                    itemStyle: {
+                                        normal: {
+                                            color: 'blue'
+                                        }
+                                    },
+                                    data:
+                                       bb
+                                },
+                                {
+                                    name: '实际开始时间',
+                                    type: 'bar',
+                                    stack: 'test2',
+                                    itemStyle: {
+                                        normal: {
+                                            color: 'rgba(0,0,0,0)'
+                                        }
+                                    },
+                                    data: cc
+                                },
+                                {
+                                    name: '实际结束时间',
+                                    type: 'bar',
+                                    stack: 'test2',
+                                    itemStyle: {
+                                        normal: {
+                                            color: function (params){
+                                                var colorList = color;
+                                                return colorList[params.dataIndex];
+                                            }
+                                        }
+                                    },
+                                    data: dd
+                                }
+                        ]
+                    }
+                    myChart.setOption(option);
+                    window.addEventListener('resize', function () {
+                        myChart.resize();
+                    });
+                }
+            });
+        }
+    </script>
+}
+<div class="z-toolbar">
+    <a href="#" plain="true" class="easyui-linkbutton" icon="icon-arrow_refresh" title="刷新" data-bind="click:refreshClick">刷新</a>
+    @*<a href="#" plain="true" class="easyui-linkbutton" icon="icon-add" title="新增" data-bind="click:addClick">新增</a>
+        <a href="#" plain="true" class="easyui-linkbutton" icon="icon-edit" title="编辑" data-bind="click:editClick">编辑</a>
+        <a href="#" plain="true" class="easyui-linkbutton" icon="icon-save" title="保存" data-bind="click:saveClick">保存</a>
+        <a href="#" plain="true" class="easyui-splitbutton" data-options="menu:'#dropdown',iconCls:'icon-download'">导出</a>*@
+
+</div>
+
+<div id="dropdown" style="width:100px; display:none;">
+    <div data-options="iconCls:'icon-ext-xls'" suffix="xls" data-bind="click:downloadClick">Excel2003   </div>
+    <div data-options="iconCls:'icon-page_excel'" suffix="xlsx" data-bind="click:downloadClick">Excel2007   </div>
+    <div data-options="iconCls:'icon-ext-doc'" suffix="doc" data-bind="click:downloadClick">Word2003    </div>
+</div>
+
+<div class="container_12" style="position:relative;">
+    <div class="grid_1 lbl">计划开始时间</div>
+    <div class="grid_2 val">
+        <input type="text" id="PlanedStartTime" data-bind="dateboxValue:form.PlanedStartTime" class="z-txt easyui-datebox" />
+        <input hidden id="PartCode" value="@ViewData["PartCode"]" />
+    </div>
+    <div class="grid_1 lbl">计划结束时间</div>
+    <div class="grid_2 val"><input type="text" id="PlanedFinishTime" data-bind="dateboxValue:form.PlanedFinishTime" class="z-txt easyui-datebox" /></div>
+
+    <div class="clear"></div>
+    <div class="prefix_9" style="position:absolute;top:-1px;height:0;">
+        <a id="a_search" href="#" class="buttonHuge button-blue" data-bind="click:searchClick" style="margin:0 15px;" onclick="    showPic('PartCode')">查询</a>
+        <a id="a_reset" href="#" class="buttonHuge button-blue" data-bind="click:clearClick">清空</a>
+    </div>
+</div>
+<div style="height: 420px;width:100%;overflow-y: scroll;float: left;">
+    <div id="container" style="margin:10px; width:100%"></div>
+</div>

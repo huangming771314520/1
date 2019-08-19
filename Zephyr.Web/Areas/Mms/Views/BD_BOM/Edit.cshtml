@@ -1,0 +1,158 @@
+﻿@{
+    ViewBag.Title = "BD_BOM1";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@section head{
+    <style type="text/css">
+        div#navigation {
+            background: white;
+        }
+        div#wrapper {
+            float: right;
+            width: 74%;
+        }
+
+        div#navigation {
+            float: left;
+            width: 15%;
+        }
+    </style>
+}
+
+@section scripts{
+    <script src="/Content/js/viewModel/com.viewModel.edit.js"></script>
+    <script type="text/javascript">
+        using(['validatebox', 'combobox','lookup','datebox','datetimebox','combogrid','combotree','extend','menu'],easyuifix.datagrid_editor_extend);
+        var viewModel = function(data){
+            var self = this;
+            com.viewModel.edit.apply(self,arguments);
+            this.grid0.size={w:8,h:125};
+            this.grid0.onClickRow=function (index) {
+                var row= self.grid0.datagrid("getRows");
+                self.pageData.form.InventoryCode(row[index].InventoryCode);
+                self.pageData.form.InventoryName(row[index].InventoryName);
+                $("#mo").val(row[index].Model);
+                $("#no").val(row[index].Model);
+                $("#id").val(row[index].ID);
+
+            }
+            var PartCode= this.pageData.form.PartCode();
+            this.tree = {
+                method: 'GET',
+                queryParams: ko.observable(),
+                url: '/api/Mms/BD_BOM/GetBoomTree2?PartCode='+PartCode,
+                lines: true,
+                animate: true,
+                loadFilter: function (d) {
+                    if (d!=null&&d.length>0) {
+                        var jsonData = eval(d);
+                        return utils.toTreeData(jsonData, 'id', 'pid', "children");
+                    }
+                    else{
+                        return '';
+                    }
+                },
+                onSelect: function (node) {
+                    
+                    var str = "1-2-3-4-5"
+                    str = node.text;
+                    var arr = str.split(" ");
+                    self.grid0.url="/api/Mms/BD_BOM1/getpart?partName="+arr[0];
+                    //self.grid0.queryParams({ContractCode:myself.form.ContractCode,PartCode:node.id});
+                    self.grid0.queryParams({});
+
+                }
+            };
+            this.saveClick = function () {
+                var post = {partCode:self.pageData.form.PartCode(),pareName:self.pageData.form.InventoryName(),id:$("#id").val(),weight:self.pageData.form.Weight()};
+                com.ajax({
+                    url: self.urls.edit,
+                    data: ko.toJSON(post),
+                    success: function (d) {
+                        com.message('success', self.resx.editSuccess);
+                    }
+                });
+            };
+
+
+        }
+        var data = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model));
+        ko.bindingViewModel(new viewModel(data));
+
+    </script>
+}
+<div id="container">
+    
+    <div id="wrapper">
+
+        <div class="z-toolbar">
+            <a id="a_save" href="#" plain="true" class="easyui-linkbutton" icon="icon-save" data-bind="click:readonly()?null:saveClick,linkbuttonDisable:readonly" title="保存">保存</a>
+            @*<a id="a_undo" href="#" plain="true" class="easyui-linkbutton" icon="icon-undo" data-bind="click:readonly()?null:rejectClick,linkbuttonDisable:readonly" title="撤消">撤消</a>
+                <a id="a_audit" href="#" plain="true" class="easyui-linkbutton" icon="icon-user-accept" data-bind="click:auditClick,easyuiLinkbutton:approveButton" title="审核">审核</a>
+                <a id="a_printer" href="#" plain="true" class="easyui-linkbutton" icon="icon-printer" title="打印" data-bind="click:printClick">打印</a>
+                <div class="datagrid-btn-separator"></div>
+                <a id="a_other" href="#" class="easyui-splitbutton" data-options="menu:'#divother',iconCls:'icon-application_go'" title="其他">其他</a>
+                <div class="datagrid-btn-separator"></div>
+                <a id="a_first" href="#" plain="true" class="easyui-linkbutton" icon="icon-resultset_first" data-bind="click:firstClick,linkbuttonEnable:pageData.scrollKeys.firstEnable" title="第一条"></a>
+                <a id="a_previous" href="#" plain="true" class="easyui-linkbutton" icon="icon-resultset_previous" data-bind="click:previousClick,linkbuttonEnable:pageData.scrollKeys.previousEnable" title="上一条"></a>
+                <a id="a_next" href="#" plain="true" class="easyui-linkbutton" icon="icon-resultset_next" data-bind="click:nextClick,linkbuttonEnable:pageData.scrollKeys.nextEnable" title="下一条"></a>
+                <a id="a_last" href="#" plain="true" class="easyui-linkbutton" icon="icon-resultset_last" data-bind="click:lastClick,linkbuttonEnable:pageData.scrollKeys.lastEnable" title="最后一条"></a>*@
+        </div>
+        <div id="master" class="container_12" data-bind="inputwidth:0.9">
+            <div class="grid_1 lbl" style="width:80px">零件编码</div>
+            <div class="grid_3 val"><input type="text" data-bind="value:pageData.form.PartCode ,readOnly:readonly" class="z-txt " /></div>
+            <div class="grid_1 lbl" style="width:80px">零件名称</div>
+            <div class="grid_3 val"><input type="text" data-bind="value:pageData.form.PartName ,readOnly:readonly" class="z-txt " /></div>
+            <div class="clear"></div>
+            <div class="grid_1 lbl">&nbsp;</div>
+            <div class="grid_2 val">&nbsp;</div>
+            <div class="clear"></div>
+            <div class="grid_1 lbl" style="width:80px">零件存货编码</div>
+            <div class="grid_3 val"><input type="text" data-bind="value:pageData.form.InventoryCode ,readOnly:readonly" class="z-txt " /></div>
+            <div class="grid_1 lbl" style="width:80px">零件存货名称</div>
+            <div class="grid_3 val"><input type="text" data-bind="value:pageData.form.InventoryName ,readOnly:readonly" class="z-txt " /></div>
+            <div class="clear"></div>
+            <div class="grid_1 lbl">&nbsp;</div>
+            <div class="grid_2 val">&nbsp;</div>
+            <div class="clear"></div>
+            <div class="grid_1 lbl" style="width:80px">规格</div>
+            <div class="grid_3 val"><input id="mo" type="text" data-bind="value:pageData.form.Model ,readOnly:readonly" class="z-txt " /></div>
+            <div class="grid_1 lbl" style="width:80px">型号</div>
+            <div class="grid_3 val"><input id ="no" type="text" data-bind="value:pageData.form.Spec ,readOnly:readonly" class="z-txt " /></div>
+            <input id="id" type="text" hidden="true" class="z-txt hide" />
+            <input id="Weight" type="text" data-bind="value:pageData.form.Weight ,readOnly:readonly" class="z-txt hide" />
+            <div class="clear"></div>
+        </div>
+
+        
+        <div  class="easyui-tabs">
+            <div title="明细">
+                <table data-bind="datagrid:grid0" id="dg">
+                    <thead>
+                        <tr>
+                            <th field="ID" sortable="true" align="left" width="80" editor="text" hidden></th>
+                            <th field="InventoryCode" sortable="true" align="left" width="150">存货编码</th>
+                            <th field="InventoryName" sortable="true" align="left" width="150">存货名称</th>
+                            <th field="Model" sortable="true" align="left" width="150">规格</th>
+                            <th field="Spec" sortable="true" align="left" width="100">型号</th>
+                        </tr>
+                    </thead>
+                </table>
+
+            </div>
+        </div>
+    </div>
+    <div id="divother" style="width:100px; display:none;">
+        <div data-options="iconCls:'icon-add'">新增</div>
+        <div data-options="iconCls:'icon-cross'">删除</div>
+        <div data-options="iconCls:'icon-arrow_refresh'">刷新</div>
+    </div>
+    <div id="navigation">
+        <div title="BOM" class="easyui-panel" data-options="title: 'BOM', iconCls: 'icon-node_tree', height: $(window).height() - 4 ,width:279">
+            <ul data-bind="easyuiTree:tree" id="mm-tree"></ul>
+        </div>
+    </div>
+</div>
+
+

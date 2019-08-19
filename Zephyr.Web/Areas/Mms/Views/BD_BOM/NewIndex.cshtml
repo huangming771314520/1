@@ -1,0 +1,365 @@
+﻿@{
+    Layout = null;
+}
+
+<link href="~/Content/js/jquery-easyui-1.7.0/themes/icon.css" rel="stylesheet" />
+<link href="~/Content/js/jquery-easyui-1.7.0/themes/default/easyui.css" rel="stylesheet" />
+
+<style type="text/css">
+
+    body {
+        margin: 2px;
+    }
+</style>
+
+
+
+<div style="width:100%;height:100%;display:flex;flex-direction:column;">
+    <div style="width:100%;height:Auto;padding:10px;">
+        <label class="tile-content">零件图号：</label>
+        <input id="bomCode" class="easyui-textbox" prompt="" style="width:250px">
+        <a onclick="OnSearch()" class="easyui-linkbutton" icon="icon-search">查询</a>
+        <a onclick="OnClear()" class="easyui-linkbutton" icon="icon-clear">清空</a>
+    </div>
+    <div style="width:100%;flex:auto;padding:10px;">
+        <table id="bomList" class="easyui-datagrid" style="width:100%;min-height:400px;height:100%;"></table>
+    </div>
+    <input id="bomID" style="display:none" />
+    <input id="partICode" style="display:none" />
+    <input id="partIName" style="display:none" />
+    <input id="weight" style="display:none" />
+    <input id="partCode" style="display:none" />
+    <input id="partName" style="display:none" />
+</div>
+
+<div id="win" class="easyui-window" title=" " style="width:920px;height:540px" data-options="iconCls:'icon-save',modal:true" closed="true">
+    <div style="margin: 10px 20px;">
+        <a onclick="OnPartSave()" class="easyui-linkbutton" icon="icon-save" style="width:80px">保存</a>
+        <a onclick="OnPartSearch()" class="easyui-linkbutton" icon="icon-search" style="width:80px">搜索</a>
+    </div>
+    <input id="partID" style="display:none" />
+    <div style="margin: 10px 20px;">
+        <input id="InventoryCode" class="easyui-textbox" label="零件存货编码:" labelAlign="right" labelWidth="100" prompt="" style="width:45%">
+        <input id="InventoryName" class="easyui-textbox" label="零件存货名称:" labelAlign="right" labelwidth="100" prompt="" style="width:45%">
+    </div>
+    <div style="margin: 10px 20px;">
+        @*<input id="Spec" class="easyui-textbox" labelAlign="right"  label="规格:" labelWidth="100" prompt=""  style="width:45%">*@
+        <input id="Model" class="easyui-textbox" label="型号:" labelAlign="right" labelwidth="100" prompt="" style="width:45%">
+    </div>
+    <div style="margin: 10px 20px;">
+        <input id="WarehouseCode" type="hidden" />
+        <input id="WarehouseName" class="easyui-combogrid" label="仓库名称:" labelAlign="right" labelWidth="100" prompt="" style="width:45%;" data-options="
+               url:'/Commons/GetCommonSearchList',
+                    queryParams : {
+                         tableName:'dbo.SYS_BN_Warehouse',
+                         searchField : '[WarehouseCode],[WarehouseName]',
+                         firstFightField:'[WarehouseName]',
+                         CacheTime:'480',
+                         connName:'Mms'
+                    },
+                    method: 'GET',
+                    panelWidth:400,
+                    //fit:true,
+                    delay: 1000,
+                    mode: 'remote',
+                    value: '',
+                    idField: 'WarehouseName',
+                    textField: 'WarehouseName',
+                    columns:[[
+                    { field: 'WarehouseCode',title: '仓库编码',width: 150 },
+                    { field: 'WarehouseName' , title: '仓库名称',width: 250,sortable:true }
+                     ]],
+                    onSelect: function (rowIndex, rowData) {
+                         $('#WarehouseCode').val(rowData['WarehouseCode'])
+                    },
+                    keyHandler:{
+                    query:function(keyword) {
+                    var queryParams=$(this).combogrid('grid').datagrid('options').queryParams;
+                    queryParams.keyword=keyword;
+                    $(this).combogrid('grid').datagrid('options').queryParams=queryParams;
+                    $(this).combogrid('grid').datagrid('reload');
+                    $(this).combogrid('setValue', keyword);
+                    }}
+               ">
+        <input id="QuantityUnit" class="easyui-combobox" label="单位:" labelAlign="right" labelwidth="100" prompt="" style="width:45%" data-options="
+                url:'/api/Mms/SYS_Part/GetQuantityUnitList',
+				method:'get',
+				valueField:'QuantityUnit',
+				textField:'QuantityUnit',
+               ">
+    </div>
+    <div style="margin: 10px auto auto auto;width:820px;">
+        <table id="partList" class="easyui-datagrid" style="width:100%;height:260px"></table>
+    </div>
+
+</div>
+
+<script src="~/Content/js/jquery-easyui-1.7.0/jquery.min.js"></script>
+<script src="~/Content/js/jquery-easyui-1.7.0/jquery.easyui.min.js"></script>
+<script src="~/Content/js/jquery-easyui-1.7.0/locale/easyui-lang-zh_CN.js"></script>
+<script src="~/Content/js/core/common.js"></script>
+<script type="text/javascript">
+
+    $().ready(function () {
+        LoadBomTableData();
+
+        $('#bomList').datagrid({
+            onDblClickCell: function (rowIndex, rowData) {
+                //var row = $('#bomList').datagrid('getSelected');
+                $("#bomList").datagrid('clearSelections');
+                $('#bomList').datagrid('selectRow', rowIndex);
+                var row = $('#bomList').datagrid('getRows')[rowIndex];
+                $("#weight").val(row.Weight);
+                $("#partCode").val(row.PartCode);
+                $("#partName").val(row.PartName);
+                $("#bomID").val(row.ID);
+                LoadPartTableData(0);
+
+                $("#InventoryCode").textbox("setValue", "");
+                $("#InventoryName").textbox("setValue", "");
+                //$("#Spec").textbox("setValue", "");
+                $("#Model").textbox("setValue", "");
+                $("#WarehouseCode").val("");
+                $("#WarehouseName").combogrid("setValue", "");
+                $("#QuantityUnit").combobox("setValue", "");
+
+                var InventoryCode = row.InventoryCode;
+                var InventoryName = row.InventoryName;
+                if (InventoryCode) {
+                    if (!confirm("确认修改此零件的存货编码吗?")) {
+                        return;
+                    }
+                    //com.message("success", "已关联零件存货编码！");
+
+                }
+
+                $('#win').window('open');
+            }
+        });
+
+        $('#partList').datagrid({
+            onClickRow: function (rowIndex, rowData) {
+                var row = $('#partList').datagrid('getSelected');
+                $("#InventoryCode").textbox("setValue", row.InventoryCode);
+                $("#InventoryName").textbox("setValue", row.InventoryName);
+                //$("#Spec").textbox("setValue", row.Spec);
+                $("#Model").textbox("setValue", row.Model);
+                $("#partID").val(row.ID);
+                $("#partICode").val(row.InventoryCode);
+                $("#partIName").val(row.InventoryName);
+                $("#QuantityUnit").combobox("setValue", row.Unit)
+            }
+        })
+
+    })
+
+    function OnSearch() {
+        var bomCode = $("#bomCode").textbox("getValue");
+        $.ajax({
+            type: "get",
+            url: "/api/Mms/SYS_Part/GetSelfMotionUpdatePart?PartFCode=" + bomCode,
+            async: false,
+            success: function (result) {
+                //com.message("success", "我来过这里");
+            }
+        })
+
+        LoadBomTableData();
+    }
+
+    function OnClear() {
+        $("#bomCode").textbox("setValue", "");
+        LoadBomTableData();
+    }
+
+    function OnGenerate() {
+        var rows = $('#bomList').datagrid('getSelections');
+        if (rows.length <= 0) {
+            com.message("success", "请选择要生成的行！");
+            return;
+        }
+        var bIDs = [];
+        for (var i = 0; i < rows.length; i++) {
+            if (rows[i].InventoryCode == null || rows[i].InventoryCode == '') {
+                bIDs.push(rows[i].ID);
+            }
+            else {
+                var index = $('#bomList').datagrid('getRowIndex', rows[i]);
+                com.message("success", "第 " + (index + 1) + " 行已绑定part数据！");
+                return;
+            }
+        }
+
+        $.ajax({
+            type: "get",
+            url: "/api/Mms/SYS_Part/GetSelfMotionUpdatePart2?pIDs=" + bIDs.join(','),
+            async: false,
+            success: function (result) {
+                com.message("success", "我来过这里");
+                console.log(result);
+            }
+        })
+
+    }
+
+    function OnPartSearch() {
+        LoadPartTableData(1);
+    }
+
+    function OnPartSave() {
+        var partID = $("#partID").val();
+        var weight = $("#weight").val();
+        var partName = $("#partName").val();
+        var partCode = $("#partCode").val();
+        var bomID = $("#bomID").val();
+        //var partICode = $("#partICode").val();
+        var partICode = $("#InventoryCode").textbox("getValue");//零件存货编码
+        //var partIName = $("#partIName").val();
+        var partIName = $("#InventoryName").textbox("getValue");//零件存货名称
+        var Model = $("#Model").textbox("getValue");//零件型号
+        var wCode = $("#WarehouseCode").val();
+        var wName = $("#WarehouseName").combogrid("getValue");
+        var qUnit = $("#QuantityUnit").combobox("getValue");
+
+        if (partICode == '') {
+            com.message("error", "请选择一个关联物料！");
+            return;
+        }
+
+        $.ajax({
+            type: "post",
+            url: "/api/Mms/SYS_Part/PostUpdatePart",
+            async: false,
+            data: {
+                PartID: partID,
+                Weight: weight,
+                PartName: partName,
+                PartCode: partCode,
+                BomID: bomID,
+                PartICode: partICode,
+                PartIName: partIName,
+                Model: Model,
+                wCode: wCode,
+                wName: wName,
+                qUnit: qUnit
+            },
+            success: function (result) {
+                if (result.result) {
+                    //alert("保存成功啦 (*￣︶￣)");
+                    com.message("success", "保存成功");
+                    $('#win').window('close');
+                    LoadBomTableData();
+                }
+                else {
+                    com.message("success", "保存失败 Ծ‸Ծ");
+                }
+            }
+        })
+    }
+
+    function LoadBomTableData() {
+        var bomCode = $("#bomCode").textbox("getValue");
+
+        $('#bomList').datagrid({
+            method: 'get',
+            url: "/api/Mms/BD_BOM/GetBOMsByPCode",
+            queryParams: {
+                partCode: bomCode
+            },
+            striped: true,
+            singleSelect: true,
+            rownumbers: true,
+            checkOnSelect: true,
+            columns: [[
+                //{ field: '', title: '', checkbox: true },
+                { field: 'ID', title: 'ID', width: 45, hidden: true },
+                { field: 'PartCode', title: '零件编号', width: 170, hidden: true },
+                { field: 'PartFigureCode', title: '存货名称', width: 200 },
+                { field: 'PartName', title: '零件名称', width: 190 },
+                { field: 'PartQuantity', title: '零件数量', width: 75 },
+                { field: 'MaterialCode', title: '材料编码', width: 95 },
+                { field: 'ParentFigureCode', title: '父级图号', width: 200, hidden: true },
+                { field: 'Weight', title: '重量', width: 70 },
+                { field: 'Totalweight', title: '总重量（台）', width: 90 },
+                { field: 'InventoryCode', title: '零件存货编号', sortable: true, width: 170 },
+                { field: 'InventoryName', title: '零件存货名称', width: 120 },
+                { field: 'Model', title: '型号规格', width: 120 },
+                { field: 'QuantityUnit', title: '单位', width: 120 },
+                { field: 'MaterialInventoryCode', title: '材料存货编号', width: 95, hidden: true },
+                { field: 'MaterialInventoryName', title: '材料存货名称', width: 95, hidden: true },
+                { field: 'MaterialQuantity', title: '材料数量', width: 75, hidden: true },
+                { field: 'VersionCode', title: '版本号', width: 65, hidden: true },
+                { field: 'Remark', title: '备注', width: 120 },
+                {
+                    field: 'IsEnable', title: '是否有效', width: 65, formatter: function (value) { return value == 1 ? '有效' : "无效" }
+                }
+            ]]
+        });
+    }
+
+    function LoadPartTableData(searchType) {
+        var partName = $("#partName").val();
+        var inventoryCode = $("#InventoryCode").textbox("getValue");
+        var inventoryName = $("#InventoryName").textbox("getValue");
+        //var spec = $("#Spec").textbox("getValue");
+        var model = $("#Model").textbox("getValue");
+        //var searchType = 0;
+
+        var postQueryParams = {
+            PartName: partName,
+            InventoryCode: inventoryCode,
+            InventoryName: inventoryName,
+            Spec: "",
+            Model: model,
+            SearchType: searchType
+        };
+
+        if (searchType == 0) {
+            $('#partList').datagrid({
+                method: 'post',
+                url: "/api/Mms/SYS_Part/PostSimBomByPName",
+                striped: true,
+                pagination: true,
+                pageList: [5, 10, 20, 50],
+                singleSelect: true,
+                queryParams: postQueryParams,
+                columns: [[
+                    { field: 'ID', title: 'ID', width: 45, hidden: true },
+                    { field: 'InventoryCode', title: '存货编码', width: 160 },
+                    { field: 'InventoryName', title: '存货名称', width: 160 },
+                    { field: 'Spec', title: '规格', width: 160, hidden: true },
+                    { field: 'Unit', title: '单位', width: 80 },
+                    { field: 'Model', title: '型号', width: 200 },
+                    { field: 'PartTypeID', title: '物料类型编码', width: 160, hidden: true },
+                    { field: 'TypeName', title: '物料类型', width: 200 },
+                    { field: 'Similarity', title: '相似度', width: 75 }
+                ]]
+            });
+        }
+        else {
+            $('#partList').datagrid({
+                method: 'post',
+                url: "/api/Mms/SYS_Part/PostSimBomByPName",
+                striped: true,
+                pagination: true,
+                pageList: [5, 10, 20, 50],
+                singleSelect: true,
+                queryParams: postQueryParams,
+                columns: [[
+                    { field: 'ID', title: 'ID', width: 45, hidden: true },
+                    { field: 'InventoryCode', title: '存货编码', width: 160 },
+                    { field: 'InventoryName', title: '存货名称', width: 160 },
+                    { field: 'Spec', title: '规格', width: 160, hidden: true },
+                    { field: 'Unit', title: '单位', width: 80 },
+                    { field: 'Model', title: '型号', width: 200 },
+                    { field: 'PartTypeID', title: '物料类型编码', width: 160, hidden: true },
+                    { field: 'TypeName', title: '物料类型', width: 200 }
+                ]]
+            });
+        }
+
+    }
+
+</script>
+
+

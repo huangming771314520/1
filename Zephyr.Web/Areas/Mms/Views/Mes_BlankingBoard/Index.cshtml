@@ -1,0 +1,181 @@
+﻿
+@{
+    ViewBag.Title = "Mes_BlankingBoard";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var Cols = new Zephyr.Models.sys_roleMenuColumnMapService().GetCurrentUserMenuColumns();
+}
+
+@section scripts{
+    <script src="/Content/js/viewModel/com.viewModel.search.js"></script>
+    <script type="text/javascript">
+       using(['validatebox','combotree','numberspinner','combobox','lookup','datebox','datetimebox','combogrid'],easyuifix.datagrid_editor_extend);
+        using(['numberbox','datebox']);
+        var data = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model));
+        var viewModel = function(){ 
+            com.viewModel.search.apply(this,arguments);
+        }
+        ko.bindingViewModel(new viewModel(data));
+    </script>
+}
+
+    @Html.RenderToolbar()
+
+    <div class="container_12" style="position:relative;">
+
+        <div class="grid_1 lbl">合同编号</div>
+
+        <div class="grid_2 val">
+            <input type="text" data-bind="combogridValue:form.ContractCode" class="z-txt easyui-combogrid" data-options="url:'/Commons/GetCommonSearchList',
+                queryParams : {
+                     tableName:'[PMS_BN_Project]',
+                         searchField:'[ContractCode],[ProjectName]',
+                         firstFightField:'[ProjectName]',
+                    whereSql:'IsEnable=1',
+                         connName:'Mms'
+                },
+                method: 'GET',
+                panelWidth:250,
+                fit:true,
+                delay: 1000,
+                mode: 'remote',
+                value: 'ContractCode',
+                idField: 'ContractCode',
+                textField: 'ProjectName',
+                columns:[[
+                { field: 'ContractCode',title: '合同编号',width: 100 },
+                { field: 'ProjectName',title:'项目名称',width:150 }
+                    ]],
+            keyHandler:{
+            query:function(keyword) {
+           var queryParams=$(this).combogrid('grid').datagrid('options').queryParams;
+           queryParams.keyword=keyword;
+           $(this).combogrid('grid').datagrid('options').queryParams=queryParams;
+           $(this).combogrid('grid').datagrid('reload');
+           }}" />
+        </div>
+
+
+        <div class="grid_1 lbl">板材</div>
+        @*<div class="grid_2 val"><input type="text" data-bind="value:form.BoardInventoryName" class="z-txt " /></div>*@
+        <div class="grid_2 val">
+            <input type="text" data-bind="combogridValue:form.BoardInventoryName" class="z-txt easyui-combogrid" data-options="url:'/Commons/GetCommonSearchList',
+                queryParams : {
+                     tableName:'[SYS_Part]',
+                         searchField:'[InventoryCode],[InventoryName],[QuantityUnit],[Model],[Spec]',
+                         firstFightField:'[InventoryName]',
+                    whereSql:'IsEnable=1',
+                         connName:'Mms'
+                },
+                method: 'GET',
+                panelWidth:1000,
+                fit:true,
+                delay: 1000,
+                mode: 'remote',
+                value: 'InventoryName',
+                idField: 'InventoryName',
+                textField: 'InventoryName',
+                columns:[[
+                { field: 'InventoryCode',title: '物料编码',width: 100 ,hidden:true},
+                    { field: 'InventoryName',title: '存货名称',width: 100 },
+                    { field: 'QuantityUnit',title: '物料单位',width: 100 },
+                    { field: 'Model',title: '型号',width: 100 },
+                { field: 'Spec',title:'规格',width:150 }
+                    ]],
+            keyHandler:{
+            query:function(keyword) {
+           var queryParams=$(this).combogrid('grid').datagrid('options').queryParams;
+           queryParams.keyword=keyword;
+           $(this).combogrid('grid').datagrid('options').queryParams=queryParams;
+           $(this).combogrid('grid').datagrid('reload');
+           }}" />
+        </div>
+
+        <div class="clear"></div>
+        <div class="grid_1 lbl">&nbsp;</div>
+        <div class="grid_2 val">&nbsp;</div>
+        <div class="clear"></div>
+
+        <div class="prefix_9" style="position:absolute;top:5px;height:0;">
+            <a id="a_search" href="#" class="buttonHuge button-blue" data-bind="click:searchClick" style="margin:0 15px;">查询</a>
+            <a id="a_reset" href="#" class="buttonHuge button-blue" data-bind="click:clearClick">清空</a>
+        </div>
+    </div>
+ 
+    <table data-bind="datagrid:grid">
+            <thead>  
+                <tr>
+                    <th field="ID" hidden sortable="true" align="left" width="80" @Html.HideColumn(Cols, "ID")>主键ID</th>
+                    <th field="ContractCode" hidden sortable="true" align="left" width="80" @Html.HideColumn(Cols, "ContractCode")>合同编号</th>
+                    <th field="PartCode" hidden sortable="true" align="left" width="80" @Html.HideColumn(Cols, "PartCode")>零件编码</th>
+                    <th field="BoardInventoryCode" hidden sortable="true" align="left" width="80" @Html.HideColumn(Cols, "BoardInventoryCode")>板材物料编码</th>
+                    <th field="BoardInventoryName" sortable="true" align="left" width="150" @Html.HideColumn(Cols, "BoardInventoryName")>板材</th>
+                    <th field="Model" sortable="true" align="left" width="150" @Html.HideColumn(Cols, "Model")>型号规格</th>
+                    <th field="BatchCode" sortable="true" align="left" width="150" @Html.HideColumn(Cols, "BatchCode")>批次号</th>
+                    <th field="ProgramCode" sortable="true" align="left" width="150" @Html.HideColumn(Cols, "ProgramCode")>程序号</th>
+                    <th field="IsEnable" hidden sortable="true" align="left" width="80" data-options="formatter:function(value,row){ return value == 1 ? '是':'否';}" @Html.HideColumn(Cols, "IsEnable")>是否有效</th>
+
+                    <th field="CreatePerson" sortable="true" hidden align="left" width="80" @Html.HideColumn(Cols, "CreatePerson")>创建人</th>
+                    <th field="CreateTime" sortable="true" hidden align="left" width="80" @Html.HideColumn(Cols, "CreateTime")>创建时间</th>
+                    <th field="ModifyPerson" sortable="true" hidden align="left" width="80" @Html.HideColumn(Cols, "ModifyPerson")>更新人</th>
+                    <th field="ModifyTime" sortable="true" hidden align="left" width="80" @Html.HideColumn(Cols, "ModifyTime")>更新时间</th>
+
+                    <th field="action" sortable="true" align="left" width="60" data-options="formatter:function(value,row){return op(row);}">操作</th>
+                    <th field="action2" sortable="true" align="left" width="60" data-options="formatter:function(value,row){return dowm(row);}">操作</th>
+                    @*<th field="FileAddress"    sortable="true" align="left"    width="80"     @Html.HideColumn(Cols,"FileAddress") >文件路径</th>
+        <th field="FileName"    sortable="true" align="left"    width="80"     @Html.HideColumn(Cols,"FileName") >文件名称</th>
+        <th field="DocName"    sortable="true" align="left"    width="80"     @Html.HideColumn(Cols,"DocName") >文档名称</th>*@
+                </tr>                            
+        </thead>      
+    </table>
+<script>
+    function RndNum(n) {
+        var rnd = "";
+        for (var i = 0; i < n; i++)
+            rnd += Math.floor(Math.random() * 10);
+        return rnd;
+    }
+    Date.prototype.Format = function (fmt) { //author: meizz
+        var o = {
+            "M+": this.getMonth() + 1,                 //月份
+            "d+": this.getDate(),                    //日
+            "h+": this.getHours(),                   //小时
+            "m+": this.getMinutes(),                 //分
+            "s+": this.getSeconds(),                 //秒
+            "q+": Math.floor((this.getMonth() + 3) / 3), //季度
+            "S": this.getMilliseconds()             //毫秒
+        };
+        if (/(y+)/.test(fmt))
+            fmt = fmt.replace(RegExp.$1, (this.getFullYear() + "").substr(4 - RegExp.$1.length));
+        for (var k in o)
+            if (new RegExp("(" + k + ")").test(fmt))
+                fmt = fmt.replace(RegExp.$1, (RegExp.$1.length == 1) ? (o[k]) : (("00" + o[k]).substr(("" + o[k]).length)));
+        return fmt;
+    }
+    function dowm(row) {
+        if (row.DocName != null) {
+            var html = "<a href='/mms/home/FileDownload2?id=" + row['ID'] + "&docName=" + row['DocName'] + "&path=" + row['FileAddress'] + "'>下载文件</a>"
+            return html;
+        }
+
+    }
+    function op(row) {
+        if (row['ID'] != "") {
+            var html = "<span param='" + row['ID'] + "' onclick='action(this);'>上传文件</span>";
+            return html;
+        }
+    }
+    function action(obj) {
+        SearchUpload($(obj).attr('param'));
+    };
+    function SearchUpload(id) {
+        var target = parent.$('#CommonSearchDialog').length ? parent.$('#CommonSearchDialog') : parent.$('<div id="CommonSearchDialog"></div>').appendTo('body');
+        utils.clearIframe(target);
+        var opt;
+        opt = { title: '列表', width: 550, height: 480, modal: true, collapsible: false, minimizable: false, maximizable: true, closable: true };
+        opt.content = "<iframe src='/mms/home/UploadDialog?id=" + id + "&newFileName=" + new Date().Format("yyyyMMddhhmmss") + RndNum(5) + "&xmlName=Mes_BlankingBoard" + "' style='height:100%;width:100%;border:0;' frameborder='0'></iframe>";  //frameborder="0" for ie7
+
+        target.window(opt);
+    }
+
+</script>
+ 

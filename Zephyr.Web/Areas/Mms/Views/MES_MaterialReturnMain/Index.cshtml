@@ -1,0 +1,59 @@
+﻿
+@{
+    ViewBag.Title = "MES_MaterialReturnMain";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var Cols = new Zephyr.Models.sys_roleMenuColumnMapService().GetCurrentUserMenuColumns();
+}
+
+@section scripts{
+    <script src="/Content/js/viewModel/com.viewModel.search.js"></script>
+    <script type="text/javascript">
+        var data = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model));
+        var viewModel = function(){ 
+            com.viewModel.search.apply(this,arguments);
+        }
+        ko.bindingViewModel(new viewModel(data));
+    </script>
+}
+
+    @Html.RenderToolbar()
+
+    <div class="container_12" style="position:relative;">
+        <div class="grid_1 lbl">单号</div>
+        <div class="grid_2 val"><input type="text" data-bind="value:form.BillCode" class="z-txt " /></div>
+        <div class="grid_1 lbl">部门</div>
+        <div class="grid_2 val"><input type="text" data-bind="value:form.DepartmentName" class="z-txt " /></div>
+
+        <div class="clear"></div>
+        <div class="grid_1 lbl">&nbsp;</div>
+        <div class="grid_2 val">&nbsp;</div>
+        <div class="clear"></div>
+
+        <div class="prefix_9" style="position:absolute;top:5px;height:0;">  
+            <a id="a_search" href="#" class="buttonHuge button-blue" data-bind="click:searchClick" style="margin:0 15px;">查询</a> 
+            <a id="a_reset"  href="#" class="buttonHuge button-blue" data-bind="click:clearClick">清空</a>
+        </div>
+    </div>
+ 
+    <table data-bind="datagrid:grid">
+            <thead>  
+            <tr>  
+                <th field="ID"    sortable="true" align="left"   hidden width="80"     @Html.HideColumn(Cols,"ID") ></th>
+                <th field="BillCode"    sortable="true" align="left"    width="80"     @Html.HideColumn(Cols,"BillCode") >单号</th>
+                <th field="PickBillCode"    sortable="true" align="left"    width="80"     @Html.HideColumn(Cols,"PickBillCode") >领料单号</th>
+                <th field="DepartmentID"    sortable="true" align="left"    width="80"     @Html.HideColumn(Cols,"DepartmentID") >部门编码</th>
+                <th field="DepartmentName"    sortable="true" align="left"    width="80"     @Html.HideColumn(Cols,"DepartmentName") >部门名称</th>
+                <th field="ContractCode" sortable="true" align="left" hidden width="80" @Html.HideColumn(Cols, "ContractCode")>部门编码</th>
+                <th field="ProjectName" sortable="true" align="left" width="80" @Html.HideColumn(Cols, "ProjectName")>工程项目</th>
+                <th field="ReturnDate" sortable="true" align="left" width="80" @Html.HideColumn(Cols, "ReturnDate") formatter="com.formatDate">退料日期</th>
+                <th field="IsEnable"    sortable="true" align="left"    width="80"     @Html.HideColumn(Cols,"IsEnable") hidden >是否可用</th>
+                <th field="Enable" sortable="true" align="left" width="70" data-options="formatter:function(value,row){ return (row.IsEnable ==1) ? '是':'否';}">
+                    是否可用
+                </th>
+                <th field="BillState" sortable="true" align="left" width="70" data-options="formatter:function(value,row){ return (row.BillState ==2) ? '已发布':'编辑中';}">
+                    状态
+                </th>
+            </tr>                            
+        </thead>      
+    </table>
+ 

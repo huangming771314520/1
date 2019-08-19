@@ -1,0 +1,31 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<activityDiagram dslVersion="1.0.0.0" absoluteBounds="0, 0, 11, 8.5" name="HBHC0406">
+  <activityRootModelMoniker Id="727b7682-e143-4327-9af0-85a340c9f102" />
+  <nestedChildShapes>
+    <initialNodeShape Id="ae752193-f804-4a94-a693-d9e136ced7e2" absoluteBounds="4.125, 1.25, 0.125, 0.125" customColor="89, 89, 89">
+      <initialNodeMoniker Id="e3af4fc4-9e63-466b-af65-f3fdd5401011" LastKnownName="Initial1" />
+    </initialNodeShape>
+    <actionShape Id="a9cfffe1-afd7-496a-be69-0ec4a775bae8" absoluteBounds="3.625, 1.875, 1.125, 0.375" customColor="161, 199, 231">
+      <opaqueActionMoniker Id="bf60eaf6-131d-4594-8a06-b464570b3954" LastKnownName="查询领料入库单" />
+    </actionShape>
+    <activityFinalNodeShape Id="03a88110-1c2f-4bb2-85da-5b26c5fcae78" absoluteBounds="4.125, 3.125, 0.125, 0.125" customColor="89, 89, 89">
+      <activityFinalNodeMoniker Id="168d109e-d393-4d11-a7ae-3ab1db83addb" LastKnownName="ActivityFinal1" />
+    </activityFinalNodeShape>
+    <controlFlowConnector edgePoints="[(4.1875 : 1.375); (4.1875 : 1.875)]" fixedFrom="NotFixed" fixedTo="NotFixed" customColor="Black">
+      <controlFlowMoniker Id="02267928-a0a9-4de6-ac21-369e6c14d5bf" />
+      <relativeChildShapes />
+      <nodes>
+        <initialNodeShapeMoniker Id="ae752193-f804-4a94-a693-d9e136ced7e2" />
+        <actionShapeMoniker Id="a9cfffe1-afd7-496a-be69-0ec4a775bae8" />
+      </nodes>
+    </controlFlowConnector>
+    <controlFlowConnector edgePoints="[(4.1875 : 2.25); (4.1875 : 3.125)]" fixedFrom="NotFixed" fixedTo="NotFixed" customColor="Black">
+      <controlFlowMoniker Id="edfab10c-4fad-4467-abde-909d17de83f3" />
+      <relativeChildShapes />
+      <nodes>
+        <actionShapeMoniker Id="a9cfffe1-afd7-496a-be69-0ec4a775bae8" />
+        <activityFinalNodeShapeMoniker Id="03a88110-1c2f-4bb2-85da-5b26c5fcae78" />
+      </nodes>
+    </controlFlowConnector>
+  </nestedChildShapes>
+</activityDiagram>

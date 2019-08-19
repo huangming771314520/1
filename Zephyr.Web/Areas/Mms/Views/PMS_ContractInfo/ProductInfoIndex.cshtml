@@ -1,0 +1,593 @@
+﻿<!DOCTYPE html>
+
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title></title>
+
+    <link href="~/Content/js/jquery-easyui-1.7.0/themes/icon.css" rel="stylesheet" />
+    <link href="~/Content/js/jquery-easyui-1.7.0/themes/default/easyui.css" rel="stylesheet" />
+    <style type="text/css">
+        * {
+            font-family: "微软雅黑";
+        }
+
+        .icon-resultset_previous {
+            background-image: url('../../../../Content/js/jquery-easyui-1.7.0/themes/icons/resultset_first.png');
+        }
+
+        .icon-resultset_next {
+            background-image: url('../../../../Content/js/jquery-easyui-1.7.0/themes/icons/resultset_last.png');
+        }
+
+        .icon-resultset_next {
+            background-image: url('../../../../Content/js/jquery-easyui-1.7.0/themes/icons/resultset_last.png');
+        }
+
+        .icon-control_power_blue {
+            background-image: url('../../../../Content/js/jquery-easyui-1.7.0/themes/icons/control_power_blue.png');
+        }
+
+        .icon-control_pause {
+            background-image: url('../../../../Content/js/jquery-easyui-1.7.0/themes/icons/control_pause.png');
+        }
+
+        .icon-arrow_rotate_clockwise {
+            background-image: url('../../../../Content/js/jquery-easyui-1.7.0/themes/icons/arrow_rotate_clockwise.png');
+        }
+
+        .icon-control_record_blue {
+            background-image: url('../../../../Content/js/jquery-easyui-1.7.0/themes/icons/control_record_blue.png');
+        }
+
+        .icon-control_fastforward_blue {
+            background-image: url('../../../../Content/js/jquery-easyui-1.7.0/themes/icons/control_fastforward_blue.png');
+        }
+
+        .icon-edit {
+            background: url('../../../../Content/js/jquery-easyui-1.7.0/themes/icons/edit.png') no-repeat center center;
+        }
+    </style>
+
+</head>
+<body>
+    <div style="width:360px;height:100%;float:left;margin-right:5px;">
+        <div class="easyui-panel" title="详细信息" style="padding:20px;">
+            <ul data-bind="easyuiTree:tree" id="Ctree"></ul>
+        </div>
+    </div>
+    <div class="easyui-panel" title="产品信息" style="padding:20px;float:left;">
+        <div style="margin-bottom:10px" id="toolBtn">
+            <a href="/mms/PMS_ContractInfo/ContractInfoIndex?projectID=@ViewData["pID"]" class="easyui-linkbutton" icon="icon-back">返回合同信息</a>
+            <a id="add" onclick="OnAdd()" href="#" class="easyui-linkbutton" icon="icon-add">新增</a>
+            <a id="cal" onclick="onCancle()" href="#" class="easyui-linkbutton" icon="icon-cancel">取消</a>
+            <a id="edit" onclick="onEdit()" href="#" class="easyui-linkbutton" icon="icon-edit">编辑</a>
+            <a id="save" onclick="OnSave()" href="#" class="easyui-linkbutton" icon="icon-save">保存</a>
+            <a id="remove" onclick="onDelete()" href="#" class="easyui-linkbutton" icon="icon-remove" hidden>删除</a>
+            <a onclick="onUpEntryData('up')" href="#" class="easyui-linkbutton" icon="icon-resultset_previous">上一条</a>
+            <a onclick="onUpEntryData('down')" href="#" class="easyui-linkbutton" icon="icon-resultset_next">下一条</a>
+            <a onclick="onAddTask()" href="#" class="easyui-linkbutton" icon="icon-add">新增任务</a>
+        </div>
+        <hr style=" height:1px;border:none;border-top:1px solid #efefef;margin:20px 0px;" />
+        <input id="ProjectID" style="display:none" value="@ViewData["pID"]" />
+        <input id="ProjectDetailID" value="@ViewData["projectDetailID"]" style="display:none" />
+        <div style="margin-bottom:10px">
+            <input id="ContractCode" class="easyui-textbox" label="合同编号:" prompt="" disabled="disabled" value="@ViewData["cCode"]" style="width:100%">
+        </div>
+        <div style="margin-bottom:10px">
+            <input id="ProductName" class="easyui-textbox" label="产品名称:" prompt="" style="width:100%">
+        </div>
+        <div style="margin-bottom:10px">
+            <input id="ProductType" label="产品类型:" style="width:300px" data-options="url:'/Commons/GetComboboxList?CodeType=ProductType',valueField:'value',textField:'text',onChange:function changeType(value) {
+                     value == 1 ? $('#ProductUnit').combobox('setValue',1):$('#ProductUnit').combobox('setValue',2);
+                   }" class="z-txt easyui-combobox">
+            @*<select id="ProductType" class="easyui-combobox" label="产品类型:" prompt="" style="width:300px">
+                    <option value="1">阀门本体</option>
+                    <option value="2">液压站</option>
+                    <option value="3">控制柜</option>
+                </select>*@
+        </div>
+        <div style="margin-bottom:10px">
+            <input id="ProductUnit" label="制造单位:" style="width:300px" data-options="url:'/Commons/GetComboboxList?CodeType=ProductUnit',valueField:'value',textField:'text'" class="z-txt easyui-combobox">
+            @*<select id="ProductUnit" class="easyui-combobox" label="生产单位:" prompt="" style="width:300px">
+                    <option value="1">制造公司</option>
+                    <option value="2">洪源公司</option>
+                </select>*@
+        </div>
+        <div style="margin-bottom:10px">
+            <input id="Model" class="easyui-textbox" label="型号:" prompt="" style="width:100%">
+        </div>
+        <div style="margin-bottom:10px">
+            <input id="Specifications" class="easyui-textbox" label="规格:" prompt="" style="width:100%">
+        </div>
+        <div style="margin-bottom:10px">
+            <input id="TotalWeight" class="easyui-textbox" label="重量(吨)" prompt="" style="width:100%">
+        </div>
+        <div style="margin-bottom:10px">
+            <input id="PlanPrice" class="easyui-textbox" label="计划价(万元)" prompt="" style="width:100%">
+        </div>
+        <div style="margin-bottom:10px">
+            <input id="Quantity" class="easyui-textbox" label="合同数量(台)" prompt="" style="width:100%">
+        </div>
+        <div style="margin-bottom:10px">
+            <input hidden id="CompleteQuantity" disabled="disabled" class="easyui-textbox" label="完工数量(台)" prompt="" style="width:100%">
+        </div>
+        <div style="margin-bottom:10px">
+            <input id="DeliveryTime" class="easyui-datebox" label="交货日期:" prompt="" style="width:300px">
+        </div>
+        <div style="margin-bottom:10px">
+            <input id="Remark" class="easyui-textbox" label="产品备注:" prompt="" style="width:100%">
+        </div>
+        <div style="margin-bottom:10px">
+            @*<select id="Urgent" class="easyui-combobox" label="紧急度:" prompt="" style="width:300px">
+                    <option value="1">一般</option>
+                    <option value="2">重要</option>
+                    <option value="3">紧急</option>
+                </select>*@
+
+            <input id="Urgent" label="项目紧急度:" style="width:300px" data-options="url:'/Commons/GetComboboxList?CodeType=Urgent',valueField:'value',textField:'text'" class="z-txt easyui-combobox">
+        </div>
+        <div style="margin-bottom:10px">
+            @*<input id="ProjectState" class="easyui-textbox" label="项目状态:" disabled="disabled" prompt="" style="width:100%">*@
+            <input id="ProjectState" label="项目状态:" readonly="readonly" style="width:300px" data-options="url:'/Commons/GetComboboxList?CodeType=ProjectState',valueField:'value',textField:'text'" class="z-txt easyui-combobox">
+        </div>
+        <hr style=" height:1px;border:none;border-top:1px solid #efefef;margin:20px 0px;" />
+        <div style="margin-bottom:10px" id="stateBtn">
+            <a onclick="startClick()" href="#" class="easyui-linkbutton" icon="icon-control_power_blue">启动</a>
+            <a onclick="parseClick()" href="#" class="easyui-linkbutton" icon="icon-control_pause">暂停</a>
+            <a onclick="restartClick()" href="#" class="easyui-linkbutton" icon="icon-arrow_rotate_clockwise">重启</a>
+            <a onclick="cancelClick()" href="#" class="easyui-linkbutton" icon="icon-control_record_blue">取消</a>
+            <a onclick="restoreClick()" href="#" class="easyui-linkbutton" icon="icon-control_fastforward_blue">恢复</a>
+        </div>
+    </div>
+
+
+    <script src="~/Content/js/jquery-easyui-1.7.0/jquery.min.js"></script>
+    <script src="~/Content/js/jquery-easyui-1.7.0/jquery.easyui.min.js"></script>
+    <script src="~/Content/js/jquery-easyui-1.7.0/locale/easyui-lang-zh_CN.js"></script>
+    <script src="~/Content/js/core/utils.js"></script>
+    <script src="~/Content/js/core/common.js"></script>
+    <script type="text/javascript">
+        function getParam(paramName) {
+            paramValue = "", isFound = !1;
+            if (this.location.search.indexOf("?") == 0 && this.location.search.indexOf("=") > 1) {
+                arrSource = unescape(this.location.search).substring(1, this.location.search.length).split("&"), i = 0;
+                while (i < arrSource.length && !isFound) arrSource[i].indexOf("=") > 0 && arrSource[i].split("=")[0].toLowerCase() == paramName.toLowerCase() && (paramValue = arrSource[i].split("=")[1], isFound = !0), i++
+            }
+            return paramValue == "" && (paramValue = null), paramValue
+        }
+        function onEdit() {
+            $("#save").linkbutton('enable');
+            $("#cal").linkbutton('enable');
+            $("#ProductName").textbox('enable');
+            $("#ProductType").combobox('enable');
+            $("#ProductUnit").combobox('enable');
+            $("#Model").textbox('enable');
+            $("#Specifications").textbox('enable');
+            $("#TotalWeight").textbox('enable');
+            $("#PlanPrice").textbox('enable');
+
+            $("#Quantity").textbox('enable');
+            $("#DeliveryTime").datebox('enable');
+            $("#Remark").textbox('enable');
+            $("#Urgent").combobox('enable');
+            $("#ProjectState").combobox('enable');
+        }
+        function setControlDisable() {
+            $("#ProductName").textbox('disable');
+            $("#ProductType").combobox('disable');
+            $("#ProductUnit").combobox('disable');
+            $("#Model").textbox('disable');
+            $("#Specifications").textbox('disable');
+            $("#TotalWeight").textbox('disable');
+            $("#PlanPrice").textbox('disable');
+
+            $("#Quantity").textbox('disable');
+            $("#DeliveryTime").datebox('disable');
+            $("#Remark").textbox('disable');
+            $("#Urgent").combobox('disable');
+            $("#ProjectState").combobox('disable');
+
+            var pState =@ViewData["pState"];
+            if (pState == 1) {
+                $("#add").linkbutton('disable');
+                $("#edit").linkbutton('disable');
+                $("#remove").linkbutton('disable');
+            }
+            else {
+                $("#add").linkbutton('enable');
+                $("#edit").linkbutton('enable');
+                $("#remove").linkbutton('enable');
+            }
+        }
+        $().ready(function () {
+            setControlDisable();
+            $("#save").linkbutton('disable');
+            $("#cal").linkbutton('disable');
+            var id = getParam("sousid");
+            if (id != "" && id != null) {
+                $.get("/api/Mms/PMS_ContractInfo/GetProjectDetailData2?id=" + id, function (result) {
+                    //console.log(result)
+                    if (result.result) {
+                        $("#ProjectDetailID").val(result.data[0].ID);
+                        $("#ProductName").textbox("setValue", result.data[0].ProductName);
+                        $("#ProductType").combobox("setValue", result.data[0].ProductType);
+                        $("#ProductUnit").combobox("setValue", result.data[0].ProductUnit);
+                        $("#Model").textbox("setValue", result.data[0].Model);
+                        $("#Specifications").textbox("setValue", result.data[0].Specifications);
+                        $("#TotalWeight").textbox("setValue", result.data[0].TotalWeight);
+                        $("#PlanPrice").textbox("setValue", result.data[0].PlanPrice);
+                        $("#Quantity").textbox("setValue", result.data[0].Quantity);
+                        $("#CompleteQuantity").textbox("setValue", result.data[0].CompleteQuantity);
+                        $("#DeliveryTime").datebox("setValue", result.data[0].DeliveryTime);
+                        $("#Remark").textbox("setValue", result.data[0].Remark);
+                        $("#Urgent").combobox("setValue", result.data[0].Urgent);
+                        $("#ProjectState").combobox("setValue", result.data[0].ProjectState);
+                    }
+                })
+            } else {
+
+                if ($("#ProjectDetailID").val() == "") {
+                    $.get("/api/Mms/PMS_ContractInfo/GetProjectDetailData?pID=" + $("#ProjectID").val(), function (result) {
+                        //console.log(result)
+                        if (result.result) {
+                            $("#ProjectDetailID").val(result.data[0].ID);
+                            $("#ProductName").textbox("setValue", result.data[0].ProductName);
+                            $("#ProductType").combobox("setValue", result.data[0].ProductType);
+                            $("#ProductUnit").combobox("setValue", result.data[0].ProductUnit);
+                            $("#Model").textbox("setValue", result.data[0].Model);
+                            $("#Specifications").textbox("setValue", result.data[0].Specifications);
+                            $("#TotalWeight").textbox("setValue", result.data[0].TotalWeight);
+                            $("#PlanPrice").textbox("setValue", result.data[0].PlanPrice);
+                            $("#Quantity").textbox("setValue", result.data[0].Quantity);
+                            $("#CompleteQuantity").textbox("setValue", result.data[0].CompleteQuantity);
+                            $("#DeliveryTime").datebox("setValue", result.data[0].DeliveryTime);
+                            $("#Remark").textbox("setValue", result.data[0].Remark);
+                            $("#Urgent").combobox("setValue", result.data[0].Urgent);
+                            $("#ProjectState").combobox("setValue", result.data[0].ProjectState);
+                        }
+                    })
+                } else {
+                    $.get("/api/Mms/PMS_ContractInfo/GetProjectDetailData?pID=" + $("#ProjectID").val() + "&projectDetailID=" + $("#ProjectDetailID").val(), function (result) {
+                        //console.log(result)
+                        if (result.result) {
+                            $("#ProjectDetailID").val(result.data[0].ID);
+                            $("#ProductName").textbox("setValue", result.data[0].ProductName);
+                            $("#ProductType").combobox("setValue", result.data[0].ProductType);
+                            $("#ProductUnit").combobox("setValue", result.data[0].ProductUnit);
+                            $("#Model").textbox("setValue", result.data[0].Model);
+                            $("#Specifications").textbox("setValue", result.data[0].Specifications);
+                            $("#TotalWeight").textbox("setValue", result.data[0].TotalWeight);
+                            $("#PlanPrice").textbox("setValue", result.data[0].PlanPrice);
+                            $("#Quantity").textbox("setValue", result.data[0].Quantity);
+                            $("#CompleteQuantity").textbox("setValue", result.data[0].CompleteQuantity);
+                            $("#DeliveryTime").datebox("setValue", result.data[0].DeliveryTime);
+                            $("#Remark").textbox("setValue", result.data[0].Remark);
+                            $("#Urgent").combobox("setValue", result.data[0].Urgent);
+                            $("#ProjectState").combobox("setValue", result.data[0].ProjectState);
+                        }
+                    })
+                }
+            }
+
+        })
+
+        //function changeType(value) {
+        //    var type = $("#ProductType").combobox("getValue");
+        //    type == 1 ? $("#ProductUnit").combobox("setValue", 1) : $("#ProductUnit").combobox("setValue", 2);
+        //}
+
+        function OnAdd() {
+            $("#toolBtn a").linkbutton('disable');
+            $("#cal").linkbutton('enable');
+            onEdit();
+            $("#ProjectDetailID").val(-1);
+            $("#ProductName").textbox("setValue", "");
+            $("#ProductType").combobox("setValue", "");
+            $("#ProductUnit").combobox("setValue", "");
+            $("#Model").textbox("setValue", "");
+            $("#Specifications").textbox("setValue", "");
+            $("#TotalWeight").textbox("setValue", "");
+            $("#PlanPrice").textbox("setValue", "");
+            $("#Quantity").textbox("setValue", "");
+            $("#CompleteQuantity").textbox("setValue", "");
+            $("#DeliveryTime").datebox("setValue", "");
+            $("#Remark").textbox("setValue", "");
+            $("#Urgent").combobox("setValue", "");
+            $("#ProjectState").combobox("setValue", 1);
+            var btn1 = $("#stateBtn a");
+            //$("#stateBtn a").attr("disabled", true);
+
+            $('#stateBtn a').linkbutton('disable');
+            $("#toolBtn a:not(a:eq(2),a:eq(4))").linkbutton('disable');
+
+            //$('#Ctree').tree("options").queryParams = { cCode: '' };
+            //$('#Ctree').tree('reload');
+        }
+
+        function onCancle() {
+            window.location.reload();
+        }
+
+        function OnSave() {
+            if ($("#ContractCode").val() == "") {
+                com.message('success', "请选择合同！");
+                return;
+            }
+            if ($("#ProductName").val() == "") {
+                com.message('success', "产品名称不能为空！");
+                return;
+            }
+            var projectState = $("#ProjectState").combobox("getValue");
+            projectState = projectState == "" ? projectState = 1 : projectState;
+            var model = [];
+            model.push({
+                ID: $("#ProjectDetailID").val(),
+                MainID: $("#ProjectID").val(),
+                ProductName: $("#ProductName").textbox("getValue"),
+                ProductType: $("#ProductType").combobox("getValue"),
+                Model: $("#Model").textbox("getValue"),
+                Specifications: $("#Specifications").textbox("getValue"),
+                Quantity: $("#Quantity").textbox("getValue"),
+                DeliveryTime: $("#DeliveryTime").datebox("getValue"),
+                Remark: $("#Remark").textbox("getValue"),
+                Urgent: $("#Urgent").combobox("getValue"),
+                ProjectState: projectState,
+                IsEnable: 1,
+                ProductUnit: $("#ProductUnit").combobox("getValue"),
+                TotalWeight: $("#TotalWeight").textbox("getValue"),
+                PlanPrice: $("#PlanPrice").textbox("getValue"),
+                CompleteQuantity: $("#CompleteQuantity").textbox("getValue")
+            });
+            $.ajax({
+                type: "POST",
+                url: '/api/Mms/PMS_ContractInfo/PostProjectDetailOnSave',
+                data: JSON.stringify(model),
+                contentType: 'application/json;charset=utf-8',
+                async: false,
+                success: function (result) {
+                    if (result.result > 0) {
+                        com.message('success', "保存成功！");
+                        window.location.href = "/mms/PMS_ContractInfo/ProductInfoIndex?pID=" + $("#ProjectID").val() + "&ccode=" + $("#ContractCode").val() + "&pname=''&projectDetailID=" + result.result;;
+                    }
+                    $('#Ctree').tree("options").queryParams = { cCode: $("#ContractCode").val() };
+                    $('#Ctree').tree('reload');
+                }
+            })
+        }
+        function onDelete() {
+
+            if (confirm("确定要删除产品信息吗?")) {
+                var model = [];
+                model.push({
+                    ID: $("#ProjectDetailID").val(),
+                    MainID: $("#ProjectID").val(),
+                    ProductName: $("#ProductName").val(),
+                    ProductType: $("#ProductType").combobox("getValue"),
+                    Model: $("#Model").textbox("getValue"),
+                    Specifications: $("#Specifications").textbox("getValue"),
+                    Quantity: $("#Quantity").textbox("getValue"),
+                    DeliveryTime: $("#DeliveryTime").datebox("getValue"),
+                    Remark: $("#Remark").textbox("getValue"),
+                    Urgent: $("#Urgent").combobox("getValue"),
+                    ProjectState: $("#ProjectState").combobox("getValue"),
+                    IsEnable: 0,
+                    ProductUnit: $("#ProductUnit").combobox("getValue"),
+                    TotalWeight: $("#TotalWeight").textbox("getValue"),
+                    PlanPrice: $("#PlanPrice").textbox("getValue"),
+                    CompleteQuantity: $("#CompleteQuantity").textbox("getValue")
+                });
+                $.ajax({
+                    type: "POST",
+                    url: '/api/Mms/PMS_ContractInfo/PostProjectDetailOnDelete',
+                    data: JSON.stringify(model),
+                    contentType: 'application/json;charset=utf-8',
+                    async: false,
+                    success: function (result) {
+                        com.message('success', result.msg);
+                        window.location.reload();
+                    }
+                })
+            }
+        }
+        function onUpEntryData(type) {
+            var ws = " and MainID=" + $("#ProjectID").val();
+            var post = {
+                tid: $("#ProjectDetailID").val(),
+                table: 'PMS_BN_ProjectDetail',
+                type: type,
+                whereSql: " and MainID=" + $("#ProjectID").val()
+            }
+            com.ajax({
+                type: "POST",
+                url: '/api/Mms/PMS_ContractInfo/PostProjectUpOrDownData',
+                data: JSON.stringify(post),
+                async: false,
+                success: function (result) {
+                    if (result.length > 0) {
+                        $("#ProjectDetailID").val(result[0].ID);
+                        $("#ProductName").textbox("setValue", result[0].ProductName);
+                        $("#ProductType").combobox("setValue", result[0].ProductType);
+                        $("#ProductUnit").combobox("setValue", result[0].ProductUnit);
+                        $("#Model").textbox("setValue", result[0].Model);
+                        $("#Specifications").textbox("setValue", result[0].Specifications);
+                        $("#TotalWeight").textbox("setValue", result[0].TotalWeight);
+                        $("#PlanPrice").textbox("setValue", result[0].PlanPrice);
+                        $("#Quantity").textbox("setValue", result[0].Quantity);
+                        $("#CompleteQuantity").textbox("setValue", result[0].CompleteQuantity);
+                        $("#DeliveryTime").datebox("setValue", result[0].DeliveryTime);
+                        $("#Remark").textbox("setValue", result[0].Remark);
+                        $("#Urgent").combobox("setValue", result[0].Urgent);
+                        $("#ProjectState").combobox("setValue", result[0].ProjectState);
+
+                    }
+                    else {
+                        com.message('success', "没有数据了！");
+                    }
+                }
+            })
+        }
+
+        function onAddTask() {
+            var pState =@ViewData["pState"];
+            var projectDetailID = $("#ProjectDetailID").val();
+            if (projectDetailID == "") {
+                com.message('success', "没有产品信息！");
+                return;
+            }
+            var contractCode = $("#ContractCode").val();
+            var pName = $("#ProductName").val();
+            var pSpecifications = $("#Specifications").val();
+            var pModel = $("#Model").val();
+            var pQuantity = $("#Quantity").val();
+            var pDeliveryTime = $("#DeliveryTime").val();
+            var pQuantity = $("#Quantity").textbox("getValue");
+            //var projectName = $("#ProjectName").val();
+
+            //string contractCode, string productID,string pName, string pModel, string pSpecifications, string DeliveryTime, string Quantity
+            window.location.href = '/mms/PMS_ContractInfo/TaskInfoIndex?pID=' + $("#ProjectID").val() + '&contractCode=' + contractCode + "&productID=" + projectDetailID + "&pName=" + pName + "&pModel=" + pModel + "&pSpecifications=" + pSpecifications + "&DeliveryTime=" + pDeliveryTime + "&Quantity=" + pQuantity+"&pState="+pState;
+        }
+
+        //启动按钮
+        function startClick() {
+
+            com.ajax({
+                type: 'GET',
+                url: '/api/Mms/PMS_BN_Project/GetProjectState?ID=' + $("#ProjectDetailID").val() + '&ProjectState=' + 2,
+                async: false,
+                success: function (d) {
+                    if (d == "0") {
+                        com.message('success', "操作失败！请确认单据状态！")
+                    } else {
+                        com.message('success', "启动成功！")
+                        window.location.reload()
+                    }
+                }
+            });
+
+        }
+        //暂停按钮
+        function parseClick() {
+
+            com.ajax({
+                type: 'GET',
+                url: '/api/Mms/PMS_BN_Project/GetProjectState?ID=' + $("#ProjectDetailID").val() + '&ProjectState=' + 3,
+                async: false,
+                success: function (d) {
+                    if (d == "0") {
+                        com.message('success', "操作失败！请确认单据状态！")
+                    } else {
+                        com.message('success', "暂停成功！")
+                        window.location.reload()
+                    }
+                }
+            });
+
+        }
+        //重启按钮
+        function restartClick() {
+
+            com.ajax({
+                type: 'GET',
+                url: '/api/Mms/PMS_BN_Project/GetProjectState?ID=' + $("#ProjectDetailID").val() + '&ProjectState=' + 5,
+                async: false,
+                success: function (d) {
+                    if (d == "0") {
+                        com.message('success', "操作失败！请确认单据状态！")
+                    } else {
+                        com.message('success', "重新启动成功！")
+                        window.location.reload()
+                    }
+                }
+            });
+
+        }
+        //取消按钮
+        function cancelClick() {
+
+            com.ajax({
+                type: 'GET',
+                url: '/api/Mms/PMS_BN_Project/GetProjectState?ID=' + $("#ProjectDetailID").val() + '&ProjectState=' + 4,
+                async: false,
+                success: function (d) {
+                    if (d == "0") {
+                        com.message('success', "操作失败！请确认单据状态！")
+                    } else {
+                        com.message('success', "取消成功！")
+                        window.location.reload()
+                    }
+                }
+            });
+
+        }
+        //恢复按钮
+        function restoreClick() {
+
+            com.ajax({
+                type: 'GET',
+                url: '/api/Mms/PMS_BN_Project/GetProjectState?ID=' + $("#ProjectDetailID").val() + '&ProjectState=' + 6,
+                async: false,
+                success: function (d) {
+                    if (d == "0") {
+                        com.message('success', "操作失败！请确认单据状态！")
+                    } else {
+                        com.message('success', "恢复成功！")
+                        window.location.reload()
+                    }
+                }
+            });
+
+        }
+
+        $('#Ctree').tree({
+            method: 'GET',
+            queryParams: { cCode: $("#ContractCode").val() },
+            lines: true,
+            animate: true,
+            url: '/api/Mms/PMS_ContractInfo/GetTaskTree',
+            loadFilter: function (d) {
+                if (d != null && d.length > 0) {
+                    var jsonData = eval(d);
+                    return utils.toTreeData(jsonData, 'id', 'pid', "children");
+                }
+                else {
+                    return '';
+                }
+            },
+            onSelect: function (node) {
+                var pState =@ViewData["pState"];
+
+                if (node.pid == "0") {
+                    window.location.href = "/mms/PMS_ContractInfo/ContractInfoIndex?projectID=" + node.id.substring(1, node.id.length);
+                } else if (node.pid.substring(0, 1) == "P") {
+                    window.location.href = "/mms/PMS_ContractInfo/ProductInfoIndex?pID=" + $("#ProjectID").val() + "&cCode=" + $("#ContractCode").val() + "&pName=0&projectDetailID=0&sousid=" + node.id.substring(1, node.id.length) + "&pState=" + pState;
+                } else if (node.pid.substring(0, 1) == "A") {
+                    $.get("/api/Mms/PMS_ContractInfo/GetProjectDetailData2?id=" + node.pid.substring(1, node.pid.length), function (result) {
+                        if (result.result) {
+                            window.location.href = '/mms/PMS_ContractInfo/TaskInfoIndex?pID=' + $("#ProjectID").val() + '&contractCode=' + $("#ContractCode").val() + "&productID=" + node.pid.substring(1, node.pid.length) + "&pName=" + result.data[0].ProductName + "&pModel=" + result.data[0].Model + "&pSpecifications=" + result.data[0].Specifications + "&DeliveryTime=" + result.data[0].DeliveryTime + "&Quantity=" + result.data[0].Quantity + "&pState=" + pState;
+                        }
+                    })
+
+                }
+                else if (node.pid.substring(0, 1) == "B") {
+                    $.get("/api/Mms/PMS_ContractInfo/GetProjectDetailData2?id=" + node.text.substr(node.text.indexOf('&') + 1, node.text.lastIndexOf('&') - node.text.indexOf('&') - 1), function (result) {
+                        if (result.result) {
+                            window.location.href = '/mms/PMS_ContractInfo/DesignTaskDetailedIndex?pID=' + $("#ProjectID").val() + '&contractCode=' + $("#ContractCode").val() + "&productID=" + node.text.substr(node.text.indexOf('&') + 1, node.text.lastIndexOf('&') - node.text.indexOf('&') - 1) + "&pName=" + result.data[0].ProductName + "&pModel=" + result.data[0].Model + "&pSpecifications=" + result.data[0].Specifications + "&MainID=" + node.pid.substring(1, node.pid.length) + "&id=" + node.id + "&pState=" + pState;
+                        }
+                    })
+                }
+                else if (node.pid.substring(0, 1) == "D") {
+                    $.get("/api/Mms/PMS_ContractInfo/GetProjectDetailData2?id=" + node.text.substr(node.text.indexOf('&') + 1, node.text.lastIndexOf('&') - node.text.indexOf('&') - 1), function (result) {
+                        if (result.result) {
+                            window.location.href = '/mms/PMS_ContractInfo/ProductionTaskDetailedIndex?pID=' + $("#ProjectID").val() + '&contractCode=' + $("#ContractCode").val() + "&productID=" + node.text.substr(node.text.indexOf('&') + 1, node.text.lastIndexOf('&') - node.text.indexOf('&') - 1) + "&pName=" + result.data[0].ProductName + "&pModel=" + result.data[0].Model + "&pSpecifications=" + result.data[0].Specifications + "&Quantity=" + result.data[0].Quantity + "&DeliveryTime=" + result.data[0].DeliveryTime + "&MainID=" + node.pid.substring(1, node.pid.length) + "&id=" + node.id + "&pState=" + pState;
+                        }
+                    })
+                }
+        }
+        });
+
+
+    </script>
+
+</body>
+</html>

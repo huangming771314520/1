@@ -1,0 +1,108 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<activityRootModel xmlns:dm0="http://schemas.microsoft.com/VisualStudio/2008/DslTools/Core" xmlns:dm1="http://schemas.microsoft.com/dsltools/Kernel" xmlns:dm2="http://schemas.microsoft.com/dsltools/Component" xmlns:dm3="http://schemas.microsoft.com/dsltools/UseCase" xmlns:dm4="http://schemas.microsoft.com/dsltools/Activity" xmlns:dm5="http://schemas.microsoft.com/dsltools/Interaction" xmlns:dm6="http://schemas.microsoft.com/dsltools/UmlModelLibrary" xmlns:dm7="http://schemas.microsoft.com/dsltools/UmlDiagrams" xmlns:dm8="http://schemas.microsoft.com/dsltools/ModelStore" xmlns:dm9="http://schemas.microsoft.com/dsltools/SimpleShapesModel" dslVersion="1.0.0.0" Id="47644bf1-1f65-47bd-8b25-0dd313c1079d" name="0403车间派工" linkedPackageId="17701824-9dc0-46e2-a4fa-7fa8b6c0f630" xmlns="http://schemas.microsoft.com/VisualStudio/TeamArchitect/ActivityDesigner">
+  <ownedCommentsInternal>
+    <comment Id="c21bad9e-6b3e-43fb-9e13-ab97fcc72593">
+      <elementDefinition Id="827edafe-c95d-47ae-bfc7-c08f4dd6486e" />
+      <body>1、车间派工只处理生产调度下达与本车间有关的生产任务；
+2、其他任务通过临时任务处理</body>
+      <annotatedElements>
+        <opaqueActionMoniker Id="911e228d-96a4-43be-8b58-5499d5b2288d" LastKnownName="查询车间任务" />
+      </annotatedElements>
+    </comment>
+    <comment Id="bb335081-cb37-4cd2-951d-4ebe46a6233d">
+      <elementDefinition Id="eb63215c-2862-40c0-8a9c-d7219c84f08f" />
+      <body>调整范围是工艺指定的本车间设备</body>
+      <annotatedElements>
+        <opaqueActionMoniker Id="18bbcf8e-cc07-42a4-8030-4a341583b108" LastKnownName="调整加工设备" />
+      </annotatedElements>
+    </comment>
+    <comment Id="4239a89c-35f3-40be-b020-d6b6c2285094">
+      <elementDefinition Id="0119b28d-4900-4292-8eb5-7ba2e44b9c31" />
+      <body>只能选择本车间的有效班组</body>
+      <annotatedElements>
+        <opaqueActionMoniker Id="2fd8dbd5-ea3c-4b9a-aa63-92fca672cebf" LastKnownName="指定任务班组" />
+      </annotatedElements>
+    </comment>
+    <comment Id="859acd13-d7c1-40d8-8aa0-d1e32da47926">
+      <elementDefinition Id="afd41933-886a-427e-80b2-278818bb452a" />
+      <body>更新任务状态为已派工</body>
+      <annotatedElements>
+        <opaqueActionMoniker Id="55c4567f-2d09-404a-8fdb-46edaa115abd" LastKnownName="派发任务" />
+      </annotatedElements>
+    </comment>
+  </ownedCommentsInternal>
+  <packagedElements>
+    <activityRootModelHasActivity>
+      <activity Id="4622b8a4-81f1-4cee-a39b-2cf15df105e1" name="0403车间派工" isAbstract="false" isLeaf="false" isActiveClass="false" isReentrant="false" isReadOnly="false" isSingleExecution="false">
+        <elementDefinition Id="c93ecd9b-1a14-4d53-85de-886e2d22d3f7" />
+        <nodes>
+          <initialNode Id="5f79e3f7-60d5-4dd4-8d44-490a45632429" name="Initial1" isLeaf="false">
+            <elementDefinition Id="9517d72d-44e4-4be5-a29b-74c01c9b7e0a" />
+            <flowNodeTargets>
+              <controlFlow Id="723dae72-ff58-403c-9b62-e79213849019" isLeaf="false">
+                <opaqueActionMoniker Id="911e228d-96a4-43be-8b58-5499d5b2288d" LastKnownName="查询车间任务" />
+                <elementDefinition Id="1e2ecb59-e660-4fb2-8c23-790dc37da427" />
+              </controlFlow>
+            </flowNodeTargets>
+          </initialNode>
+          <opaqueAction Id="911e228d-96a4-43be-8b58-5499d5b2288d" name="查询车间任务" isLeaf="false">
+            <elementDefinition Id="3431e9ed-2125-4dfe-a526-e57ad543a114" />
+            <flowNodeTargets>
+              <controlFlow Id="380daf13-0b92-45c9-80d7-9d35915d7962" isLeaf="false">
+                <opaqueActionMoniker Id="18bbcf8e-cc07-42a4-8030-4a341583b108" LastKnownName="调整加工设备" />
+                <elementDefinition Id="bc5e6cf0-9483-46a2-b482-18dbfb0a1e29" />
+              </controlFlow>
+            </flowNodeTargets>
+          </opaqueAction>
+          <activityFinalNode Id="dc2f7269-a80e-4c00-b28f-06a9eb3073a1" name="ActivityFinal1" isLeaf="false">
+            <elementDefinition Id="73e04238-7d74-402a-8641-6eb53565b63c" />
+          </activityFinalNode>
+          <opaqueAction Id="18bbcf8e-cc07-42a4-8030-4a341583b108" name="调整加工设备" isLeaf="false">
+            <elementDefinition Id="99a8c0f4-8da9-42ec-86ac-035ae6f4a9fd" />
+            <flowNodeTargets>
+              <controlFlow Id="0ec81438-5d9e-45d1-b9df-057fef1d2b74" isLeaf="false">
+                <opaqueActionMoniker Id="2fd8dbd5-ea3c-4b9a-aa63-92fca672cebf" LastKnownName="指定任务班组" />
+                <elementDefinition Id="b14079ce-c181-4acc-a2cd-506005da2297" />
+              </controlFlow>
+            </flowNodeTargets>
+          </opaqueAction>
+          <opaqueAction Id="2fd8dbd5-ea3c-4b9a-aa63-92fca672cebf" name="指定任务班组" isLeaf="false">
+            <elementDefinition Id="d5d4b529-3224-438c-a2aa-891364e46fe0" />
+            <flowNodeTargets>
+              <controlFlow Id="14be3f09-21d0-41bc-80f3-b49794c7cf2f" isLeaf="false">
+                <opaqueActionMoniker Id="55c4567f-2d09-404a-8fdb-46edaa115abd" LastKnownName="派发任务" />
+                <elementDefinition Id="4a9933ee-f364-4bab-a102-5ec566b810e9" />
+              </controlFlow>
+            </flowNodeTargets>
+          </opaqueAction>
+          <opaqueAction Id="55c4567f-2d09-404a-8fdb-46edaa115abd" name="派发任务" isLeaf="false">
+            <elementDefinition Id="c82ec63e-b872-4436-b62a-d7d1d03f9533" />
+            <flowNodeTargets>
+              <controlFlow Id="2d0279b4-5bbe-47b2-a182-1c584c1b8dbe" isLeaf="false">
+                <activityFinalNodeMoniker Id="dc2f7269-a80e-4c00-b28f-06a9eb3073a1" LastKnownName="ActivityFinal1" />
+                <elementDefinition Id="81076d9b-82f1-41bf-9831-0a96b3b8ea92" />
+              </controlFlow>
+            </flowNodeTargets>
+          </opaqueAction>
+        </nodes>
+      </activity>
+    </activityRootModelHasActivity>
+  </packagedElements>
+  <package Id="17701824-9dc0-46e2-a4fa-7fa8b6c0f630" name="HCJXUML">
+    <elementDefinition Id="6348ac1d-75ba-4a39-8ebf-237333c18d4f" />
+    <profileInstances>
+      <packageHasProfileInstances Id="c2e64161-d899-4650-b1f1-d5f7eac15708">
+        <profileInstance Id="e4f534c5-8f3f-41e2-9dbc-b15c781d3b79" name="StandardProfileL2">
+          <elementDefinition Id="e34d544e-0fea-4ed6-ac5e-1b74119ac791" />
+        </profileInstance>
+        <elementDefinition Id="0caec977-1f8c-4ba3-a7db-8cc9ad9cc73b" />
+      </packageHasProfileInstances>
+      <packageHasProfileInstances Id="d4e1af5a-68e1-48a2-96fc-66b13ad9e0c3">
+        <profileInstance Id="9874f341-94b8-4b92-b4b5-6b3f41d80bba" name="StandardProfileL3">
+          <elementDefinition Id="532ea607-fb19-44b8-8502-3351b05452be" />
+        </profileInstance>
+        <elementDefinition Id="29349502-908c-4fda-9054-c48619c59ed0" />
+      </packageHasProfileInstances>
+    </profileInstances>
+  </package>
+</activityRootModel>

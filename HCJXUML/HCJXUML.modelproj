@@ -1,0 +1,394 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{a199b255-4049-4a76-b6ed-840539256e4c}</ProjectGuid>
+    <ArchitectureToolsVersion>2.0.0.0</ArchitectureToolsVersion>
+    <Name>HCJXUML</Name>
+    <RootNamespace>HCJXUML</RootNamespace>
+    <SccProjectName>SAK</SccProjectName>
+    <SccProvider>SAK</SccProvider>
+    <SccAuxPath>SAK</SccAuxPath>
+    <SccLocalPath>SAK</SccLocalPath>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <OutputPath>bin\Debug\</OutputPath>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <OutputPath>bin\Release\</OutputPath>
+  </PropertyGroup>
+  <PropertyGroup>
+    <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
+    <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
+  </PropertyGroup>
+  <Import Project="$(VSToolsPath)\ArchitectureTools\Microsoft.VisualStudio.TeamArchitect.ModelingProject.targets" Condition="'$(VSToolsPath)' != ''" />
+  <ItemGroup>
+    <Folder Include="ModelDefinition\" />
+    <Content Include="00基础数据\HBHC0010.activitydiagram">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="00基础数据\HBHC0010.activitydiagram.layout">
+      <SubType>Content</SubType>
+      <DependentUpon>00基础数据\HBHC0010.activitydiagram</DependentUpon>
+    </Content>
+    <Content Include="01项目管理\HBHC0101.activitydiagram">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="01项目管理\HBHC0101.activitydiagram.layout">
+      <SubType>Content</SubType>
+      <DependentUpon>01项目管理\HBHC0101.activitydiagram</DependentUpon>
+    </Content>
+    <Content Include="01项目管理\HBHC0102.activitydiagram">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="01项目管理\HBHC0102.activitydiagram.layout">
+      <SubType>Content</SubType>
+      <DependentUpon>01项目管理\HBHC0102.activitydiagram</DependentUpon>
+    </Content>
+    <Content Include="01项目管理\HBHC0103.activitydiagram">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="01项目管理\HBHC0103.activitydiagram.layout">
+      <SubType>Content</SubType>
+      <DependentUpon>01项目管理\HBHC0103.activitydiagram</DependentUpon>
+    </Content>
+    <Content Include="01项目管理\HBHC0104.activitydiagram">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="01项目管理\HBHC0104.activitydiagram.layout">
+      <SubType>Content</SubType>
+      <DependentUpon>01项目管理\HBHC0104.activitydiagram</DependentUpon>
+    </Content>
+    <Content Include="01项目管理\HBHC0105.activitydiagram">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="01项目管理\HBHC0105.activitydiagram.layout">
+      <SubType>Content</SubType>
+      <DependentUpon>01项目管理\HBHC0105.activitydiagram</DependentUpon>
+    </Content>
+    <Content Include="02工艺管理\HBHC0201.activitydiagram">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="02工艺管理\HBHC0201.activitydiagram.layout">
+      <SubType>Content</SubType>
+      <DependentUpon>02工艺管理\HBHC0201.activitydiagram</DependentUpon>
+    </Content>
+    <Content Include="02工艺管理\HBHC0202.activitydiagram">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="02工艺管理\HBHC0202.activitydiagram.layout">
+      <SubType>Content</SubType>
+      <DependentUpon>02工艺管理\HBHC0202.activitydiagram</DependentUpon>
+    </Content>
+    <Content Include="02工艺管理\HBHC0203.activitydiagram">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="02工艺管理\HBHC0203.activitydiagram.layout">
+      <SubType>Content</SubType>
+      <DependentUpon>02工艺管理\HBHC0203.activitydiagram</DependentUpon>
+    </Content>
+    <Content Include="02工艺管理\HBHC0204.activitydiagram">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="02工艺管理\HBHC0204.activitydiagram.layout">
+      <SubType>Content</SubType>
+      <DependentUpon>02工艺管理\HBHC0204.activitydiagram</DependentUpon>
+    </Content>
+    <Content Include="02工艺管理\HBHC0205.activitydiagram">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="02工艺管理\HBHC0205.activitydiagram.layout">
+      <SubType>Content</SubType>
+      <DependentUpon>02工艺管理\HBHC0205.activitydiagram</DependentUpon>
+    </Content>
+    <Content Include="03生产管理\HBHC0301.activitydiagram">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="03生产管理\HBHC0301.activitydiagram.layout">
+      <SubType>Content</SubType>
+      <DependentUpon>03生产管理\HBHC0301.activitydiagram</DependentUpon>
+    </Content>
+    <Content Include="03生产管理\HBHC0302.activitydiagram">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="03生产管理\HBHC0302.activitydiagram.layout">
+      <SubType>Content</SubType>
+      <DependentUpon>03生产管理\HBHC0302.activitydiagram</DependentUpon>
+    </Content>
+    <Content Include="03生产管理\HBHC0303.activitydiagram">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="03生产管理\HBHC0303.activitydiagram.layout">
+      <SubType>Content</SubType>
+      <DependentUpon>03生产管理\HBHC0303.activitydiagram</DependentUpon>
+    </Content>
+    <Content Include="04车间管理\HBHC0401.activitydiagram">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="04车间管理\HBHC0401.activitydiagram.layout">
+      <SubType>Content</SubType>
+      <DependentUpon>04车间管理\HBHC0401.activitydiagram</DependentUpon>
+    </Content>
+    <Content Include="04车间管理\HBHC0402.activitydiagram">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="04车间管理\HBHC0402.activitydiagram.layout">
+      <SubType>Content</SubType>
+      <DependentUpon>04车间管理\HBHC0402.activitydiagram</DependentUpon>
+    </Content>
+    <Content Include="04车间管理\HBHC0403.activitydiagram">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="04车间管理\HBHC0403.activitydiagram.layout">
+      <SubType>Content</SubType>
+      <DependentUpon>04车间管理\HBHC0403.activitydiagram</DependentUpon>
+    </Content>
+    <Content Include="04车间管理\HBHC0404.activitydiagram">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="04车间管理\HBHC0404.activitydiagram.layout">
+      <SubType>Content</SubType>
+      <DependentUpon>04车间管理\HBHC0404.activitydiagram</DependentUpon>
+    </Content>
+    <Content Include="04车间管理\HBHC0405.activitydiagram">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="04车间管理\HBHC0405.activitydiagram.layout">
+      <SubType>Content</SubType>
+      <DependentUpon>04车间管理\HBHC0405.activitydiagram</DependentUpon>
+    </Content>
+    <Content Include="04车间管理\HBHC0406.activitydiagram">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="04车间管理\HBHC0406.activitydiagram.layout">
+      <SubType>Content</SubType>
+      <DependentUpon>04车间管理\HBHC0406.activitydiagram</DependentUpon>
+    </Content>
+    <Content Include="04车间管理\HBHC0407.activitydiagram">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="04车间管理\HBHC0407.activitydiagram.layout">
+      <SubType>Content</SubType>
+      <DependentUpon>04车间管理\HBHC0407.activitydiagram</DependentUpon>
+    </Content>
+    <Content Include="04车间管理\HBHC0408.activitydiagram">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="04车间管理\HBHC0408.activitydiagram.layout">
+      <SubType>Content</SubType>
+      <DependentUpon>04车间管理\HBHC0408.activitydiagram</DependentUpon>
+    </Content>
+    <Content Include="04车间管理\HBHC0421.activitydiagram">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="04车间管理\HBHC0421.activitydiagram.layout">
+      <SubType>Content</SubType>
+      <DependentUpon>04车间管理\HBHC0421.activitydiagram</DependentUpon>
+    </Content>
+    <Content Include="05采购供应\HBHC0501.activitydiagram">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="05采购供应\HBHC0501.activitydiagram.layout">
+      <SubType>Content</SubType>
+      <DependentUpon>05采购供应\HBHC0501.activitydiagram</DependentUpon>
+    </Content>
+    <Content Include="05采购供应\HBHC0502.activitydiagram">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="05采购供应\HBHC0502.activitydiagram.layout">
+      <SubType>Content</SubType>
+      <DependentUpon>05采购供应\HBHC0502.activitydiagram</DependentUpon>
+    </Content>
+    <Content Include="07仓储管理\HBHC0707.activitydiagram">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="07仓储管理\HBHC0707.activitydiagram.layout">
+      <SubType>Content</SubType>
+      <DependentUpon>07仓储管理\HBHC0707.activitydiagram</DependentUpon>
+    </Content>
+    <Content Include="07仓储管理\HBHC0701.activitydiagram">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="07仓储管理\HBHC0701.activitydiagram.layout">
+      <SubType>Content</SubType>
+      <DependentUpon>07仓储管理\HBHC0701.activitydiagram</DependentUpon>
+    </Content>
+    <Content Include="07仓储管理\HBHC0702.activitydiagram">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="07仓储管理\HBHC0702.activitydiagram.layout">
+      <SubType>Content</SubType>
+      <DependentUpon>07仓储管理\HBHC0702.activitydiagram</DependentUpon>
+    </Content>
+    <Content Include="07仓储管理\HBHC0703.activitydiagram">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="07仓储管理\HBHC0703.activitydiagram.layout">
+      <SubType>Content</SubType>
+      <DependentUpon>07仓储管理\HBHC0703.activitydiagram</DependentUpon>
+    </Content>
+    <Content Include="07仓储管理\HBHC0704.activitydiagram">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="07仓储管理\HBHC0704.activitydiagram.layout">
+      <SubType>Content</SubType>
+      <DependentUpon>07仓储管理\HBHC0704.activitydiagram</DependentUpon>
+    </Content>
+    <Content Include="07仓储管理\HBHC0705.activitydiagram">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="07仓储管理\HBHC0705.activitydiagram.layout">
+      <SubType>Content</SubType>
+      <DependentUpon>07仓储管理\HBHC0705.activitydiagram</DependentUpon>
+    </Content>
+    <Content Include="07仓储管理\HBHC0706.activitydiagram">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="07仓储管理\HBHC0706.activitydiagram.layout">
+      <SubType>Content</SubType>
+      <DependentUpon>07仓储管理\HBHC0706.activitydiagram</DependentUpon>
+    </Content>
+    <Content Include="07仓储管理\HBHC0708.activitydiagram">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="07仓储管理\HBHC0708.activitydiagram.layout">
+      <SubType>Content</SubType>
+      <DependentUpon>07仓储管理\HBHC0708.activitydiagram</DependentUpon>
+    </Content>
+    <Content Include="07仓储管理\HBHC0709.activitydiagram">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="07仓储管理\HBHC0709.activitydiagram.layout">
+      <SubType>Content</SubType>
+      <DependentUpon>07仓储管理\HBHC0709.activitydiagram</DependentUpon>
+    </Content>
+    <Content Include="07仓储管理\HBHC0710.activitydiagram">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="07仓储管理\HBHC0710.activitydiagram.layout">
+      <SubType>Content</SubType>
+      <DependentUpon>07仓储管理\HBHC0710.activitydiagram</DependentUpon>
+    </Content>
+    <Content Include="07仓储管理\HBHC0711.activitydiagram">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="07仓储管理\HBHC0711.activitydiagram.layout">
+      <SubType>Content</SubType>
+      <DependentUpon>07仓储管理\HBHC0711.activitydiagram</DependentUpon>
+    </Content>
+    <Content Include="07仓储管理\HBHC0712.activitydiagram">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="07仓储管理\HBHC0712.activitydiagram.layout">
+      <SubType>Content</SubType>
+      <DependentUpon>07仓储管理\HBHC0712.activitydiagram</DependentUpon>
+    </Content>
+    <Content Include="07仓储管理\HBHC0713.activitydiagram">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="07仓储管理\HBHC0713.activitydiagram.layout">
+      <SubType>Content</SubType>
+      <DependentUpon>07仓储管理\HBHC0713.activitydiagram</DependentUpon>
+    </Content>
+    <Content Include="09时序图\01合同状态.sequencediagram">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="09时序图\01合同状态.sequencediagram.layout">
+      <SubType>Content</SubType>
+      <DependentUpon>09时序图\01合同状态.sequencediagram</DependentUpon>
+    </Content>
+    <Content Include="09时序图\02设计BOM状态.sequencediagram">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="09时序图\02设计BOM状态.sequencediagram.layout">
+      <SubType>Content</SubType>
+      <DependentUpon>09时序图\02设计BOM状态.sequencediagram</DependentUpon>
+    </Content>
+    <Content Include="09时序图\03设计任务状态.sequencediagram">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="09时序图\03设计任务状态.sequencediagram.layout">
+      <SubType>Content</SubType>
+      <DependentUpon>09时序图\03设计任务状态.sequencediagram</DependentUpon>
+    </Content>
+    <Content Include="09时序图\04生产任务状态.sequencediagram">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="09时序图\04生产任务状态.sequencediagram.layout">
+      <SubType>Content</SubType>
+      <DependentUpon>09时序图\04生产任务状态.sequencediagram</DependentUpon>
+    </Content>
+    <Content Include="09时序图\05工艺BOM状态.sequencediagram">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="09时序图\05工艺BOM状态.sequencediagram.layout">
+      <SubType>Content</SubType>
+      <DependentUpon>09时序图\05工艺BOM状态.sequencediagram</DependentUpon>
+    </Content>
+    <Content Include="09时序图\06设计更改状态.sequencediagram">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="09时序图\06设计更改状态.sequencediagram.layout">
+      <SubType>Content</SubType>
+      <DependentUpon>09时序图\06设计更改状态.sequencediagram</DependentUpon>
+    </Content>
+    <Content Include="09时序图\07生产整改状态.sequencediagram">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="09时序图\07生产整改状态.sequencediagram.layout">
+      <SubType>Content</SubType>
+      <DependentUpon>09时序图\07生产整改状态.sequencediagram</DependentUpon>
+    </Content>
+    <Content Include="09时序图\08生产配套状态.sequencediagram">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="09时序图\08生产配套状态.sequencediagram.layout">
+      <SubType>Content</SubType>
+      <DependentUpon>09时序图\08生产配套状态.sequencediagram</DependentUpon>
+    </Content>
+    <Content Include="09时序图\09生产计划状态.sequencediagram">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="09时序图\09生产计划状态.sequencediagram.layout">
+      <SubType>Content</SubType>
+      <DependentUpon>09时序图\09生产计划状态.sequencediagram</DependentUpon>
+    </Content>
+    <Content Include="09时序图\10生产请购状态.sequencediagram">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="09时序图\10生产请购状态.sequencediagram.layout">
+      <SubType>Content</SubType>
+      <DependentUpon>09时序图\10生产请购状态.sequencediagram</DependentUpon>
+    </Content>
+    <Content Include="09时序图\11车间请购状态.sequencediagram">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="09时序图\11车间请购状态.sequencediagram.layout">
+      <SubType>Content</SubType>
+      <DependentUpon>09时序图\11车间请购状态.sequencediagram</DependentUpon>
+    </Content>
+    <Content Include="09时序图\12车间领料状态.sequencediagram">
+      <SubType>Content</SubType>
+    </Content>
+    <Content Include="09时序图\12车间领料状态.sequencediagram.layout">
+      <SubType>Content</SubType>
+      <DependentUpon>09时序图\12车间领料状态.sequencediagram</DependentUpon>
+    </Content>
+    <Content Include="ModelDefinition\HCJXUML.uml">
+      <SubType>Content</SubType>
+    </Content>
+    <Folder Include="00基础数据" />
+    <Folder Include="01项目管理" />
+    <Folder Include="02工艺管理" />
+    <Folder Include="03生产管理" />
+    <Folder Include="04车间管理" />
+    <Folder Include="05采购供应" />
+    <Folder Include="06品质管理" />
+    <Folder Include="07仓储管理" />
+    <Folder Include="08设备管理" />
+    <Folder Include="09时序图" />
+  </ItemGroup>
+</Project>

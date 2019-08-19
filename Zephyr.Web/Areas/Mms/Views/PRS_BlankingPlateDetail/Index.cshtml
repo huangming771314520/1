@@ -1,0 +1,68 @@
+﻿
+@{
+    ViewBag.Title = "PRS_BlankingPlateDetail";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@section scripts{
+    <script src="/Content/js/viewModel/com.viewModel.searchEdit.js"></script>
+    <script type="text/javascript">
+    using(['validatebox', 'combotree', 'numberspinner', 'combobox', 'lookup', 'datebox', 'datetimebox', 'combogrid'], easyuifix.datagrid_editor_extend);
+    var viewModel = function(data){
+        var self = this;
+        com.viewModel.searchEdit.apply(self, arguments);
+        this.grid.pagination = false;
+        this.saveClick = function () {
+            self.gridEdit.ended(); //结束grid编辑状态
+            var post = {};
+            post.list = self.gridEdit.getChanges(self.setting.postListFields);
+            if (self.gridEdit.ended() && post.list._changed) {
+                com.ajax({
+                    url: self.urls.edit,
+                    data: ko.toJSON(post),
+                    success: function (d) {
+                        com.message('success', self.resx.editSuccess);
+                        self.searchClick();
+                        self.gridEdit.accept();
+
+
+                        var iframe = getThisIframe();
+                        var thiswin = parent.$(iframe).parent();
+                        var options = thiswin.window("options");
+                        thiswin.window('destroy');
+                    }
+                });
+            }
+        };
+    }
+    var data = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model));
+    ko.bindingViewModel(new viewModel(data));
+    </script>
+}
+<div class="z-toolbar">
+    <a href="#" plain="true" class="easyui-linkbutton" icon="icon-arrow_refresh" title="刷新" data-bind="click:refreshClick">刷新</a>
+    <a href="#" plain="true" class="easyui-linkbutton" icon="icon-add" title="新增" data-bind="click:addClick">新增</a>
+    <a href="#" plain="true" class="easyui-linkbutton" icon="icon-edit" title="编辑" data-bind="click:editClick">编辑</a>
+    <a href="#" plain="true" class="easyui-linkbutton" icon="icon-cross" title="删除" data-bind="click:deleteClick">删除</a>
+    <a href="#" plain="true" class="easyui-linkbutton" icon="icon-save" title="保存" data-bind="click:saveClick">保存</a>
+</div>
+
+<table data-bind="datagrid:grid" style="display:none">
+    <thead>
+        <tr>
+            <th field="ID" hidden="true" sortable="true" align="left" width="80" editor="text">主键ID</th>
+            <th field="MainID" hidden="true" sortable="true" align="left" width="120" editor="text">拼板方案ID</th>
+            <th field="PlateSize" sortable="true" align="left" width="120" editor="text">筋板尺寸</th>
+            <th field="Weight" sortable="true" align="left" width="120" editor="text">重量</th>
+            <th field="LineLength" sortable="true" align="left" width="120" editor="text">线长</th>
+            @*<th field="BlankingType" sortable="true" align="left" width="80" editor="{type: 'combobox', options:{
+                data : [{value:'1',text:'手工'},{value:'2',text:'数控'}],
+                valueField : 'value',
+                textField : 'text',
+                panelHeight:'auto'}}" formatter="utils.fnValueToText([{value:'1',text:'手工'},{value:'2',text:'数控'}])">下料方式</th>*@
+            <th field="CreatePerson" hidden="true" sortable="true" align="left" width="120" editor="text">创建人</th>
+            <th field="InventoryCode" hidden="true" sortable="true" align="left" width="120" editor="text">InventoryCode</th>
+            <th field="CreateTime" hidden="true" sortable="true" align="left" width="120" editor="text" formatter="com.formatDate">创建时间</th>
+        </tr>
+    </thead>
+</table>

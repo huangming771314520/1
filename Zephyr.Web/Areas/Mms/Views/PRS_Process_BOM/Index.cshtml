@@ -1,0 +1,381 @@
+﻿@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Index</title>
+    <link href="~/Content/js/jquery-easyui-1.7.0/themes/icon.css" rel="stylesheet" />
+    <link href="~/Content/js/jquery-easyui-1.7.0/themes/default/easyui.css" rel="stylesheet" />
+    <script src="~/Content/js/jquery-easyui-1.7.0/jquery.min.js"></script>
+    <script src="~/Content/js/jquery-easyui-1.7.0/jquery.easyui.min.js"></script>
+    <script src="~/Content/js/core/utils.js"></script>
+    <script src="~/Content/js/core/common.js"></script>
+
+</head>
+<body style="margin:5px;">
+    <div class="easyui-layout" style="width:100%;height:80%;" data-options="fit:true">
+        <div data-options="region:'west',title:'工艺BOM',split:true" style="width:360px;padding: 20px 10px;">
+            <div style="margin-bottom:10px">
+                <a class="easyui-linkbutton" id="ChoosePartCode" icon="icon-search">选择项目零件</a>
+            </div>
+            <ul id="Ctree"></ul>
+        </div>
+        <div data-options="region:'center',title:'工艺BOM编辑'">
+            <form style="padding: 10px;" method="post">
+                <div style="margin:10px">
+                    <a class="easyui-linkbutton" id="SavePartCode" icon="icon-save">保 存</a>
+                </div>
+                <div style="margin-bottom:10px">
+                    <input type="hidden" id="ContractCode" />
+                    <input class="easyui-textbox" id="PartCode" label="零件编号:" labelwidth="80" labelalign="right" prompt="" style="width: 96%;" disabled="disabled">
+                </div>
+                <div style="margin-bottom:10px">
+                    <input class="easyui-textbox" id="PartFigureCode" label="零件图号:" labelwidth="80" labelalign="right" prompt="" style="width: 96%;" disabled="disabled">
+                </div>
+                <div style="margin-bottom:10px">
+                    <input class="easyui-textbox" id="PartName" hidden="hidden" label="零件名称:" labelwidth="80" labelalign="right" prompt="" style="width: 96%;" disabled="disabled">
+                </div>
+                <div style="margin-bottom:10px">
+                    <input class="easyui-textbox" id="MaterialCode" label="设计材料:" labelwidth="80" labelalign="right" prompt="" style="width: 96%;" disabled="disabled">
+                </div>
+                <div style="margin-bottom:10px;">
+                    <select class="easyui-combobox" id="SetMateName" label="定料材料:" labelwidth="80" labelalign="right" prompt="请选择材料" style="width:50%;" data-options="required:true"></select>
+                    <span class="searchbox-button" id="ChooseIntoryCode"></span>
+                    @*<select class="easyui-combogrid easyui-validatebox" id="SetMateName" label="定料材料:" labelwidth="80" labelalign="right" prompt="请选择材料" style="width:50%;" data-options="required:true,url:'/Commons/GetCommonSearchList',
+                             queryParams : {
+                                    tableName:'[SYS_Part]',
+                                    searchField:'[InventoryCode],[InventoryName],[Model],[Spec]',
+                                    firstFightField:'[InventoryName]',
+                                       whereSql:'IsEnable=1 and InventoryCode like \''+'01%'+'\'',
+                                        orderBy:'InventoryName,Model',
+                                    connName:'Mms'
+                                        //CacheKey:'SYS_Part',
+                                        //CacheTime:'480',
+                                        //connName:'Mms'
+                                    },
+                                    method: 'GET',
+                                    panelWidth:680,
+                                    delay: 1000,
+                                    mode: 'remote',
+                                    value: '',
+                                    idField: 'InventoryCode',
+                                    textField: 'InventoryName',
+                                    fitColumns: true,
+                                    columns:[[
+                                    { field: 'InventoryCode',title: '编码',width: 200 },
+                                    { field: 'InventoryName',title: '名称',width: 200 },
+                                    { field: 'Model',title: '型号',width: 120 },
+                                    { field: 'Spec',title: '规格',width: 160 }
+                                        ]],
+                            onSelect: function (rowIndex, rowData) {
+                                     $('#New_PartName').textbox('setValue', rowData['InventoryName']);
+                                     $('#New_Model').textbox('setValue', rowData['Model']);
+                                     $('#MateParamValue').textbox('setValue', rowData['Model']);
+
+                                     console.log(rowData['InventoryName']);
+
+                                     console.log(rowData['Model']);
+
+                                    var PartCode = $('#PartCode').textbox('getValue');
+                                    if (PartCode == '') {
+                                        $('#SetMateName')['combogrid']('clear');
+                                        $.messager.alert('提醒', '请选择【左侧】零件编号!', 'success');
+                                    }
+
+                                    },
+                         keyHandler:{
+                           query:function(keyword) {
+                           var queryParams=$(this).combogrid('grid').datagrid('options').queryParams;
+                           queryParams.keyword=keyword;
+                           $(this).combogrid('grid').datagrid('options').queryParams=queryParams;
+                           $(this).combogrid('grid').datagrid('reload');
+                          $(this).combogrid('setValue', keyword);
+                        }}"></select>*@
+                    <input class="easyui-checkbox" id="add_part_info" labelwidth="80" labelalign="right" label="新增零件:" prompt="" style="width:20px;height:20px;">
+                </div>
+                <div style="margin-bottom:10px;" id="new_part_info">
+                    <input class="easyui-textbox" id="New_PartName" name="New_PartName" label="名称(新):" labelwidth="80" labelalign="right" prompt="" style="width: 48%;">
+                    <input class="easyui-textbox" id="New_Model" name="New_Model" label="型号规格(新):" labelwidth="80" labelalign="right" prompt="" style="width: 48%;">
+                    <input id="New_Specs" hidden="hidden" />
+                    @*<input class="easyui-textbox" id="New_Specs" label="规格(新):" hidden="true" labelwidth="80" labelalign="right" prompt="" style="width: 31%;">*@
+                </div>
+                <div style="margin-bottom:10px">
+                    <select class="easyui-combobox" id="MateType" label="材料类型:" labelwidth="80" labelalign="right" prompt="请选择材料类型" required="true" style="width: 48%;">
+                        <option value="0">其他</option>
+                        <option value="4">铸件</option>
+                        <option value="5">锻件</option>
+                    </select>
+                    <input class="easyui-textbox" name="MateParamValue" id="MateParamValue" label="类型参数:" labelwidth="80" labelalign="right" prompt="" style="width: 48%;">
+                </div>
+                <div style="margin-bottom:10px" hidden="hidden">
+                    <select class="easyui-combobox" id="BlankingType" label="下料方式:" labelwidth="80" labelalign="right" prompt="请选择下料方式" style="width: 50%;">
+                        <option value=""></option>
+                        @*<option value="1">数控切割</option>
+                            <option value="2">锯</option>
+                            <option value="3">手工切割</option>*@
+                        <option value="1">切割</option>
+                        <option value="2">锯</option>
+                    </select>
+                </div>
+                <div style="margin-bottom:10px">
+                    <input class="easyui-textbox" id="PartQuantity" label="设计数量:" labelwidth="80" labelalign="right" prompt="" style="width: 48%;" disabled="disabled">
+                    <input class="easyui-textbox" id="Quantity" label="合同台数:" labelwidth="80" labelalign="right" prompt="" style="width: 48%;" disabled="disabled">
+                </div>
+                @*<div style="margin-bottom:10px">
+                        <input class="easyui-textbox" id="Quantity" label="合同台数:" labelwidth="80" labelalign="right" prompt="" style="width: 48%;" disabled="disabled">
+                    </div>*@
+                <div style="margin-bottom:10px" hidden="hidden">
+                    <input class="easyui-textbox" id="SetMateNum" label="备料数量:" labelwidth="80" labelalign="right" prompt="" value="0" style="width: 96%;">
+                </div>
+                <div style="margin-bottom:10px">
+                    <input class="easyui-textbox" id="InPlanceSize" label="到位尺寸:" labelwidth="80" labelalign="right" prompt="" style="width: 96%;">
+                </div>
+                <div style="margin-bottom:10px" hidden="hidden">
+                    <input class="easyui-textbox" id="BlankingSize" label="备料尺寸:" labelwidth="80" labelalign="right" prompt="" style="width: 96%;">
+                </div>
+                <div style="margin-bottom:10px">
+                    <input class="easyui-textbox" id="Weight" label="设计重量:" labelwidth="80" labelalign="right" prompt="" style="width: 96%;" disabled="disabled">
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        (function ($) {
+            "use strict";
+            var Page = {
+                init: function () {
+                    $("#new_part_info").hide();
+                    Page.bind();
+                    $('input').validatebox({
+                        validateOnCreate: true,
+                        err: function (target, message, action) {
+                            var opts = $(target).validatebox('options');
+                            //message = opts.prompt;
+                            message = message || opts.prompt;
+                            message = (message != 'This field is required.' && message) || opts.prompt;
+                            $.fn.validatebox.defaults.err(target, message, action);
+                        }
+                    });
+                },
+                bind: function () {
+                    $("#ChooseIntoryCode").click(function () {
+                        var target = parent.$('#CommonSearchDialog').length ? parent.$('#CommonSearchDialog') : parent.$('<div id="CommonSearchDialog"></div>').appendTo('body');
+                        //utils.clearIframe(target);
+                        var opt;
+                        opt = { title: '列表', width: 600, height: 400, modal: true, collapsible: false, minimizable: false, maximizable: true, closable: true };
+                        opt.content = "<iframe src='/mms/home/CommonDialog?xmlName=ChooseBoardItem' style='height:100%;width:100%;border:0;' frameborder='0'></iframe>";  //frameborder="0" for ie7
+                        var params = { xmlName: 'ChooseBoardItem' };
+                        opt.paramater = params;
+                        opt.onSelect = function (data) {
+                            //console.log(data);
+                            $('#New_PartName').textbox('setValue', data[0]['InventoryName']);
+                            $('#New_Model').textbox('setValue', data[0]['Model']);
+                            $('#MateParamValue').textbox('setValue', data[0]['Model']);
+
+                            com.ajax({
+                                type: 'GET',
+                                url: '/api/Mms/PRS_Process_BOM/GetIntoryNameByCode',
+                                data: { InventoryCode: data[0]['InventoryCode'] },
+                                async: false,
+                                success: function (res) {
+                                    //console.log(res);
+                                    $('#SetMateName').combobox({
+                                        valueField: 'value',
+                                        textField: 'label',
+                                        data: res,
+                                        //disabled: true
+                                    });
+                                    $('#SetMateName').combobox('setValue', data[0]['InventoryCode']);
+                                }
+                            });
+
+
+                        };
+                        target.window(opt);
+                    });
+
+                    $("#Ctree").tree({
+                        method: 'GET',
+                        queryParams: { TableName: 'PRS_Process_BOM', NodeField: 'PartCode', ParentNodeField: 'ParentCode', ParentNodeValue: '0', TreeSetting: 'PartCode as id,(PartFigureCode+\' \'+PartName) as text,' },
+                        lines: true,
+                        animate: true,
+                        url: '/Commons/GetTreeNodeList',
+                        loadFilter: function (d) {
+                            if (d != null && d.length > 0) {
+                                var jsonData = eval(d);
+                                //console.log(jsonData);
+                                return utils.toTreeData(jsonData, 'id', 'ParentCode', "children");
+                            }
+                            else {
+                                return '';
+                            }
+                        },
+                        onSelect: function (node) {
+                            com.ajax({
+                                type: 'GET',
+                                url: '/api/Mms/PRS_Process_BOM/GetPRS_Process_BOMDetail',
+                                data: { PartCode: node.id },
+                                async: false,
+                                success: function (data) {
+                                    com.ajax({
+                                        type: 'GET',
+                                        url: '/api/Mms/PRS_Process_BOM/GetIntoryNameByCode',
+                                        data: { InventoryCode: data['SetMateName'] },
+                                        async: false,
+                                        success: function (res) {
+                                            console.log(res);
+                                            $('#SetMateName').combobox({
+                                                valueField: 'value',
+                                                textField: 'label',
+                                                data: res
+                                                //disabled: true
+                                            });
+                                            //$('#SetMateName').combobox('setValue', data['InventoryCode']);
+                                        }
+                                    });
+
+                                    $.each(data, function (i, el) {
+                                        var combobox = $('#' + i).hasClass("easyui-combobox");
+                                        var combogrid = $('#' + i).hasClass("easyui-combogrid");
+                                        var textbox = $('#' + i).hasClass("easyui-textbox");
+                                        if (combobox) { $('#' + i).combobox('setValue', el); }
+                                        if (combogrid) { $('#' + i).combogrid('setValue', el); }
+                                        if (textbox) { $('#' + i).textbox('setValue', el); }
+                                    });
+                                    var SetMateNum = $("#SetMateNum").textbox('getValue');
+                                    var partQuantity = $("#PartQuantity").textbox('getValue');
+                                    if (SetMateNum == '0' || SetMateNum == 0) {
+                                        $("#SetMateNum").textbox('setValue', (partQuantity == "" || partQuantity == null || partQuantity == undefined) ? 0 : partQuantity);
+                                    }
+
+                                }
+                            });
+
+
+
+                            var New_PartName = $("#New_PartName").textbox('getValue');
+                            if (New_PartName) {
+                                $('#add_part_info').checkbox({
+                                    checked: true
+                                });
+                                $("#new_part_info").slideDown();
+                            }
+                            else {
+                                $('#add_part_info').checkbox({
+                                    checked: false
+                                });
+                                $("#new_part_info").slideUp();
+                            }
+                        }
+                    })
+
+                    $("#ChoosePartCode").click(function () {
+                        var target = parent.$('#CommonSearchDialog').length ? parent.$('#CommonSearchDialog') : parent.$('<div id="CommonSearchDialog"></div>').appendTo('body');
+                        utils.clearIframe(target);
+                        var opt;
+                        opt = { title: '列表', width: 800, height: 600, modal: true, collapsible: false, minimizable: false, maximizable: true, closable: true };
+                        opt.content = "<iframe src='/mms/home/CommonDialog?xmlName=ChooseProjectPart' style='height:100%;width:100%;border:0;' frameborder='0'></iframe>";  //frameborder="0" for ie7
+                        opt.onSelect = function (data) {
+                            //console.log(data[0].PartCode);
+                            $("#ContractCode").val(data[0].ContractCode);
+                            $("#Quantity").textbox('setValue', data[0].Quantity);
+                            $('#Ctree').tree("options").queryParams =
+                                {
+                                    TableName: 'PRS_Process_BOM',
+                                    NodeField: 'PartCode',
+                                    ParentNodeField: 'ParentCode',
+                                    ParentNodeValue: data[0].PartCode,
+                                    TreeSetting: 'PartCode as id,(PartFigureCode+\'|\'+PartName) as text,',
+                                    WhereSql: 'where IsSelfMade=1 order by new_id',
+                                    IsLevel: true
+                                };
+                            $('#Ctree').tree('reload');//重新加载树
+                        };
+                        target.window(opt);
+                    });
+
+                    $("#SavePartCode").click(function () {
+                        var isValid = $("form").form("validate");
+                        if (isValid == false) {
+                            return;
+                        }
+
+                        var post = {
+                            PartCode: $("#PartCode").textbox('getValue'),
+                            SetMateName: $("#SetMateName").combobox('getValue'),
+                            SetMateNum: $("#SetMateNum").textbox('getValue'),
+                            InPlanceSize: $("#InPlanceSize").textbox('getValue'),
+                            BlankingSize: $("#BlankingSize").textbox('getValue'),
+                            ContractCode: $("#ContractCode").val(),
+                            Quantity: $("#Quantity").textbox('getValue'),
+                            PartQuantity: $("#PartQuantity").textbox('getValue'),
+                            MaterialCode: $("#MaterialCode").textbox('getValue'),
+                            New_Specs: $("#New_Specs").val(),
+                            New_Model: $("#New_Model").textbox('getValue'),
+                            New_PartName: $("#New_PartName").textbox('getValue'),
+                            PartName: $("#PartName").textbox('getValue'),
+                            MateType: $("#MateType").combobox('getValue'),
+                            MateParamValue: $("#MateParamValue").textbox('getValue'),
+                            FigureCode: $("#PartFigureCode").textbox('getValue'),
+                            //BlankingType: $("#BlankingType").combobox('getValue')
+                            IsSetNewSMP: $("#add_part_info").checkbox('options')['checked']
+                        }
+                        com.ajax({
+                            type: 'POST',
+                            url: '/api/Mms/PRS_Process_BOM/PostSavePartCode',
+                            data: JSON.stringify(post),
+                            success: function (data) {
+                                if (data > 0) {
+                                    $.messager.alert('提醒', '保存成功!', 'success');
+                                }
+                                else {
+                                    $.messager.alert('错误', '保存失败!', 'error');
+                                }
+                            }
+                        });
+                    });
+
+                    $('#add_part_info').checkbox({
+                        onChange: function () {
+                            var IsChecked = $(this).checkbox('options')['checked'];
+                            if (IsChecked) {
+                                $("#new_part_info").slideDown();
+                            }
+                            else {
+                                $("#new_part_info").slideUp();
+                            }
+                        }
+                    });
+
+                    $("#MateType").combobox({
+                        onSelect: function (node) {
+                            var val = node.value;
+                            switch (val) {
+                                case "1":
+                                    $("label[for=_easyui_textbox_input7]").text('厚度:');
+                                    break;
+                                case "2":
+                                    $("label[for=_easyui_textbox_input7]").text('直径:');
+                                    break;
+                                default:
+                                    $("label[for=_easyui_textbox_input7]").text('类型参数:');
+                                    break;
+                            }
+                        }
+                    });
+                }
+            };
+            $(document).ready(function () {
+                Page.init();
+            });
+        })(window.jQuery);
+
+    </script>
+
+</body>
+</html>

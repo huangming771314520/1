@@ -1,0 +1,180 @@
+﻿@{
+    ViewBag.Title = "MES_OrderContract";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@section scripts{
+    <script src="/Content/js/viewModel/com.viewModel.searchEdit.js"></script>
+    <script type="text/javascript">
+        function RndNum(n) {
+            var rnd = "";
+            for (var i = 0; i < n; i++)
+                rnd += Math.floor(Math.random() * 10);
+            return rnd;
+        }
+        Date.prototype.Format = function (fmt) { //author: meizz
+            var o = {
+                "M+": this.getMonth() + 1,                 //月份
+                "d+": this.getDate(),                    //日
+                "h+": this.getHours(),                   //小时
+                "m+": this.getMinutes(),                 //分
+                "s+": this.getSeconds(),                 //秒
+                "q+": Math.floor((this.getMonth() + 3) / 3), //季度
+                "S": this.getMilliseconds()             //毫秒
+            };
+            if (/(y+)/.test(fmt))
+                fmt = fmt.replace(RegExp.$1, (this.getFullYear() + "").substr(4 - RegExp.$1.length));
+            for (var k in o)
+                if (new RegExp("(" + k + ")").test(fmt))
+                    fmt = fmt.replace(RegExp.$1, (RegExp.$1.length == 1) ? (o[k]) : (("00" + o[k]).substr(("" + o[k]).length)));
+            return fmt;
+        }
+        function dowm(row) {
+            if (row.DocName != null) {
+                var html = "<a href='/mms/home/FileDownload2?id=" + row['ID'] + "&docName=" + row['DocName'] + "&path=" + row['FileAddress'] + "'>下载文件</a>"
+                return html;
+            }
+
+        }
+        function op(row) {
+            if (row['ID'] && row['ID'] != "") {
+                if (row.BillState != 2) {
+                    var html = "<span param='" + row['ID'] + "' onclick='action(this);'>上传文件</span>";
+                    return html;
+                }
+
+            }
+        }
+        function action(obj) {
+            SearchUpload($(obj).attr('param'));
+        };
+        function SearchUpload(id) {
+            var target = parent.$('#CommonSearchDialog').length ? parent.$('#CommonSearchDialog') : parent.$('<div id="CommonSearchDialog"></div>').appendTo('body');
+            utils.clearIframe(target);
+            var opt;
+            opt = { title: '列表', width: 550, height: 480, modal: true, collapsible: false, minimizable: false, maximizable: true, closable: true };
+            opt.content = "<iframe src='/mms/home/UploadDialog?id=" + id + "&newFileName=" + new Date().Format("yyyyMMddhhmmss") + RndNum(5) + "&xmlName=MES_OrderContract" + "' style='height:100%;width:100%;border:0;' frameborder='0'></iframe>";  //frameborder="0" for ie7
+
+            target.window(opt);
+        }
+        var myself;
+        var viewModel = function(data){
+            var self = this;
+            com.viewModel.searchEdit.apply(self,arguments);
+            myself=self;
+            this.grid.onDblClickRow=function(){
+                var rows = myself.grid.datagrid('getSelected');
+                if(rows["BillState"]=="2"){
+                    com.message('success', "已审核数据不可以再次编辑");
+                    return;
+                }
+                else{
+                    self.gridEdit = new com.editGridViewModel(self.grid);
+                    self.gridEdit.begin()
+                }
+            }
+            this.deleteClick1=function(){
+                com.message('confirm', "确定要删除数据吗?", function (b) {
+                    if (b) {
+                        var row=myself.grid.datagrid("getSelected");
+                        if (row.BillState==2) {
+                            com.message('warning', "已审核不能删除！");
+                            return;
+                        }
+                        else{
+                            com.ajax({
+                                type: 'GET',
+                                url: "/api/Mms/MES_OrderContract/GetDelete?id="+row.ID,
+                                cache:false,
+                                async:false,
+                                success: function (d) {
+                                    if (d>0) {
+                                        com.message('success', "删除成功！");
+                                        $("#a_search").click();
+                                    }
+                                }
+                            });
+                        }
+                    }
+
+                });
+            };
+            this.StorageClick = function () {
+                var rows = myself.grid.datagrid('getSelected');
+                if (rows==null) {
+                    return com.message('warning',"请选择记录！");
+                }
+                var whereSql="ID="+rows.ID;
+                com.ajax({
+                    type: 'GET',
+                    url: "/api/Mms/MES_OrderContract/GetAuditSearchEditBillState"+"?whereSql="+whereSql,
+                    success: function (d) {
+                        if (!d) {
+                            com.message('success', "审核成功！");
+                        }else if (d=="1") {
+                            com.message('success', "单据已经审核过！");
+                        }else if (d=="2") {
+                            com.message('success', "请先保存再审核！");
+                        }
+                        $("#a_search").click();
+                    }
+                });
+            };
+            this.saveClick = function () {
+                self.gridEdit.ended(); //结束grid编辑状态
+                var post = {};
+                post.list = self.gridEdit.getChanges(self.setting.postListFields);
+                if (self.gridEdit.ended() && post.list._changed) {
+                    com.ajax({
+                        url: self.urls.edit,
+                        async: false,
+                        data: ko.toJSON(post),
+                        success: function (d) {
+                            com.message('success', self.resx.editSuccess);
+                            $("#a_search").click();
+                        }
+                    });
+                }
+            };
+        }
+        var data = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model));
+        ko.bindingViewModel(new viewModel(data));
+    </script>
+}
+<div class="z-toolbar">
+    <a href="#" plain="true" class="easyui-linkbutton" icon="icon-arrow_refresh" title="刷新" data-bind="click:refreshClick">刷新</a>
+    <a href="#" plain="true" class="easyui-linkbutton" icon="icon-add" title="新增" data-bind="click:addClick">新增</a>
+    <a href="#" plain="true" class="easyui-linkbutton" icon="icon-edit" title="编辑" data-bind="click:editClick">编辑</a>
+    <a href="#" plain="true" class="easyui-linkbutton" icon="icon-cross" title="删除" data-bind="click:deleteClick1">删除</a>
+    <a href="#" plain="true" class="easyui-linkbutton" icon="icon-save" title="保存" data-bind="click:saveClick">保存</a>
+    <a id="a_audit" href="#" plain="true" class="easyui-linkbutton" icon="icon-user-accept" data-bind="click:StorageClick" title="审核">审核</a>
+</div>
+<div class="container_12" style="position:relative;">
+    <div class="grid_1 lbl">采购合同编号</div>
+    <div class="grid_2 val"><input type="text" data-bind="value:form.OrderContractCode" class="z-txt " /></div>
+
+    <div class="clear"></div>
+    <div class="grid_1 lbl">&nbsp;</div>
+    <div class="grid_2 val">&nbsp;</div>
+    <div class="clear"></div>
+
+    <div class="prefix_9" style="position:absolute;top:5px;height:0;">
+        <a id="a_search" href="#" class="buttonHuge button-blue" data-bind="click:searchClick" style="margin:0 15px;">查询</a>
+        <a id="a_reset" href="#" class="buttonHuge button-blue" data-bind="click:clearClick">清空</a>
+    </div>
+</div>
+
+<table data-bind="datagrid:grid" style="display:none">
+    <thead>
+        <tr>
+            <th field="ID" sortable="true" align="left" width="80" hidden editor="text">主键ID</th>
+            <th field="OrderContractCode" sortable="true" align="left" width="120" editor="text">采购合同编号</th>
+            <th field="OrderContractName" sortable="true" align="left" width="150" editor="text">采购合同名称</th>
+            <th field="BillState" sortable="true" align="left" width="70" data-options="formatter:function(value,row){ return (value == 2) ? '已审核':'未审核';}">
+                单据状态
+            </th>
+            <th field="action" sortable="true" align="left" width="60" data-options="formatter:function(value,row){return op(row);}">操作</th>
+            <th field="action2" sortable="true" align="left" width="60" data-options="formatter:function(value,row){return dowm(row);}">操作</th>
+        </tr>
+    </thead>
+</table>

@@ -1,0 +1,821 @@
+﻿<!DOCTYPE html>
+
+<html style="height:100%;">
+<head>
+    <meta charset="utf-8" />
+    <title></title>
+
+
+    <link href="~/Content/js/jquery-easyui-1.7.0/themes/icon.css" rel="stylesheet" />
+    <link href="~/Content/js/jquery-easyui-1.7.0/themes/default/easyui.css" rel="stylesheet" />
+
+    <style type="text/css">
+        * {
+            font-family: "微软雅黑";
+        }
+
+
+        .l-btn-left {
+            display: inline-block;
+            position: relative;
+            overflow: hidden;
+            margin: 0;
+            padding: 0;
+            vertical-align: top;
+        }
+
+        .l-btn-icon-left .l-btn-text {
+            margin: 0 6px 0 26px;
+        }
+
+        .l-btn-text {
+            display: inline-block;
+            vertical-align: top;
+            width: auto;
+            line-height: 28px;
+            font-size: 14px;
+            padding: 0;
+            margin: 0 6px;
+        }
+
+        .l-btn {
+            color: #444;
+        }
+
+        .l-btn {
+            text-decoration: none;
+            display: inline-block;
+            overflow: hidden;
+            margin: 0;
+            padding: 0;
+            cursor: pointer;
+            outline: none;
+            text-align: center;
+            vertical-align: middle;
+            line-height: normal;
+        }
+
+        .l-btn-icon {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            line-height: 16px;
+            position: absolute;
+            top: 50%;
+            margin-top: -8px;
+            font-size: 1px;
+        }
+
+        .icon-edit_add {
+            background: url('../../../../Content/js/jquery-easyui-1.7.0/themes/icons/edit_add.png') no-repeat center center;
+        }
+
+        .icon-save {
+            background: url('../../../../Content/js/jquery-easyui-1.7.0/themes/icons/filesave.png') no-repeat center center;
+        }
+
+        .icon-edit {
+            background: url('../../../../Content/js/jquery-easyui-1.7.0/themes/icons/edit.png') no-repeat center center;
+        }
+
+        .icon-edit_remove {
+            background: url('../../../../Content/js/jquery-easyui-1.7.0/themes/icons/edit_remove.png') no-repeat center center;
+        }
+
+        .icon-resultset_first {
+            background: url('../../../../Content/js/jquery-easyui-1.7.0/themes/icons/resultset_first.png') no-repeat center center;
+        }
+
+        .icon-resultset_last {
+            background: url('../../../../Content/js/jquery-easyui-1.7.0/themes/icons/resultset_last.png') no-repeat center center;
+        }
+
+        .icon-shenhe {
+            background: url('../../../../Content/images/tabicons.png') no-repeat -100px -480px;
+        }
+
+        #aa {
+            display: block;
+            height: 30px;
+            width: 70px;
+            text-align: center;
+            background: #51a351;
+            color: #ffffff;
+            font-size: 14px;
+            text-decoration: none;
+            line-height: 30px;
+            border-radius: 4px;
+        }
+    </style>
+
+</head>
+<body style="height:100%;margin:0px;padding:8px;">
+    <div style="width:auto;height:100%;float:left;margin-right:5px;overflow-y:auto;">
+        <div class="easyui-panel" title="详细信息" style="padding:20px;height:100%;width:auto;">
+            <ul data-bind="easyuiTree:tree" id="Ctree" style="height:100%;min-width:360px;max-width:400px;width:auto;"></ul>
+        </div>
+    </div>
+    <div class="easyui-panel" title="合同信息" style="padding:20px;float:left;height:100%;">
+        <div style="margin-bottom:10px" id="toolBtn">
+            <a id="add" onclick="OnAdd()" href="#" class="easyui-linkbutton" icon="icon-add">新增</a>
+            <a id="cal" onclick="onCancle()" href="#" class="easyui-linkbutton" icon="icon-cancel">取消</a>
+            <a id="edit" onclick="onEdit()" href="#" class="easyui-linkbutton" icon="icon-edit">编辑</a>
+            <a id="save" onclick="OnSave()" href="#" class="easyui-linkbutton" icon="icon-save">保存</a>
+            <a id="audit" onclick="OnAudit()" class="easyui-linkbutton" icon="icon-shenhe">审核</a>
+            <a id="remove" onclick="onDelete()" href="#" class="easyui-linkbutton" icon="icon-edit_remove" hidden>删除</a>
+            <a id="updata" onclick="onUpEntryData('up')" href="#" class="easyui-linkbutton" icon="icon-resultset_first">上一条</a>
+            <a id="downdata" onclick="onUpEntryData('down')" href="#" class="easyui-linkbutton" icon="icon-resultset_last">下一条</a>
+            <a id="produce" onclick="onMaintain()" href="#" class="easyui-linkbutton" icon="icon-edit_add">维护产品信息</a>
+        </div>
+        <hr style=" height:1px;border:none;border-top:1px solid #efefef;margin:20px 0px;" />
+        <input id="ProjectID" style="display:none" />
+        <input id="tempProjectID" style="display:none" />
+        <input id="IsEnable" style="display:none">
+        <input id="ProjectState" style="display:none">
+        <div style="margin-bottom:10px">
+            <input id="ContractCode" class="easyui-textbox" label="合同编号:" labelwidth="120" prompt="" style="width:100%">
+        </div>
+        <div style="margin-bottom:10px">
+            <input id="ProjectName" class="easyui-textbox" label="工程项目:" labelwidth="120" prompt="" style="width:100%">
+        </div>
+
+        <div style="margin-bottom:10px">
+            <input id="ProjectForShort" class="easyui-textbox" label="项目简称:" labelwidth="120" prompt="" style="width:100%">
+        </div>
+        <div style="margin-bottom:10px">
+            <input id="ContractReceiveTime" class="easyui-datebox" label="合同接收时间:" labelwidth="120" prompt="" style="width:300px">
+        </div>
+        <div style="margin-bottom:10px">
+            <input id="AdvancePaymentDate" class="easyui-datebox" label="到预付款时间:" labelwidth="120" prompt="" data-options="onSelect:AdvancePaymentDateChange" style="width:300px">
+        </div>
+        <div style="margin-bottom:10px" id="tuzhi">
+            <form id="importFileForm" method="post" enctype="multipart/form-data"></form>
+        </div>
+        <input hidden id="ProductReport">
+        <div style="margin-bottom:10px">
+            <input id="Remark" class="easyui-textbox" label="合同备注:" labelwidth="120" prompt="" style="width:100%">
+        </div>
+        <div style="margin-bottom:10px">
+            <label class="textbox-label" style="width:120px">开始投产:</label>
+            <input id="IsStartProduct" hidden />
+            <input id="Is0tSartProduct" class="easyui-switchbutton" />
+        </div>
+
+        @*<div style="margin-bottom:10px">
+                <label class="textbox-label">图纸上传:</label>
+                <form id="formUpload" action="/api/upload" enctype="multipart/form-data">
+                    <div>
+                        <a style="float:left;" id="aa" href="#" onclick="$('#fileupload').click(); return">选择文件</a>
+                        <div style="float:left;margin-left:10px" id="fileName"></div>
+                        <input style="float:left;display:none" type="file" id="fileupload" name="fileupload" onchange="OnFileChange();" accept=".pdf,image/*,.docx" multiple="multiple">
+                        <button id="btnUploadAll" class="btn btn-success" type="button" style="float:left;margin-left:80px">
+                            上传
+                        </button>
+                    </div>
+                </form>
+            </div>*@
+
+    </div>
+
+
+    <script src="~/Content/js/uploader/jquery-1.8.3.js"></script>
+    <script src="~/Content/js/uploader/jquery-ui-1.9.2.js"></script>
+    <script src="~/Content/js/jquery-easyui-1.7.0/jquery.easyui.min.js"></script>
+    <script src="~/Content/js/core/utils.js"></script>
+    <script src="~/Content/js/core/common.js"></script>
+    <script src="/Content/js/viewModel/com.viewModel.edit.js"></script>
+    <script src="~/Content/js/core/jquery.easyui.fix.js"></script>
+    <script src="~/Content/js/jquery-easyui-1.7.0/locale/easyui-lang-zh_CN.js"></script>
+    <script type="text/javascript">
+
+        $().ready(function () {
+            var id = getParam("projectID");
+            if (id != "" && id != null) {
+                $.ajax({
+                    type: "get",
+                    url: '/api/Mms/PMS_ContractInfo/GetProject?projectID=' + id,
+                    success: function (result) {
+                        if (result != null && result != "" && result != "undefined" && result != []) {
+                            $("#ProjectState").val((result[0].ProjectState == "" || result[0].ProjectState == null || result[0].ProjectState == "undefault") ? 0 : result[0].ProjectState);
+                            $("#ProjectID").val(result[0].ProjectID);
+                            $("#tempProjectID").val(result[0].ProjectID);
+                            $("#ContractCode").textbox("setValue", result[0].ContractCode);
+                            $("#ProjectName").textbox("setValue", result[0].ProjectName);
+                            $("#ProjectForShort").textbox("setValue", result[0].ProjectForShort);
+                            $("#ContractReceiveTime").datebox("setValue", result[0].ContractReceiveTime);
+                            $("#AdvancePaymentDate").datebox("setValue", result[0].AdvancePaymentDate);
+                            $("#Remark").textbox("setValue", result[0].Remark);
+                            $("#IsEnable").val(1);
+                            $("#ProductReport").val(result[0].ProductReport);
+                            $("#Is0tSartProduct").switchbutton(result[0].Is0tSartProduct == 1 ? "check" : "uncheck");
+                            //result[0].Is0tSartProduct == 1 ? $('#Is0tSartProduct').switchbutton('enable') : $('#Is0tSartProduct').switchbutton('disable');
+                            $('#Ctree').tree("options").queryParams = { cCode: result[0].ContractCode };
+                            $('#Ctree').tree('reload');
+                            getFile();
+
+                            if ($("#ProjectState").val() == 1) {
+                                //启用 - enable   禁用 - disable
+                                $("#add").linkbutton('enable');//新增
+                                $("#cal").linkbutton('disable');//取消
+                                $("#edit").linkbutton('disable');//编辑
+                                $("#save").linkbutton('disable');//保存
+                                $("#audit").linkbutton('disable');//审核
+                                $("#remove").linkbutton('disable');//删除
+                                $("#updata").linkbutton('enable');//上一条
+                                $("#downdata").linkbutton('enable');//下一条
+                                $("#produce").linkbutton('disable');//维护产品信息
+                            }
+                            else {
+                                //启用 - enable   禁用 - disable
+                                $("#add").linkbutton('enable');//新增
+                                $("#cal").linkbutton('disable');//取消
+                                $("#edit").linkbutton('enable');//编辑
+                                $("#save").linkbutton('disable');//保存
+                                $("#audit").linkbutton('enable');//审核
+                                $("#remove").linkbutton('enable');//删除
+                                $("#updata").linkbutton('enable');//上一条
+                                $("#downdata").linkbutton('enable');//下一条
+                                $("#produce").linkbutton('enable');//维护产品信息
+                            }
+                        }
+                        else {
+                            //启用 - enable   禁用 - disable
+                            $("#add").linkbutton('enable');//新增
+                            $("#cal").linkbutton('disable');//取消
+                            $("#edit").linkbutton('disable');//编辑
+                            $("#save").linkbutton('disable');//保存
+                            $("#audit").linkbutton('disable');//审核
+                            $("#remove").linkbutton('disable');//删除
+                            $("#updata").linkbutton('disable');//上一条
+                            $("#downdata").linkbutton('disable');//下一条
+                            $("#produce").linkbutton('disable');//维护产品信息
+                        }
+                    }
+                })
+            } else {
+                $.ajax({
+                    type: "get",
+                    url: '/api/Mms/PMS_ContractInfo/GetProject',
+                    success: function (result) {
+                        if (result != null && result != "" && result != "undefined" && result != []) {
+                            $("#ProjectState").val((result[0].ProjectState == "" || result[0].ProjectState == null || result[0].ProjectState == "undefault") ? 0 : result[0].ProjectState);
+                            $("#ProjectID").val(result[0].ProjectID);
+                            $("#tempProjectID").val(result[0].ProjectID);
+                            $("#ContractCode").textbox("setValue", result[0].ContractCode);
+                            $("#ProjectName").textbox("setValue", result[0].ProjectName);
+                            $("#ProjectForShort").textbox("setValue", result[0].ProjectForShort);
+                            $("#ContractReceiveTime").datebox("setValue", result[0].ContractReceiveTime);
+                            $("#AdvancePaymentDate").datebox("setValue", result[0].AdvancePaymentDate);
+                            $("#Remark").textbox("setValue", result[0].Remark);
+                            $("#IsEnable").val(1);
+                            $("#ProductReport").val(result[0].ProductReport);
+                            $("#Is0tSartProduct").switchbutton(result[0].Is0tSartProduct == 1 ? "check" : "uncheck");
+                            //result[0].Is0tSartProduct == 1 ? $('#Is0tSartProduct').switchbutton('enable') : $('#Is0tSartProduct').switchbutton('disable');
+                            $('#Ctree').tree("options").queryParams = { cCode: result[0].ContractCode };
+                            $('#Ctree').tree('reload');
+                            getFile();
+
+                            if ($("#ProjectState").val() == 1) {
+                                //启用 - enable   禁用 - disable
+                                $("#add").linkbutton('enable');//新增
+                                $("#cal").linkbutton('disable');//取消
+                                $("#edit").linkbutton('disable');//编辑
+                                $("#save").linkbutton('disable');//保存
+                                $("#audit").linkbutton('disable');//审核
+                                $("#remove").linkbutton('disable');//删除
+                                $("#updata").linkbutton('enable');//上一条
+                                $("#downdata").linkbutton('enable');//下一条
+                                $("#produce").linkbutton('disable');//维护产品信息
+                            }
+                            else {
+                                //启用 - enable   禁用 - disable
+                                $("#add").linkbutton('enable');//新增
+                                $("#cal").linkbutton('disable');//取消
+                                $("#edit").linkbutton('enable');//编辑
+                                $("#save").linkbutton('disable');//保存
+                                $("#audit").linkbutton('enable');//审核
+                                $("#remove").linkbutton('enable');//删除
+                                $("#updata").linkbutton('enable');//上一条
+                                $("#downdata").linkbutton('enable');//下一条
+                                $("#produce").linkbutton('enable');//维护产品信息
+                            }
+                        }
+                        else {
+                            //启用 - enable   禁用 - disable
+                            $("#add").linkbutton('enable');//新增
+                            $("#cal").linkbutton('disable');//取消
+                            $("#edit").linkbutton('disable');//编辑
+                            $("#save").linkbutton('disable');//保存
+                            $("#audit").linkbutton('disable');//审核
+                            $("#remove").linkbutton('disable');//删除
+                            $("#updata").linkbutton('disable');//上一条
+                            $("#downdata").linkbutton('disable');//下一条
+                            $("#produce").linkbutton('disable');//维护产品信息
+                        }
+                    }
+                })
+            }
+
+            //$("#save").linkbutton('disable');
+            //$("#cal").linkbutton('disable');
+            setUploadFile(new Object());
+            //var is0tSartProduct = $("#IsStartProduct").val();
+            //$("#Is0tSartProduct").switchbutton(is0tSartProduct == 1 ? "check" : "uncheck");
+            //if (is0tSartProduct != 1) {
+            //    $("#Is0tSartProduct").switchbutton("uncheck");
+            //}
+
+            $('#ContractCode').textbox('textbox').blur(function () {
+                var cCode = $("#ContractCode").val();
+                if (cCode == null || cCode == "" || cCode == "undefined") {
+                    return;
+                }
+                $.ajax({
+                    type: "get",
+                    url: '/api/Mms/PMS_ContractInfo/GetProjectByCCode?contractCode=' + cCode,
+                    async: false,
+                    success: function (result) {
+                        if (result != null && result != "" && result != "undefined" && result != []) {
+                            //if ($("#save").linkbutton('options').disabled == false) {
+                            //    //com.message('success', "合同号已存在！");
+                            //    return;
+                            //}
+                            $("#ProjectState").val((result[0].ProjectState == "" || result[0].ProjectState == null || result[0].ProjectState == "undefault") ? 0 : result[0].ProjectState);
+
+                            $("#ProjectID").val(result[0].ProjectID);
+                            $("#tempProjectID").val(result[0].ProjectID);
+                            $("#ContractCode").textbox("setValue", result[0].ContractCode);
+                            $("#ProjectName").textbox("setValue", result[0].ProjectName);
+                            $("#ProjectForShort").textbox("setValue", result[0].ProjectForShort);
+                            $("#ContractReceiveTime").datebox("setValue", result[0].ContractReceiveTime);
+                            $("#AdvancePaymentDate").datebox("setValue", result[0].AdvancePaymentDate);
+                            $("#Remark").textbox("setValue", result[0].Remark);
+                            $("#IsEnable").val(1);
+                            $("#ProductReport").val(result[0].ProductReport);
+                            $("#Is0tSartProduct").switchbutton(result[0].Is0tSartProduct == 1 ? "check" : "uncheck");
+                            //result[0].Is0tSartProduct == 1 ? $('#Is0tSartProduct').switchbutton('enable') : $('#Is0tSartProduct').switchbutton('disable');
+                            $('#Ctree').tree("options").queryParams = { cCode: result[0].ContractCode };
+                            $('#Ctree').tree('reload');
+                            getFile();
+
+                            if ($("#ProjectState").val() == 1) {
+                                //启用 - enable   禁用 - disable
+                                $("#add").linkbutton('enable');//新增
+                                $("#cal").linkbutton('disable');//取消
+                                $("#edit").linkbutton('disable');//编辑
+                                $("#save").linkbutton('disable');//保存
+                                $("#audit").linkbutton('disable');//审核
+                                $("#remove").linkbutton('disable');//删除
+                                $("#updata").linkbutton('enable');//上一条
+                                $("#downdata").linkbutton('enable');//下一条
+                                $("#produce").linkbutton('disable');//维护产品信息
+                            }
+                            else {
+                                //启用 - enable   禁用 - disable
+                                $("#add").linkbutton('enable');//新增
+                                $("#cal").linkbutton('disable');//取消
+                                $("#edit").linkbutton('enable');//编辑
+                                $("#save").linkbutton('disable');//保存
+                                $("#audit").linkbutton('enable');//审核
+                                $("#remove").linkbutton('enable');//删除
+                                $("#updata").linkbutton('enable');//上一条
+                                $("#downdata").linkbutton('enable');//下一条
+                                $("#produce").linkbutton('enable');//维护产品信息
+                            }
+                        }
+                        else {
+                            //启用 - enable   禁用 - disable
+                            $("#add").linkbutton('enable');//新增
+                            $("#cal").linkbutton('disable');//取消
+                            $("#edit").linkbutton('disable');//编辑
+                            $("#save").linkbutton('disable');//保存
+                            $("#audit").linkbutton('disable');//审核
+                            $("#remove").linkbutton('disable');//删除
+                            $("#updata").linkbutton('disable');//上一条
+                            $("#downdata").linkbutton('disable');//下一条
+                            $("#produce").linkbutton('disable');//维护产品信息
+                        }
+                    }
+                })
+            })
+
+            FunDisableForm();
+
+        });
+
+        //禁用表单
+        function FunDisableForm() {
+            $("#ContractCode").textbox('disable');
+            $("#ProjectName").textbox('disable');
+            $("#ProjectForShort").textbox('disable');
+            $("#ContractReceiveTime").datebox('disable');
+            $("#AdvancePaymentDate").datebox('disable');
+            $("#Remark").textbox('disable');
+            $("#Is0tSartProduct").switchbutton('disable');
+        }
+
+        //启用表单
+        function FunEnableForm() {
+            $("#ContractCode").textbox('enable');
+            $("#ProjectName").textbox('enable');
+            $("#ProjectForShort").textbox('enable');
+            $("#ContractReceiveTime").datebox('enable');
+            $("#AdvancePaymentDate").datebox('enable');
+            $("#Remark").textbox('enable');
+            $("#Is0tSartProduct").switchbutton('enable');
+        }
+
+        function getFile() {
+            $.ajax({
+                type: "GET",
+                url: '/api/Mms/PMS_ContractInfo/GetProcessRouteFile?id=' + $("#ProjectID").val(),
+                contentType: 'application/json;charset=utf-8',
+                async: false,
+                success: function (model) {
+                    setUploadFile(model);
+                }
+            })
+        }
+        function getParam(paramName) {
+            paramValue = "", isFound = !1;
+            if (this.location.search.indexOf("?") == 0 && this.location.search.indexOf("=") > 1) {
+                arrSource = unescape(this.location.search).substring(1, this.location.search.length).split("&"), i = 0;
+                while (i < arrSource.length && !isFound) arrSource[i].indexOf("=") > 0 && arrSource[i].split("=")[0].toLowerCase() == paramName.toLowerCase() && (paramValue = arrSource[i].split("=")[1], isFound = !0), i++
+            }
+            return paramValue == "" && (paramValue = null), paramValue
+        }
+
+
+        function OnAdd() {
+            //$("#toolBtn a").linkbutton('disable');
+            //$("#cal").linkbutton('enable');
+
+            //启用 - enable   禁用 - disable
+            $("#add").linkbutton('disable');//新增
+            $("#cal").linkbutton('enable');//取消
+            $("#edit").linkbutton('disable');//编辑
+            $("#save").linkbutton('enable');//保存
+            $("#audit").linkbutton('disable');//审核
+            $("#remove").linkbutton('disable');//删除
+            $("#updata").linkbutton('disable');//上一条
+            $("#downdata").linkbutton('disable');//下一条
+            $("#produce").linkbutton('disable');//维护产品信息
+
+            FunEnableForm();
+            $("#importFileForm .easyui-filebox").filebox('enable');
+            $("#importFileForm .easyui-filebox").parent().find('>img').css("display", "inline");
+            //$("#importFileForm .easyui-filebox").filebox("setValue", "");
+            //setUploadFile(new Object());
+
+            $('#importFileForm').html("");
+            $("#importFileForm").append('<div class="filei" id="del' + count + '" style="margin-bottom:10px;width:500px"><input id="tb_' + count + '" name="fileup" class="easyui-filebox" label="附件上传:" buttonText="选择文件" labelwidth="120"  style="width:90%;" /><img style="margin-left: 7px;" src="/Content/js/jquery-easyui-1.7.0/themes/icons/edit_add.png" onclick="addContral()"/><img style="margin-left: 7px;" src="/Content/js/jquery-easyui-1.7.0/themes/icons/cancel.png" param="del' + count + '" onclick="delContral(this)"/></div>')
+            $.parser.parse($('#tb_' + count).parent());
+
+            //onEdit();
+            $("#ProjectID").val(-1);
+            $("#ContractCode").textbox("setValue", "");
+            $("#ProjectName").textbox("setValue", "");
+            $("#ProjectForShort").textbox("setValue", "");
+            $("#ContractReceiveTime").datebox("setValue", "");
+            $("#AdvancePaymentDate").datebox("setValue", "");
+            $("#Remark").textbox("setValue", "");
+            $("#IsEnable").val(1);
+            $("#ProductReport").val("");
+            $("#Is0tSartProduct").switchbutton("uncheck");
+            //$('#Is0tSartProduct').switchbutton('disable');
+            $('#Ctree').tree("options").queryParams = { cCode: '' };
+            $('#Ctree').tree('reload');
+        }
+
+        function onCancle() {
+            //window.location.reload();
+            window.location.href = "/mms/PMS_ContractInfo/ContractInfoIndex?projectID=" + $("#tempProjectID").val();
+        }
+
+        function onEdit() {
+            //$("#save").linkbutton('enable');
+            //$("#cal").linkbutton('enable');
+
+            //启用 - enable   禁用 - disable
+            $("#add").linkbutton('disable');//新增
+            $("#cal").linkbutton('enable');//取消
+            $("#edit").linkbutton('disable');//编辑
+            $("#save").linkbutton('enable');//保存
+            $("#audit").linkbutton('disable');//审核
+            $("#remove").linkbutton('disable');//删除
+            $("#updata").linkbutton('disable');//上一条
+            $("#downdata").linkbutton('disable');//下一条
+            $("#produce").linkbutton('disable');//维护产品信息
+
+            FunEnableForm();
+            $("#importFileForm .easyui-filebox").filebox('enable');
+            $("#importFileForm .easyui-filebox").parent().find('>img').css("display", "inline");
+        }
+
+        function OnSave() {
+            if ($("#ProjectName").val() == "") {
+                com.message('success', "工程项目不能为空！");
+                return;
+            }
+            var model = [];
+            model.push({
+                ProjectID: $("#ProjectID").val(),
+                ContractCode: $("#ContractCode").val(),
+                ProjectName: $("#ProjectName").val(),
+                ProjectForShort: $("#ProjectForShort").val(),
+                AdvancePaymentDate: $("#AdvancePaymentDate").val(),
+                Is0tSartProduct: $("#Is0tSartProduct").switchbutton("options").checked == true ? 1 : 0,
+                IsEnable: 1,
+                Remark: $("#Remark").val(),
+                ProductReport: $("#ProductReport").val(),
+                ContractReceiveTime: $("#ContractReceiveTime").val(),
+            });
+            $.ajax({
+                type: "POST",
+                url: '/api/Mms/PMS_ContractInfo/PostOnSave',
+                data: JSON.stringify(model),
+                contentType: 'application/json;charset=utf-8',
+                async: false,
+                success: function (msg) {
+                    if (msg > 0) {
+                        com.message('success', "保存成功！");
+                        OnFileUpload(msg);
+                        window.location.href = "/mms/PMS_ContractInfo/ContractInfoIndex?projectID=" + $("#ProjectID").val();
+                    }
+
+                    else {
+                        com.message('success', "保存失败，合同号已存在！");
+                    }
+                    $('#Ctree').tree("options").queryParams = { cCode: $("#ContractCode").val() };
+                    $('#Ctree').tree('reload');
+                }
+            })
+        }
+
+        function OnAudit() {
+            var pID = $("#ProjectID").val();
+            var contractCode = $("#ContractCode").val();
+            var projectState = $("#ProjectState").val();
+
+            if (projectState == 1 || projectState == "1") {
+                com.message('success', "已审核数据不能重复审核！");
+            }
+            else {
+                $.ajax({
+                    url: "/api/Mms/PMS_ContractInfo/GetOneKeyAuditResult?pID=" + pID,
+                    type: 'get',
+                    async: false,
+                    success: function (data) {
+                        if (data.Result) {
+                            com.message('success', "审核成功！");
+                            //window.location.reload();
+                            window.location.href = "/mms/PMS_ContractInfo/ContractInfoIndex?projectID=" + pID;
+                        }
+                        else {
+                            com.message('success', data.Msg);
+                        }
+                    },
+                    error: function (data) {
+
+                    }
+                });
+            }
+        }
+
+        function onDelete() {
+
+            if (confirm("确定删除此条合同信息?")) {
+                var model = [];
+                model.push({
+                    ProjectID: $("#ProjectID").val(),
+                    ContractCode: $("#ContractCode").val(),
+                    ProjectName: $("#ProjectName").val(),
+                    ProjectForShort: $("#ProjectForShort").val(),
+                    AdvancePaymentDate: $("#AdvancePaymentDate").val(),
+                    Remark: $("#Remark").val(),
+                    ProductReport: $("#ProductReport").val(),
+                    IsEnable: 0,
+                    ContractReceiveTime: $("#ContractReceiveTime").val(),
+                });
+                $.ajax({
+                    type: "POST",
+                    url: '/api/Mms/PMS_ContractInfo/PostOnDelete',
+                    data: JSON.stringify(model),
+                    contentType: 'application/json;charset=utf-8',
+                    async: false,
+                    success: function (msg) {
+
+                        com.message('success', msg.msg);
+                        window.location.reload();
+
+                    }
+                })
+            }
+
+
+        }
+
+        function onUpEntryData(type) {
+            var post = {
+                tid: $("#ProjectID").val(),
+                table: 'PMS_BN_Project',
+                type: type
+            }
+            com.ajax({
+                type: "POST",
+                url: '/api/Mms/PMS_ContractInfo/PostProjectUpOrDownData',
+                data: JSON.stringify(post),
+                success: function (result) {
+                    if (result.length > 0) {
+                        console.log(result[0])
+                        $("#ProjectState").val((result[0].ProjectState == "" || result[0].ProjectState == null || result[0].ProjectState == "undefault") ? 0 : result[0].ProjectState);
+                        $("#ProjectID").val(result[0].ProjectID);
+                        $("#tempProjectID").val(result[0].ProjectID);
+                        $("#ContractCode").textbox("setValue", result[0].ContractCode);
+                        $("#ProjectName").textbox("setValue", result[0].ProjectName);
+                        $("#ProjectForShort").textbox("setValue", result[0].ProjectForShort);
+                        $("#ContractReceiveTime").datebox("setValue", result[0].ContractReceiveTime);
+                        $("#AdvancePaymentDate").datebox("setValue", result[0].AdvancePaymentDate);
+                        $("#Remark").textbox("setValue", result[0].Remark);
+                        $("#IsEnable").val(1);
+                        $("#ProductReport").val(result[0].ProductReport);
+                        $("#Is0tSartProduct").switchbutton(result[0].Is0tSartProduct == 1 ? "check" : "uncheck");
+                        //result[0].Is0tSartProduct == 1 ? $('#Is0tSartProduct').switchbutton('enable') : $('#Is0tSartProduct').switchbutton('disable');
+                        $('#Ctree').tree("options").queryParams = { cCode: result[0].ContractCode };
+                        $('#Ctree').tree('reload');
+                        getFile();
+
+                        if ($("#ProjectState").val() == 1) {
+                            //启用 - enable   禁用 - disable
+                            $("#add").linkbutton('enable');//新增
+                            $("#cal").linkbutton('disable');//取消
+                            $("#edit").linkbutton('disable');//编辑
+                            $("#save").linkbutton('disable');//保存
+                            $("#audit").linkbutton('disable');//审核
+                            $("#remove").linkbutton('disable');//删除
+                            $("#updata").linkbutton('enable');//上一条
+                            $("#downdata").linkbutton('enable');//下一条
+                            $("#produce").linkbutton('disable');//维护产品信息
+                        }
+                        else {
+                            //启用 - enable   禁用 - disable
+                            $("#add").linkbutton('enable');//新增
+                            $("#cal").linkbutton('disable');//取消
+                            $("#edit").linkbutton('enable');//编辑
+                            $("#save").linkbutton('disable');//保存
+                            $("#audit").linkbutton('enable');//审核
+                            $("#remove").linkbutton('enable');//删除
+                            $("#updata").linkbutton('enable');//上一条
+                            $("#downdata").linkbutton('enable');//下一条
+                            $("#produce").linkbutton('enable');//维护产品信息
+                        }
+                    }
+                    else {
+                        com.message('success', "没有数据了！");
+                    }
+                }
+            })
+        }
+
+        function onMaintain() {
+            var pID = $("#ProjectID").val();
+            var contractCode = $("#ContractCode").val();
+            var projectName = $("#ProjectName").val();
+            window.location.href = '/mms/PMS_ContractInfo/ProductInfoIndex?pID=' + pID + "&cCode=" + contractCode + "&pName=" + projectName + "&pState=" + $("#ProjectState").val();
+        }
+
+        //导入事件，显示导入弹出窗口
+        //function importClick() {
+        //    SearchUpload($("#ProjectID").val());
+        //}
+
+        //图纸
+        function OnFileUpload(gid) {
+            var id = $("#ProjectID").val() == -1 ? gid : $("#ProjectID").val();
+            var formData = new FormData($("#importFileForm")[0]);
+            $.ajax({
+                url: "/api/Mms/MES_BN_ProductProcessRoute/PostFileData?id=" + id + "&tName=PMS_BN_Project&tId=" + deltuzhiId + "&type=4",
+                type: 'POST',
+                data: formData,
+                async: false,
+                cache: false,
+                contentType: false,
+                processData: false,
+                success: function (returnInfo) {
+
+                },
+                error: function (returnInfo) {
+
+                }
+            });
+        }
+        var count = 0;
+        function setUploadFile(data) {
+            count = 0;
+            $('#importFileForm').html("");
+            if (data.length > 0) {
+                for (var i = 0; i < data.length; i++) {
+                    $("#importFileForm").append('<div class="filei" id="del' + count + '" style="margin-bottom:10px;width:500px"><input id="tb_' + count + '" name="fileup" class="easyui-filebox" label="附件上传:" buttonText="选择文件" labelwidth="120" prompt="' + data[i].DocName + '"   style="width:82%" /><img style="margin-left: 7px;" src="/Content/js/jquery-easyui-1.7.0/themes/icons/edit_add.png" onclick="addContral()"/><img style="margin-left: 7px;" src="/Content/js/jquery-easyui-1.7.0/themes/icons/cancel.png" param="del' + count + '" docId="' + data[i].ID + '" onclick="delContral(this)"/><a href="/mms/MES_BN_ProductProcessRoute/FileDownload?id=' + data[i].ID + '"><img style="margin-left: 7px;" src="/Content/js/jquery-easyui-1.7.0/themes/icons/download.png" /></a></div>')
+                    $.parser.parse($('#tb_' + count).parent());
+                    count++;
+                }
+
+            } else {
+                $("#importFileForm").append('<div class="filei" id="del' + count + '" style="margin-bottom:10px;width:500px"><input id="tb_' + count + '" name="fileup" class="easyui-filebox" label="附件上传:" buttonText="选择文件" labelwidth="120"  style="width:90%;" /><img style="margin-left: 7px;" src="/Content/js/jquery-easyui-1.7.0/themes/icons/edit_add.png" onclick="addContral()"/><img style="margin-left: 7px;" src="/Content/js/jquery-easyui-1.7.0/themes/icons/cancel.png" param="del' + count + '" onclick="delContral(this)"/></div>')
+                $.parser.parse($('#tb_' + count).parent());
+                count++;
+            }
+            $("#importFileForm .easyui-filebox").filebox('disable');
+            $("#importFileForm .easyui-filebox").parent().find('>img').css("display", "none");
+        }
+        var deltuzhiId = "";
+        function delContral(obj) {
+            if ($(".filei").length == 1) {
+                return;
+            }
+            if ($(obj).attr('docId')) {
+                deltuzhiId += $(obj).attr('docId') + ',';
+            }
+            var idObject = document.getElementById($(obj).attr('param'));
+            if (idObject != null)
+                idObject.parentNode.removeChild(idObject);
+            //alert($(obj).attr('param'));
+        }
+        function addContral() {
+            count++;
+            $("#importFileForm").append('<div class="filei" id="del' + count + '" style="margin-bottom:10px;width:500px"><input id="tb_' + count + '" name="fileup" class="easyui-filebox" label="附件上传:" buttonText="选择文件" labelwidth="120"  style="width:90%;" /><img style="margin-left: 7px;" src="/Content/js/jquery-easyui-1.7.0/themes/icons/edit_add.png" onclick="addContral()"/><img style="margin-left: 7px;" src="/Content/js/jquery-easyui-1.7.0/themes/icons/cancel.png" param="del' + count + '" onclick="delContral(this)"/></div>')
+            $.parser.parse($('#tb_' + count).parent());
+        }
+
+        //function SearchUpload(id) {
+        //    var target = parent.$('#CommonSearchDialog').length ? parent.$('#CommonSearchDialog') : parent.$('<div id="CommonSearchDialog"></div>').appendTo('body');
+        //    //utils.clearIframe(target);
+        //    var opt = $("#UpLoadFilePanel");
+
+        //    opt = { title: '列表', width: 550, height: 480, modal: true, collapsible: false, minimizable: false, maximizable: true, closable: true };
+        //    opt.content = "<iframe src='/mms/home/UploadDialog2?id=" + id + "&newFileName=" + new Date().Format("yyyyMMddhhmmss") + RndNum(5) + "&xmlName=PMS_BN_Project" + "' style='height:100%;width:100%;border:0;' frameborder='0'></iframe>";  //frameborder="0" for ie7
+
+        //    target.window(opt);
+        //    //$("#Is0tSartProduct").switchbutton("setValue", 1);
+        //    $("#Is0tSartProduct").checkbox("setValue", 1);
+        //}
+
+        function AdvancePaymentDateChange() {
+            $('#Is0tSartProduct').switchbutton('check');
+            $('#Is0tSartProduct').switchbutton('enable');
+        }
+
+        $('#Ctree').tree({
+            method: 'GET',
+            queryParams: { cCode: $("#ContractCode").val() },
+            lines: true,
+            animate: true,
+            url: '/api/Mms/PMS_ContractInfo/GetTaskTree',
+            loadFilter: function (d) {
+                if (d != null && d.length > 0) {
+                    var jsonData = eval(d);
+                    return utils.toTreeData(jsonData, 'id', 'pid', "children");
+                }
+                else {
+                    return '';
+                }
+            },
+            onSelect: function (node) {
+                var pState = $("#ProjectState").val();
+
+                if (node.pid == "0") {
+                    window.location.href = "/mms/PMS_ContractInfo/ContractInfoIndex?projectID=" + node.id.substring(1, node.id.length);
+                } else if (node.pid.substring(0, 1) == "P") {
+                    window.location.href = "/mms/PMS_ContractInfo/ProductInfoIndex?pID=" + $("#ProjectID").val() + "&cCode=" + $("#ContractCode").val() + "&pName=0&projectDetailID=0&sousid=" + node.id.substring(1, node.id.length) + "&pState=" + pState;
+                } else if (node.pid.substring(0, 1) == "A") {
+                    $.get("/api/Mms/PMS_ContractInfo/GetProjectDetailData2?id=" + node.pid.substring(1, node.pid.length), function (result) {
+                        if (result.result) {
+                            window.location.href = '/mms/PMS_ContractInfo/TaskInfoIndex?pID=' + $("#ProjectID").val() + '&contractCode=' + $("#ContractCode").val() + "&productID=" + node.pid.substring(1, node.pid.length) + "&pName=" + result.data[0].ProductName + "&pModel=" + result.data[0].Model + "&pSpecifications=" + result.data[0].Specifications + "&DeliveryTime=" + result.data[0].DeliveryTime + "&Quantity=" + result.data[0].Quantity + "&pState=" + pState;
+                        }
+                    })
+
+                }
+                else if (node.pid.substring(0, 1) == "B") {
+                    $.get("/api/Mms/PMS_ContractInfo/GetProjectDetailData2?id=" + node.text.substr(node.text.indexOf('&') + 1, node.text.lastIndexOf('&') - node.text.indexOf('&') - 1), function (result) {
+                        if (result.result) {
+                            window.location.href = '/mms/PMS_ContractInfo/DesignTaskDetailedIndex?pID=' + $("#ProjectID").val() + '&contractCode=' + $("#ContractCode").val() + "&productID=" + node.text.substr(node.text.indexOf('&') + 1, node.text.lastIndexOf('&') - node.text.indexOf('&') - 1) + "&pName=" + result.data[0].ProductName + "&pModel=" + result.data[0].Model + "&pSpecifications=" + result.data[0].Specifications + "&MainID=" + node.pid.substring(1, node.pid.length) + "&id=" + node.id + "&pState=" + pState;
+                        }
+                    })
+                }
+                else if (node.pid.substring(0, 1) == "D") {
+                    $.get("/api/Mms/PMS_ContractInfo/GetProjectDetailData2?id=" + node.text.substr(node.text.indexOf('&') + 1, node.text.lastIndexOf('&') - node.text.indexOf('&') - 1), function (result) {
+                        if (result.result) {
+                            window.location.href = '/mms/PMS_ContractInfo/ProductionTaskDetailedIndex?pID=' + $("#ProjectID").val() + '&contractCode=' + $("#ContractCode").val() + "&productID=" + node.text.substr(node.text.indexOf('&') + 1, node.text.lastIndexOf('&') - node.text.indexOf('&') - 1) + "&pName=" + result.data[0].ProductName + "&pModel=" + result.data[0].Model + "&pSpecifications=" + result.data[0].Specifications + "&Quantity=" + result.data[0].Quantity + "&DeliveryTime=" + result.data[0].DeliveryTime + "&MainID=" + node.pid.substring(1, node.pid.length) + "&id=" + node.id + "&pState=" + pState;
+                        }
+                    })
+                }
+            }
+
+        });
+
+
+
+    </script>
+
+</body>
+</html>

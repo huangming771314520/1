@@ -1,0 +1,172 @@
+﻿<Page x:Class="PreviewClient.View.ProduceProcePage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:local="clr-namespace:PreviewClient.View"
+      xmlns:viewmodel="clr-namespace:PreviewClient.ViewModels"
+      mc:Ignorable="d" 
+      x:Name="PageProduceProce"
+      d:DesignHeight="450" d:DesignWidth="800"
+      Title="ProduceProcePage" Loaded="PageProduceProce_Loaded" Background="#FF414141">
+
+    <Page.Resources>
+        <!--<Style x:Key="WorkStep_ListBoxItem" TargetType="{x:Type ListBoxItem}">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type ListBoxItem}">
+                        <Grid Height="Auto">
+                            <TextBlock Text="{Binding WorkStepsShowTxt}" Foreground="#808080" Padding="4 10" HorizontalAlignment="Left"/>
+                        </Grid>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>-->
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="../Styles/WorkStepsListBox.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Page.Resources>
+    <!--<Page.DataContext>
+        <viewmodel:newProduceProceViewModel/>
+    </Page.DataContext>-->
+
+    <Grid x:Name="MainPage" Focusable="True" PreviewKeyDown="MainPage_PreviewKeyDown" InputMethod.IsInputMethodEnabled="False" Style="{DynamicResource GridStyle}">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="10*"/>
+            <ColumnDefinition  Width="90*"/>
+            <ColumnDefinition Width="Auto" MaxWidth="250"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="5*"/>
+            <RowDefinition Height="5*"/>
+            <RowDefinition Height="85*"/>
+            <RowDefinition Height="5*"/>
+        </Grid.RowDefinitions>
+        <Viewbox Grid.Row="0" Grid.ColumnSpan="3">
+            <!--<Label x:Name="lblProjectName" FontSize="18"  Foreground="White"></Label>-->
+            <TextBlock HorizontalAlignment="Left" VerticalAlignment="Top">
+                <Label Foreground="White" Content="{Binding ProjectName}"></Label>
+            </TextBlock>
+        </Viewbox>
+        <Viewbox Grid.Row="1" Grid.ColumnSpan="3">
+            <!--<Grid Grid.Row="1" x:Name="WorkStepsInfoContainer" Margin="10,10,0,5" VerticalAlignment="Stretch" HorizontalAlignment="Stretch"/>-->
+            <TextBlock HorizontalAlignment="Left" VerticalAlignment="Top">
+                <Label Foreground="White" Content="{Binding WorkStep.WorkStepsInfo}"></Label>
+            </TextBlock>
+        </Viewbox>
+        <Grid x:Name="tbWorkStepsInfo" Grid.Row="2" Grid.ColumnSpan="1">
+            <!--<controls:ScrollViewer Margin="0,0,0,10">
+                <Grid  HorizontalAlignment="Stretch" VerticalAlignment="Stretch" >
+                    <controls:StepBar Grid.Column="0" Width="Auto" x:Name="WorkStepBar" Dock="Left" >
+                        <controls:StepBar.ItemTemplate>
+                            <DataTemplate>
+                                <StackPanel>
+                                    <TextBlock Text="{Binding WorkStepsTitle}" FontSize="16" FontWeight="Bold" HorizontalAlignment="Left"/>
+                                    <TextBlock Margin="0,4,0,0" Text="{Binding WorkStepsName}"/>
+                                </StackPanel>
+                            </DataTemplate>
+                        </controls:StepBar.ItemTemplate>
+                    </controls:StepBar>
+                </Grid>
+            </controls:ScrollViewer>-->
+            <ListBox BorderThickness="1" Style="{StaticResource WorkStepsListBox}" ItemsSource="{Binding WorkSteps}"  x:Name="WorkStepsList" BorderBrush="#eaeaeb" Background="Transparent">
+                <!--<ListBox.Style>
+                    <Style TargetType="ListBox">
+                        <Setter Property="Template">
+                            <Setter.Value>
+                                <ControlTemplate TargetType="ListBox">
+                                    <Border BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Padding="0">
+                                        <ScrollViewer Focusable="False">
+                                            <ItemsPresenter />
+                                        </ScrollViewer>
+                                    </Border>
+                                </ControlTemplate>
+                            </Setter.Value>
+                        </Setter>
+                    </Style>
+                </ListBox.Style>-->
+                <ListBox.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <StackPanel></StackPanel>
+                    </ItemsPanelTemplate>
+                </ListBox.ItemsPanel>
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <TextBlock Text="{Binding WorkStepsShowTxt}" Padding="2 4" />
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+            <!--<ScrollViewer x:Name="WorkStepsScrollViewer">
+                <ItemsControl x:Name="WorkStepsList" ItemsSource="{Binding WorkSteps}">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <WrapPanel/>
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate >
+                        <DataTemplate >
+                            <Border Width="Auto" Height="Auto" Padding="4 8" Cursor="Hand" BorderThickness="2" BorderBrush="#FF414141">
+                                <WrapPanel Orientation="Vertical">
+                                    <TextBlock Text="{Binding WorkStepsShowTxt}" Foreground="#808080" Padding="4 10" HorizontalAlignment="Left"/>
+                                </WrapPanel>
+                            </Border>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </ScrollViewer>-->
+        </Grid>
+        <Grid Grid.Row="2" Grid.Column="1"  x:Name="mxDraw"  VerticalAlignment="Stretch" HorizontalAlignment="Stretch"/>
+        <Grid Grid.Row="2" Grid.Column="2" x:Name="materielList">
+            <!--<Viewbox HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Height="auto">
+                <controls:ScrollViewer Margin="0,0,0,10">
+                    -->
+            <!--<ListBox x:Name="materielItems">
+                        -->
+            <!--<ListBox.ItemContainerStyle>
+                            <Style TargetType="ListBoxItem">
+                                <Setter Property="VerticalAlignment" Value="Top"></Setter>
+                                <Setter Property="HorizontalContentAlignment" Value="Stretch"></Setter>
+                            </Style>
+                        </ListBox.ItemContainerStyle>-->
+            <!--
+                    </ListBox>-->
+            <!--
+                    
+                </controls:ScrollViewer>
+            </Viewbox>-->
+            <ListBox x:Name="materielItems" Background="#FF414141" BorderThickness="0" VerticalAlignment="Stretch">
+                <!--<ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <Border Margin="5">
+                            <StackPanel Height="Auto" Orientation="Vertical">
+                                --><!--<Label HorizontalAlignment="Left" Content="123"></Label>
+                                <Label HorizontalAlignment="Left" Content="456"></Label>
+                                <Label HorizontalAlignment="Left" Content="789"></Label>-->
+                                <!--<TextBlock HorizontalAlignment="Left" Text="{Binding PartCode}" Height="30"></TextBlock>
+                                <TextBlock HorizontalAlignment="Left" Text="{Binding PartName}" Height="30"></TextBlock>
+                                <TextBlock HorizontalAlignment="Left" Text="{Binding PartQuantity}" Height="30"></TextBlock>--><!--
+                            </StackPanel>
+                        </Border>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>-->
+            </ListBox>
+        </Grid>
+        <Grid Grid.Row="3" x:Name="tbDrawingList" Grid.ColumnSpan="3">
+            <ItemsControl x:Name="DrawCardItems">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <StackPanel  Width="Auto" HorizontalAlignment="Center" Orientation="Horizontal"  />
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <!--<RadioButton BorderThickness="0" Width="Auto" Style="{StaticResource RadioButtonIcon}" Content="{Binding DrawName}"/>-->
+                        <TextBlock Text="{Binding DrawName}" VerticalAlignment="Center" HorizontalAlignment="Left" Foreground="White" FontSize="16" Margin="5 5 0 5" />
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </Grid>
+    </Grid>
+</Page>

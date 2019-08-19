@@ -1,0 +1,266 @@
+﻿@{
+    ViewBag.Title = "PMS_BN_ProjectPlanDetail";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@section scripts{
+    <script src="/Content/js/viewModel/com.viewModel.searchEdit.js"></script>
+    <script type="text/javascript">
+        var myself;
+        using(['validatebox','combotree','numberspinner','combobox','lookup','datebox','datetimebox','combogrid'],easyuifix.datagrid_editor_extend);
+        var viewModel = function(data){
+            var self = this;
+            com.viewModel.searchEdit.apply(self,arguments);
+            myself=self;
+
+            this.SearchDialog = function () {
+                var setting = {
+                    type: this.type,
+                    targetField: this.targetField,
+                    sourceField: this.sourceField,
+                    settingArray: this.settingArray
+                }
+                //settingArray 0:width 1:height 2:xmlName
+                var target = parent.$('#CommonSearchDialog').length ? parent.$('#CommonSearchDialog') : parent.$('<div id="CommonSearchDialog"></div>').appendTo('body');
+                utils.clearIframe(target);
+                var opt;
+                opt = { title: '列表', width: setting.settingArray[0], height: setting.settingArray[1], modal: true, collapsible: false, minimizable: false, maximizable: true, closable: true };
+                opt.content = "<iframe src='/mms/home/CommonDialog?xmlName=" + setting.settingArray[2] + "' style='height:100%;width:100%;border:0;' frameborder='0'></iframe>";  //frameborder="0" for ie7
+                params = { xmlName: setting.settingArray[2] };
+                opt.paramater = params;
+                opt.onSelect = function (data) {
+                    self.form.ContractCode(data[0].ContractCode);
+                    self.form.ProductName(data[0].ProductName);
+                    com.ajax({
+                        type: 'GET',
+                        url: '/api/Mms/PMS_ProjectPlanSearch/GetIsExsitsPlan?ContractCode='+data[0].ContractCode+'&ProjectDetailID='+data[0].ProjectDetailID,
+                        cache:false,
+                        async:false,
+                        success: function (d) {
+                            if (d>0) {
+                                self.searchClick();
+                            }
+                            else{
+                                var tt=$('#dg').datagrid('getColumnOption', 'FinishDate'); //通过列名获得此列
+                                tt.editor={}; //设置此列的编辑属性 如果禁用编辑 则设置 tt.editor={}
+
+                                self.grid.datagrid('loadData',{total:0,rows:[]});
+                                for (var t = 0; t < self.dataSource.dsPlanType.length; t++) {
+                                    var jsonstr=$.extend({},self.grid.defaults,data[0],{});
+                                    jsonstr.PlanType=self.dataSource.dsPlanType[t].value;
+                                    jsonstr.ProjectDetailID=data[0].ProjectDetailID;
+                                    jsonstr.ApprovalStatus=0;
+                                    jsonstr.IsEnable=1;
+                                    jsonstr.ID="";
+                                    self.grid.datagrid('appendRow', jsonstr);
+                                }
+
+                                myself.saveClick_One();
+                                myself.searchClick();
+                            }
+                        }
+                    });
+               
+             
+                };
+                target.window(opt);
+            }
+            //行点击事件
+            //this.grid.onClickRow = function () {
+            //    var row = self.grid.datagrid('getSelected');
+            //    var ContractCode=row.ContractCode;//合同编号
+            //    com.ajax({
+            //                type:'GET',
+            //                url:'/api/Mms/PMS_BN_ProjectPlanDetail/GetContractCode',
+            //                data:{ContractCode:ContractCode},
+            //                async:false,
+            //                success:function(d){
+            //                    if (d=="0") {
+
+            //                        com.message('success', "此合同编号已结束！")
+            //                    }
+            //                    else {
+
+            //                        self.gridEdit.begin();
+            //                    }
+            //                }
+            //            });
+            //};
+            this.editClick1=function(){
+                var row = self.grid.datagrid('getSelected');
+                var ContractCode=row.ContractCode;//合同编号
+                com.ajax({
+                    type:'GET',
+                    url:'/api/Mms/PMS_BN_ProjectPlanDetail/GetContractCode',
+                    data:{ContractCode:ContractCode},
+                    async:false,
+                    success:function(d){
+                        if (d=="0") {
+
+                            com.message('success', "此合同编号已结束！")
+                        }
+                        else {
+
+                            self.gridEdit.begin();
+                        }
+                    }
+                });
+            }
+            this.saveClick_One=function(){
+                this.saveClick();
+            }
+
+            this.grid.onDblClickRow=function () {
+                var row = self.grid.datagrid('getSelected');
+                var ContractCode=row.ContractCode;//合同编号
+                com.ajax({
+                    type:'GET',
+                    url:'/api/Mms/PMS_BN_ProjectPlanDetail/GetContractCode',
+                    data:{ContractCode:ContractCode},
+                    async:false,
+                    success:function(d){
+                        if (d=="0") {
+
+                            com.message('success', "此合同编号已结束！")
+                        }
+                        else {
+
+                            self.gridEdit.begin();
+                        }
+                    }
+                });
+            }
+            this.StartWorkClick=function(){
+                var row = self.grid.datagrid('getSelected');
+                if(row==null||row=="")
+                {
+                    com.message('success', "请先选择需要审核的项目！")
+                    return;
+                }
+                var FinishDate = row.FinishDate;
+                var ProjectDetailID = row.ProjectDetailID;
+                var ContractCode = row.ContractCode;
+                com.ajax({
+                    type:'GET',
+                    url:'/api/Mms/PMS_BN_ProjectPlanDetail/GetProjectDetailID',
+                    data:{ID:row.ID,ProjectDetailID:ProjectDetailID,ContractCode:ContractCode},
+                    async:false,
+                    success:function(d){
+                        if (d=="0") {
+                            com.message('success', "此合同编号已审核！")
+                        }else
+                            if(d=="2"){
+                                com.message('success', "无法审核，请确认考核节点日期！")
+                            }
+                            else{
+                                com.message('success', "审核成功！");
+                                $("#a_search").click();
+                            }
+                                
+
+                    }
+                });
+
+            }
+            //this.StartWorkClick1=function(){
+            //    var row = self.grid.datagrid('getSelected');
+            //    var ContractCode=row.ContractCode;//合同编号
+            //    var PlanType = row.PlanType;
+            //    var PlanDate = row.PlanDate;
+            //    var FinishDate = row.FinishDate;
+            //    com.ajax({
+            //        type:'GET',
+            //        url:'/api/Mms/PMS_BN_ProjectPlanDetail/GetProjectDetail',
+            //        data:{ContractCode:ContractCode,PlanType:PlanType,PlanDate:PlanDate,FinishDate:FinishDate},
+            //        async:false,
+            //        success:function(d){
+            //            com.message('success', self.resx.auditSuccess)
+            //        }
+            //    });
+
+            //}
+        }
+        //}
+        var data = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model));
+        ko.bindingViewModel(new viewModel(data));
+    </script>
+}
+<div class="z-toolbar">
+    <a href="#" plain="true" class="easyui-linkbutton" icon="icon-arrow_refresh" title="刷新" data-bind="click:refreshClick">刷新</a>
+    @*<a href="#" plain="true" class="easyui-linkbutton" icon="icon-add" title="新增" data-bind="click:addClick">新增</a>*@
+    @*<a href="#" plain="true" class="easyui-linkbutton" icon="icon-edit" title="编辑" data-bind="click:editClick">编辑</a>*@
+    <a href="#" plain="true" class="easyui-linkbutton" icon="icon-edit" title="编辑" data-bind="click:editClick1">编辑</a>
+    @*<a href="#" plain="true" class="easyui-linkbutton" icon="icon-cross" title="删除" data-bind="click:deleteClick">删除</a>*@
+    <a href="#" plain="true" class="easyui-linkbutton" icon="icon-save" title="保存" data-bind="click:saveClick_One">保存</a>
+    <a href="#" plain="true" class="easyui-splitbutton" data-options="menu:'#dropdown',iconCls:'icon-download'">导出</a>
+    <a id="a_add" href="#" class="easyui-linkbutton" data-options="iconCls:'icon-search',plain:true" data-bind="event: { click: function(data, event) {SearchDialog.call({type:'form',targetField:'Name',sourceField:'Name','settingArray':['800','400','ChooseXM']})}}">选择项目新增考核节点</a>
+    <a id="a_add" href="#" plain="true" class="easyui-linkbutton" icon="icon-user-accept" title="审核" data-bind="click:StartWorkClick">审核</a>
+    @*<a id="a_add" href="#" plain="true" class="easyui-linkbutton" icon="icon-save" title="更新" data-bind="click:StartWorkClick1">更新</a>*@
+</div>
+
+<div id="dropdown" style="width:100px; display:none;">
+    <div data-options="iconCls:'icon-ext-xls'" suffix="xls" data-bind="click:downloadClick">Excel2003   </div>
+    <div data-options="iconCls:'icon-page_excel'" suffix="xlsx" data-bind="click:downloadClick">Excel2007   </div>
+    <div data-options="iconCls:'icon-ext-doc'" suffix="doc" data-bind="click:downloadClick">Word2003    </div>
+</div>
+
+<div class="container_12" style="position:relative;">
+    <div class="grid_1 lbl" style="width:80px">合同编号</div>
+    <div class="grid_2 val"><input type="text" data-bind="value:form.ContractCode" class="z-txt " /></div>
+    <div class="grid_1 lbl" style="width:80px">产品名称</div>
+    <div class="grid_2 val"><input type="text" data-bind="value:form.ProductName" class="z-txt " /></div>
+
+    <div class="clear"></div>
+    <div class="grid_1 lbl">&nbsp;</div>
+    <div class="grid_2 val">&nbsp;</div>
+    <div class="clear"></div>
+
+    <div class="clear"></div>
+    <div class="grid_1 lbl" style="width:80px">考核节点类型</div>
+    @*<div class="grid_2 val"><input type="text" data-bind="comboboxValue:form.PlanType" class="z-txt easyui-combobox"  /></div>*@
+    <div class="grid_2 val">
+        <input type="text" data-bind="comboboxValue:form.PlanType" data-options="url:'/Commons/GetComboboxList?CodeType=PlanType',valueField:'value',textField:'text'" class="z-txt easyui-combobox" />
+    </div>
+
+    <div class="grid_1 lbl" style="width:80px">是否有效</div>
+    <div class="grid_2 val"><input type="text" data-bind="comboboxValue:form.IsEnable" data-options="data:[{value:'',text:'所有'},{value:1,text:'是'},{value:0,text:'否'}],valueField: 'value',textField: 'text'" class="z-txt easyui-combobox" /></div>
+
+    <div class="clear"></div>
+    <div class="grid_1 lbl">&nbsp;</div>
+    <div class="grid_2 val">&nbsp;</div>
+    <div class="clear"></div>
+
+    <div class="prefix_9" style="position:absolute;top:5px;height:0;">
+        <a id="a_search" href="#" class="buttonHuge button-blue" data-bind="click:searchClick" style="margin:0 15px;">查询</a>
+        <a id="a_reset" href="#" class="buttonHuge button-blue" data-bind="click:clearClick">清空</a>
+    </div>
+</div>
+
+<table data-bind="datagrid:grid" style="display:none" id="dg">
+    <thead>
+        <tr>
+            <th field="ID" hidden sortable="true" align="left" width="150" editor="{type:'lookup',options:{}}">项目ID</th>
+            <th field="ProjectDetailID" sortable="true" align="left" width="150" hidden="hidden">ProjectDetailID</th>
+            <th field="ContractCode" sortable="true" align="left" width="120">合同编号</th>
+            <th field="ProductName" sortable="true" align="left" width="80">产品名称</th>
+            <th field="ProductType" sortable="true" align="left" width="100" data-options="formatter:function(value,row){return com.formatCombobox('ProductType',value);}">产品类型</th>
+            <th field="Model" sortable="true" align="left" width="120">型号</th>
+            <th field="Specifications" sortable="true" align="left" width="120">规格</th>
+
+            <th field="PlanType" sortable="true" align="left" width="150" data-options="formatter:function(value,row){return com.formatCombobox('PlanType',value);}"
+                editor="{type:'combobox',options:{required:true,url:'/Commons/GetComboboxList?CodeType=PlanType',method:'GET',panelWidth:150,panelHeight:150,valueField:'value',textField:'text'}}">考核节点类型</th>
+
+            <th field="PlanDate" sortable="true" align="left" width="100" editor="{type:'datebox',options:{required:true}}" formatter="com.formatDate">考核节点日期</th>
+            <th field="FinishDate" sortable="true" align="left" width="100" editor="datebox" formatter="com.formatDate">实际完成日期</th>
+
+            <th field="ApprovalStatus" sortable="true" align="left" width="80" data-options="formatter:function(value,row){ return value == 1 ? '已审核':'未审核';}">审核状态</th>
+
+            <th field="IsEnable" sortable="true" align="left" width="60" data-options="formatter:function(value,row){ return value == 1 ? '是':'否';}" editor="{type:'combobox',
+            options:{data:[{value:1,text:'是'},{value:0,text:'否'}],panelWidth:100,panelHeight: 100,valueField: 'value',textField: 'text'}}">
+                是否可用
+            </th>
+
+
+        </tr>
+    </thead>
+</table>

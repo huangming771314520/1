@@ -1,0 +1,274 @@
+﻿
+@{
+    ViewBag.Title = "MES_BN_WorkShopMatching";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@section scripts{
+    <script src="/Content/js/viewModel/com.viewModel.searchEdit.js"></script>
+    <script type="text/javascript">
+    using(['validatebox', 'combotree', 'numberspinner', 'combobox', 'lookup', 'datebox', 'datetimebox', 'combogrid'], easyuifix.datagrid_editor_extend);
+    var myself;
+    var viewModel = function(data){
+        var self = this;
+        com.viewModel.searchEdit.apply(self, arguments);
+        myself = self;
+        this.grid.pagination = false;
+        self.grid.queryParams({ RootPartCode: '0' });
+        this.SearchDialog = function () {
+            var setting = {
+                type: this.type,
+                targetField: this.targetField,
+                sourceField: this.sourceField,
+                settingArray: this.settingArray
+            }
+            //settingArray 0:width 1:height 2:xmlName
+            var target = parent.$('#CommonSearchDialog').length ? parent.$('#CommonSearchDialog') : parent.$('<div id="CommonSearchDialog"></div>').appendTo('body');
+            utils.clearIframe(target);
+            var opt;
+            opt = { title: '列表', width: setting.settingArray[0], height: setting.settingArray[1], modal: true, collapsible: false, minimizable: false, maximizable: true, closable: true };
+            opt.content = "<iframe src='/mms/home/CommonDialog?xmlName=" + setting.settingArray[2] + "' style='height:100%;width:100%;border:0;' frameborder='0'></iframe>";  //frameborder="0" for ie7
+            params = { xmlName: setting.settingArray[2] };
+            opt.paramater = params;
+            opt.onSelect = function (data) {
+                var PartCode = data[0].PartCode;
+                var ContractCode = data[0].ContractCode;
+                var ProjectDetailID = data[0].ProjectDetailID;
+
+                com.ajax({
+                    type: 'post',
+                    url: '/api/mms/MES_BN_WorkShopMatching/PostIsExistWorkShopMatchingData',
+                    data: JSON.stringify({ ParentCode: PartCode }),
+                    async: false,
+                    success: function (d) {
+                        if (!d) {
+                            com.ajax({
+                                type: 'post',
+                                url: '/api/mms/MES_BN_WorkShopMatching/PostCreateWorkShopMatchingData',
+                                data: JSON.stringify({
+                                    ParentCode: PartCode,
+                                    ContractCode: ContractCode,
+                                    ProjectDetailID: ProjectDetailID,
+                                    OperationType:'add'
+                                    }),
+                                async: false,
+                                success: function (d) {
+                                    self.grid.queryParams({ RootPartCode: PartCode });
+                                }
+                            });
+                        }
+                        else {
+                            //if (confirm("是否覆盖！")) {
+                                com.ajax({
+                                    type: 'post',
+                                    url: '/api/mms/MES_BN_WorkShopMatching/PostCreateWorkShopMatchingData',
+                                    data: JSON.stringify({
+                                        ParentCode: PartCode,
+                                        ContractCode: ContractCode,
+                                        ProjectDetailID: ProjectDetailID,
+                                        OperationType: 'update'
+                                    }),
+                                    async: false,
+                                    success: function (d) {
+                                        self.grid.queryParams({ RootPartCode: PartCode });
+                                    }
+                                });
+                            //}
+                            //else {
+                            //    self.grid.queryParams({ RootPartCode: PartCode });
+                            //}
+                        }
+                    }
+                });
+
+            };
+            target.window(opt);
+        }
+
+        this.grid.onAfterEdit = function (editors) {
+            var row = self.grid.datagrid('getRows')[editors];
+            //console.log(row);
+            com.ajax({
+                type: 'post',
+                url: '/api/mms/MES_BN_WorkShopMatching/PostChangeWorkShopCode',
+                data: JSON.stringify(row),
+                async: false,
+                success: function (d) {
+                    self.grid.queryParams({ RootPartCode: row.RootPartCode });
+                    com.message("success", "保存成功!");
+                }
+            });
+        };
+
+    }
+    var data = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model));
+    ko.bindingViewModel(new viewModel(data));
+    </script>
+}
+<div class="z-toolbar">
+    <a href="#" plain="true" class="easyui-linkbutton" icon="icon-arrow_refresh" title="刷新" data-bind="click:refreshClick">刷新</a>
+    <a id="a_add" href="#" class="easyui-linkbutton" data-options="iconCls:'icon-search',plain:true" data-bind="event: { click: function(data, event) {SearchDialog.call({type:'form',targetField:'Name',sourceField:'Name','settingArray':['850','400','MatchingChooseProjectPart']})}}">选择项目</a>
+    <a href="#" plain="true" class="easyui-linkbutton" icon="icon-edit" title="编辑" data-bind="click:editClick">编辑</a>
+</div>
+
+@*<div class="container_12" style="position:relative;">
+            <div class="grid_1 lbl">工艺BOM编号</div>
+            <div class="grid_2 val"><input type="text" data-bind="value:form.PartCode" class="z-txt "  /></div>
+
+            <div class="clear"></div>
+            <div class="grid_1 lbl">&nbsp;</div>
+            <div class="grid_2 val">&nbsp;</div>
+        <div class="clear"></div>
+
+        <div class="prefix_9" style="position:absolute;top:5px;height:0;">
+            <a id="a_search" href="#" class="buttonHuge button-blue" data-bind="click:searchClick" style="margin:0 15px;">查询</a>
+            <a id="a_reset" href="#" class="buttonHuge button-blue" data-bind="click:clearClick">清空</a>
+        </div>
+    </div>*@
+
+<table data-bind="datagrid:grid" style="display:none">
+    <thead>
+        <tr>
+            <th field="ID" hidden="true" sortable="true" align="left" width="80"></th>
+            <th field="PartFigureCode" sortable="true" align="left" width="180">零件图号</th>
+            <th field="RootPartCode" hidden sortable="true" align="left" width="150">父级零件编号</th>
+            <th field="PartCode" hidden sortable="true" align="left" width="150">零件编号</th>
+            <th field="PartName" sortable="true" align="left" width="150">零件名称</th>
+            <th field="MaterialCode" sortable="true" align="left" width="120">材质</th>
+            <th field="PartQuantity" sortable="true" align="left" width="120">单台数量</th>
+            <th field="TotoalQuantity" sortable="true" align="left" width="120">需求数量</th>
+            <th field="Blanking" sortable="true" align="left" width="120" editor="{type:'combogrid',options:{
+                        url:'/Commons/GetCommonSearchList',
+                    queryParams : {
+                     tableName:'SYS_BN_Department',
+                         searchField:'DepartmentName,DepartmentCode',
+                         firstFightField:'DepartmentName',
+                            whereSql:'ProcessType=1',
+                                     connName:'Mms'
+                            },
+                            method: 'GET',
+                            panelWidth:400,
+                            fit:true,
+                            delay: 1000,
+                            mode: 'remote',
+                            value: 'DepartmentCode',
+                            idField: 'DepartmentCode',
+                            textField: 'DepartmentName',
+                            columns:[[
+                            { field: 'DepartmentCode',title: '部门编码',width: 200 },
+                            { field: 'DepartmentName',title: '部门名称',width: 200 }
+                                ]],
+                   onSelect: function (rowIndex, rowData) {
+
+                },
+                   keyHandler:{
+                   query:function(keyword) {
+                   var queryParams=$(this).combogrid('grid').datagrid('options').queryParams;
+                   queryParams.keyword=keyword;
+                   $(this).combogrid('grid').datagrid('options').queryParams=queryParams;
+                   $(this).combogrid('grid').datagrid('reload');
+                  $(this).combogrid('setValue', keyword);
+                }}
+                }}" formatter="utils.fnValueToText(data.dataSource.Department)">下料</th>
+            <th field="Welding" sortable="true" align="left" width="120" editor="{type:'combogrid',options:{
+                        url:'/Commons/GetCommonSearchList',
+                    queryParams : {
+                     tableName:'SYS_BN_Department',
+                         searchField:'DepartmentName,DepartmentCode',
+                         firstFightField:'DepartmentName',
+                            whereSql:'ProcessType=2',
+                                     connName:'Mms'
+                            },
+                            method: 'GET',
+                            panelWidth:400,
+                            fit:true,
+                            delay: 1000,
+                            mode: 'remote',
+                            value: 'DepartmentCode',
+                            idField: 'DepartmentCode',
+                            textField: 'DepartmentName',
+                            columns:[[
+                            { field: 'DepartmentCode',title: '部门编码',width: 200 },
+                            { field: 'DepartmentName',title: '部门名称',width: 200 }
+                                ]],
+                   onSelect: function (rowIndex, rowData) {
+
+                },
+                   keyHandler:{
+                   query:function(keyword) {
+                   var queryParams=$(this).combogrid('grid').datagrid('options').queryParams;
+                   queryParams.keyword=keyword;
+                   $(this).combogrid('grid').datagrid('options').queryParams=queryParams;
+                   $(this).combogrid('grid').datagrid('reload');
+                  $(this).combogrid('setValue', keyword);
+                }}
+                }}" formatter="utils.fnValueToText(data.dataSource.Department)">焊接</th>
+            <th field="Machining" sortable="true" align="left" width="120" editor="{type:'combogrid',options:{
+                        url:'/Commons/GetCommonSearchList',
+                    queryParams : {
+                     tableName:'SYS_BN_Department',
+                         searchField:'DepartmentName,DepartmentCode',
+                         firstFightField:'DepartmentName',
+                            whereSql:'ProcessType=3',
+                                     connName:'Mms'
+                            },
+                            method: 'GET',
+                            panelWidth:400,
+                            fit:true,
+                            delay: 1000,
+                            mode: 'remote',
+                            value: 'DepartmentCode',
+                            idField: 'DepartmentCode',
+                            textField: 'DepartmentName',
+                            columns:[[
+                            { field: 'DepartmentCode',title: '部门编码',width: 200 },
+                            { field: 'DepartmentName',title: '部门名称',width: 200 }
+                                ]],
+                   onSelect: function (rowIndex, rowData) {
+
+                },
+                   keyHandler:{
+                   query:function(keyword) {
+                   var queryParams=$(this).combogrid('grid').datagrid('options').queryParams;
+                   queryParams.keyword=keyword;
+                   $(this).combogrid('grid').datagrid('options').queryParams=queryParams;
+                   $(this).combogrid('grid').datagrid('reload');
+                  $(this).combogrid('setValue', keyword);
+                }}
+                }}" formatter="utils.fnValueToText(data.dataSource.Department)">机加</th>
+            <th field="Assembling" sortable="true" align="left" width="120" editor="{type:'combogrid',options:{
+                        url:'/Commons/GetCommonSearchList',
+                    queryParams : {
+                     tableName:'SYS_BN_Department',
+                         searchField:'DepartmentName,DepartmentCode',
+                         firstFightField:'DepartmentName',
+                            whereSql:'ProcessType=4',
+                                     connName:'Mms'
+                            },
+                            method: 'GET',
+                            panelWidth:400,
+                            fit:true,
+                            delay: 1000,
+                            mode: 'remote',
+                            value: 'DepartmentCode',
+                            idField: 'DepartmentCode',
+                            textField: 'DepartmentName',
+                            columns:[[
+                            { field: 'DepartmentCode',title: '部门编码',width: 200 },
+                            { field: 'DepartmentName',title: '部门名称',width: 200 }
+                                ]],
+                   onSelect: function (rowIndex, rowData) {
+
+                },
+                   keyHandler:{
+                   query:function(keyword) {
+                   var queryParams=$(this).combogrid('grid').datagrid('options').queryParams;
+                   queryParams.keyword=keyword;
+                   $(this).combogrid('grid').datagrid('options').queryParams=queryParams;
+                   $(this).combogrid('grid').datagrid('reload');
+                  $(this).combogrid('setValue', keyword);
+                }}
+                }}" formatter="utils.fnValueToText(data.dataSource.Department)">装配</th>
+        </tr>
+    </thead>
+</table>

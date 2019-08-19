@@ -1,0 +1,10 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+
+<RootLocal>
+  <Version>1.0.0.0</Version>
+  <Workshop>WorkShop_A</Workshop>
+  <ServerUrl>http://127.0.0.1:8003</ServerUrl>
+  <AppName>MesWpfClient.exe</AppName>
+  <XmlName>Update.xml</XmlName>
+  <ZipName>Update.zip</ZipName>
+</RootLocal>

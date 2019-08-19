@@ -1,0 +1,309 @@
+﻿@{
+    ViewBag.Title = "APS_ProductPurchaseDetail";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<style>
+    #proj .combo-arrow {
+        display: none;
+    }
+</style>
+
+@section scripts{
+    <script src="/Content/js/viewModel/com.viewModel.edit.js"></script>
+    <script type="text/javascript">
+        using(['validatebox', 'combobox','lookup','numberbox','datebox','datetimebox','combogrid','combotree','extend','menu'],easyuifix.datagrid_editor_extend);
+        var myself;
+        var viewModel = function(data){
+            var self = this;
+            com.viewModel.edit.apply(self,arguments);
+            myself=self;
+            myself.pageData.form.PurchaseDate(com.formatDate(myself.pageData.form.PurchaseDate()));
+            this.grid0.size={w:8,h:125};
+
+            this.SearchDialog = function () {
+                var setting = {
+                    type: this.type,
+                    targetField: this.targetField,
+                    sourceField: this.sourceField,
+                    settingArray: this.settingArray
+                }
+                //settingArray 0:width 1:height 2:xmlName
+                var target = parent.$('#CommonSearchDialog').length ? parent.$('#CommonSearchDialog') : parent.$('<div id="CommonSearchDialog"></div>').appendTo('body');
+                utils.clearIframe(target);
+                var opt;
+                opt = { title: '列表', width: setting.settingArray[0], height: setting.settingArray[1], modal: true, collapsible: false, minimizable: false, maximizable: true, closable: true };
+                opt.content = "<iframe src='/mms/home/CommonDialog2?xmlName=" + setting.settingArray[2] + "&ProductPlanCode="+myself.pageData.form.ProductPlanCode()+"&WarehouseCode="+myself.pageData.form.WarehouseID()+"' style='height:100%;width:100%;border:0;' frameborder='0'></iframe>";  //frameborder="0" for ie7
+                params = { xmlName: setting.settingArray[2] };
+                opt.paramater = params;
+                opt.onSelect = function (data) {
+                    var rows=myself.grid0.datagrid("getRows");
+                    for (var i = 0; i < data.length; i++) {
+                        var part=data[i].PartCode;
+                        for (var t = 1; t <= rows.length-1; t++) {
+                            if (rows[t].InventoryCode == part)
+                            {
+                                com.message('warning', '存货编码已存在！');
+                                myself.grid0.datagrid("selectRow",t);
+                                return;
+                            }
+
+                        }
+                    }
+
+                    self.grid0.datagrid('loadData',{total:0,rows:[]});
+                    for (var i = 0; i < data.length; i++) {
+                        com.ajax({
+                            type: 'GET',
+                            url: self.urls.newkey,
+                            data: { type: 'grid0', key: self.pageData.scrollKeys.current() },
+                            cache:false,
+                            async:false,
+                            success: function (d) {
+                                var jsonstr = new Object();
+                                //jsonstr.ID=d;
+                                debugger;
+                                /*
+                                    c.PartFigureCode,
+            a.PartCode,
+            a.PartName,
+            c.PartQuantity,
+            a.[NeedQuantity]
+            --库存数量
+            --已请购数量
+                                */
+                                jsonstr.PartFigureCode=data[i].PartFigureCode;
+                                jsonstr.MainID=self.pageData.scrollKeys.current();
+                                jsonstr.InventoryCode=data[i].PartCode;
+                                jsonstr.SingleProductRequestQuantity=data[i].PartQuantity;
+                                jsonstr.TotalRequestQuantity=data[i].NeedQuantity;
+                                jsonstr.PurchaseState=1;
+                                jsonstr.IsEnable=1;
+                                jsonstr.StockQuantity="";
+                                jsonstr.OrderQuantity="";
+                                self.grid0.datagrid('appendRow', jsonstr);
+                            }
+                        });
+                    }
+                };
+                target.window(opt);
+            }
+
+            //this.SearchDialog2 = function () {
+            //    var setting = {
+            //        type: this.type,
+            //        targetField: this.targetField,
+            //        sourceField: this.sourceField,
+            //        settingArray: this.settingArray
+            //    }
+            //    //settingArray 0:width 1:height 2:xmlName
+            //    var target = parent.$('#CommonSearchDialog').length ? parent.$('#CommonSearchDialog') : parent.$('<div id="CommonSearchDialog"></div>').appendTo('body');
+            //    utils.clearIframe(target);
+            //    var opt;
+            //    opt = { title: '列表', width: setting.settingArray[0], height: setting.settingArray[1], modal: true, collapsible: false, minimizable: false, maximizable: true, closable: true };
+            //    opt.content = "<iframe src='/mms/home/CommonDialog?xmlName=" + setting.settingArray[2] + "' style='height:100%;width:100%;border:0;' frameborder='0'></iframe>";  //frameborder="0" for ie7
+            //    params = { xmlName: setting.settingArray[2] };
+            //    opt.paramater = params;
+            //    opt.onSelect = function (data) {
+            //        //self.pageData.form.PurchaseDocumentCode(data[0].WorkshopPurchaseCode);
+            //        com.ajax({
+            //            type: 'GET',
+            //            url: '/api/Mms/APS_ProductPurchaseDetail/GetWorkshopPurchaseDetail?mainID='+data[0].ID,
+            //            cache:false,
+            //            async:false,
+            //            success: function (list) {
+            //                self.grid0.datagrid('loadData',{total:0,rows:[]});
+            //                for (var i = 0; i < list.length; i++) {
+            //                    com.ajax({
+            //                        type: 'GET',
+            //                        url: self.urls.newkey,
+            //                        data: { type: 'grid0', key: self.pageData.scrollKeys.current() },
+            //                        cache:false,
+            //                        async:false,
+            //                        success: function (d) {
+            //                            var jsonstr = new Object();
+            //                            //jsonstr.ID=d;
+            //                            debugger;
+            //                            jsonstr.MainID=self.pageData.scrollKeys.current();
+            //                            jsonstr.InventoryCode=list[i].InventoryCode;
+            //                            jsonstr.SingleProductRequestQuantity=list[i].TotalRequestQuantity;
+            //                            jsonstr.TotalRequestQuantity=list[i].TotalRequestQuantity;
+            //                            jsonstr.PurchaseState=1;
+            //                            jsonstr.IsEnable=1;
+            //                            jsonstr.StockQuantity="";
+            //                            jsonstr.OrderQuantity="";
+
+            //                            self.grid0.datagrid('appendRow', jsonstr);
+            //                        }
+            //                    });
+            //                }
+            //            }
+            //        });
+            //    };
+            //    target.window(opt);
+            //}
+
+            this.StorageClick=function(){
+                var post = {
+                    mainID:self.dataSource.pageData.scrollKeys.current,
+                };
+                com.ajax({
+                    type:'POST',
+                    url:self.urls.storageSave,
+                    data: JSON.stringify(post),
+                    aysnc: false,
+                    success:function(d){
+                        com.message('success',d);
+                        window.location.reload();
+                    }
+                });
+            };
+        }
+        var data = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model));
+        ko.bindingViewModel(new viewModel(data));
+    </script>
+}
+
+<div class="z-toolbar">
+    <a id="a_save" href="#" plain="true" class="easyui-linkbutton" icon="icon-save" data-bind="click:readonly()?null:saveClick,linkbuttonDisable:readonly" title="保存">保存</a>
+    <a id="a_add" href="#" class="easyui-linkbutton" data-options="iconCls:'icon-search',plain:true" data-bind="event: { click: function(data, event) {SearchDialog.call({type:'form',targetField:'Name',sourceField:'Name','settingArray':['850','400','ChooseProjectPartByWarehouse']})}}">选择零件</a>
+    @*<a id="a_add" href="#" class="easyui-linkbutton" data-options="iconCls:'icon-search',plain:true" data-bind="event: { click: function(data, event) {SearchDialog2.call({type:'form',targetField:'Name',sourceField:'Name','settingArray':['850','400','ChooseWorkshopPurchase']})}}">选择车间请购</a>*@
+    <a id="a_audit" href="#" plain="true" class="easyui-linkbutton" icon="icon-user-accept" data-bind="click:StorageClick,easyuiLinkbutton:approveButton" title="发布">发布</a>
+</div>
+
+<div id="divother" style="width:100px; display:none;">
+    <div data-options="iconCls:'icon-add'">新增</div>
+    <div data-options="iconCls:'icon-cross'">删除</div>
+    <div data-options="iconCls:'icon-arrow_refresh'">刷新</div>
+</div>
+
+<div id="master" class="container_12" data-bind="inputwidth:0.9">
+    <div class="grid_1 lbl">请购单编码</div>
+    <div class="grid_3 val"><input type="text" data-bind="value:pageData.form.PurchaseDocumentCode ,readOnly:true" class="z-txt " /></div>
+    <div class="grid_1 lbl">工程项目</div>
+    <div class="grid_3 val" id="proj">
+        <input type="text" data-bind="combogridValue:pageData.form.ContractCode" disabled="disabled" class="z-txt easyui-combogrid" data-options="url:'/Commons/GetCommonSearchList',
+                 queryParams : {
+                     tableName:'[PMS_BN_Project]',
+                         searchField:'[ContractCode],[ProjectName]',
+                         firstFightField:'[ProjectName]',
+                         connName:'Mms'
+                },
+                method: 'GET',
+                panelWidth:250,
+                fit:true,
+                delay: 1000,
+                mode: 'remote',
+                value: 'ContractCode',
+                idField: 'ContractCode',
+                textField: 'ProjectName',
+                columns:[[
+                { field: 'ContractCode',title: '合同编号',width: 150 },
+                { field: 'ProjectName',title:'工程项目',width:150 }
+                    ]],
+                 onSelect: function (rowIndex, rowData) {
+                 myself.pageData.form.ContractCode(rowData['ContractCode']);
+               },
+            keyHandler:{
+            query:function(keyword) {
+           var queryParams=$(this).combogrid('grid').datagrid('options').queryParams;
+           queryParams.keyword=keyword;
+           $(this).combogrid('grid').datagrid('options').queryParams=queryParams;
+           $(this).combogrid('grid').datagrid('reload');
+           }}" />
+    </div>
+    <div class="grid_1 lbl">请购日期</div>
+    <div class="grid_3 val"><input type="text" data-bind="value:pageData.form.PurchaseDate ,readOnly:true" class="z-txt " /></div>
+    <div class="clear"></div>
+
+    @*<div class="grid_1 lbl">仓库编号</div>
+        <div class="grid_3 val">
+            <input type="text" id="WarehouseIDInput" data-bind="combogridValue:pageData.form.WarehouseID ,readOnly:true" class="z-txt easyui-combogrid" data-options="url:'/Commons/GetCommonSearchList',
+                                    required:true,
+                                    queryParams : {
+                                         tableName:'[SYS_BN_Warehouse]',
+                                             searchField:'[WarehouseCode],[WarehouseName]',
+                                             firstFightField:'[WarehouseCode]',
+                                             CacheKey:'SYS_BN_Warehouse',
+                                             CacheTime:'480',
+                                             connName:'Mms'
+                                    },
+                                    method: 'GET',
+                                    panelWidth:250,
+                                    fit:true,
+                                    delay: 1000,
+                                    mode: 'remote',
+                                    value: 'WarehouseCode',
+                                    idField: 'WarehouseCode',
+                                    textField: 'WarehouseName',
+                                    columns:[[
+                                    { field: 'WarehouseCode',title: '仓库编码',width: 100 },
+                                    { field: 'WarehouseName',title:'仓库名称',width:150 }
+                                        ]],
+
+                                keyHandler:{
+                                query:function(keyword) {
+                               var queryParams=$(this).combogrid('grid').datagrid('options').queryParams;
+                               queryParams.keyword=keyword;
+                               $(this).combogrid('grid').datagrid('options').queryParams=queryParams;
+                               $(this).combogrid('grid').datagrid('reload');
+                               }}" />
+        </div>*@
+
+    <div class="clear"></div>
+</div>
+
+<div id="tt" class="easyui-tabs">
+    <div title="明细">
+        <table data-bind="datagrid:grid0">
+            <thead>
+                <tr>
+                    <th field="ID" sortable="true" align="left" width="80" editor="text" hidden></th>
+                    <th field="MainID" sortable="true" align="left" width="80" editor="text" hidden>生产请购单主表ID</th>
+                    <th field="InventoryCode" sortable="true" align="left" width="200" hidden>存货编码</th>
+                    <th field="InventoryName" sortable="true" align="left" width="200">存货名称</th>
+                    <th field="Model" sortable="true" align="left" width="80">规格型号</th>
+                    @*<th field="Spec" sortable="true" align="left" width="80"></th>*@
+                    <th field="SingleProductRequestQuantity" sortable="true" align="left" width="80">单台数量</th>
+                    <th field="TotalRequestQuantity" sortable="true" align="left" width="80">实需数量</th>
+
+                    <th field="StockQuantity" sortable="true" align="left" width="80">库存数量</th>
+                    <th field="QuantityUnit" sortable="true" align="left" width="80">库存单位</th>
+                    @*<th field="RequestedQuantity" sortable="true" align="left" width="80" >已请购数量</th>*@
+                    <th field="PurchaseQuantity" sortable="true" align="left" width="80" editor="text">本次请购数量</th>
+
+                    <th field="Unit" sortable="true" align="left" width="80">单位</th>
+                    <th field="Remark" sortable="true" align="left" width="80" editor="text">备注</th>
+                    @*<th field="SaleMan" sortable="true" align="left" width="80" editor="text">采购员</th>
+        <th field="UserCode" sortable="true" align="left" width="80" hidden editor="text">采购员</th>
+        <th field="DepartmentName" sortable="true" align="left" width="80" editor="text">部门</th>
+        <th field="DepartmentCode" sortable="true" align="left" width="80" hidden editor="text">部门</th>
+        <th field="WarehouseName" sortable="true" align="left" width="80" editor="text">仓库</th>
+        <th field="WarehouseCode" sortable="true" align="left" width="80" hidden editor="text">仓库</th>
+        <th field="SupplierName" sortable="true" align="left" width="80" editor="text">供应商</th>
+        <th field="SupplierCode" sortable="true" align="left" width="80" hidden editor="text">供应商</th>*@
+                    <th field="OrderQuantity" sortable="true" align="left" width="80">采购数量</th>
+                    <th field="PurchaseFeedback" sortable="true" align="left" width="80">采购反馈状态</th>
+                    <th field="PurchaseRemark" sortable="true" align="left" width="80">采购备注</th>
+                    @*<th field="PurchaseState" sortable="true" align="left" width="70" data-options="formatter:function(value,row){ return (value == 1) ? '编辑中':'已发布';}">
+                        请购状态
+                    </th>*@
+                    <th field="PurchaseState" sortable="true" align="left" width="100" data-options="formatter:function(value,row){return com.formatCombobox('PurchaseState',value);}">请购状态</th>
+                    <th field="PlanArrivelDate" sortable="true" align="left" width="80" formatter="com.formatDate">计划到货日期</th>
+                    @*<th field="IsEnable"		sortable="true"	align="left"	width="80" editor="{type:'combobox',options:{}}" >是否可用</th>*@
+                    @*<th field="IsEnable" sortable="true" align="left" width="70" data-options="formatter:function(value,row){ return (value == 1) ? '是':'否';}" editor="{type:'combobox',
+        options:{data:[{value:1,text:'是'},{value:0,text:'否'}],panelWidth:100,panelHeight: 100,valueField: 'value',textField: 'text'}}">
+                    是否可用
+                </th>*@
+                    @*<th field="IsEnable"	hidden	sortable="true"	align="left"	width="80" editor="text" ></th>*@
+                </tr>
+            </thead>
+            <div id="gridtb0">
+                @*<a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-search',plain:true" data-bind="click:readonly()?null:grid0.addRowClick,linkbuttonDisable:readonly">新增</a>*@
+                <a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-edit',plain:true" data-bind="click:readonly()?null:grid0.onClickRow,linkbuttonDisable:readonly">编辑</a>
+                <a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-remove',plain:true" data-bind="click:readonly()?null:grid0.removeRowClick,linkbuttonDisable:readonly">删除</a>
+            </div>
+        </table>
+
+
+    </div>
+</div>

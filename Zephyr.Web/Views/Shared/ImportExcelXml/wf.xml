@@ -1,0 +1,57 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Root>
+  <Excel name="TakeStockDetail">
+    <tableName>WMS_BN_TakeStockDetail</tableName>
+    <ExcelTempletURL>\ExcelTemplet\盘点明细表导入模板.xls</ExcelTempletURL>
+    <FieldList>
+      <ExcelFields>
+        [BillCode]
+        ,[BatchCode]
+        ,[InventoryCode]
+        ,[InventoryName]
+        ,[WarehouseCode]
+        ,[WarehouseName]
+        ,[RealNum]
+
+      </ExcelFields>
+      <ConvertFields>
+      </ConvertFields>
+    </FieldList>
+  </Excel>
+  <Excel name="WMS_BN_ArrivalGoodsBill">
+    <tableName>WMS_BN_ArrivalGoodsBill</tableName>
+    <ExcelTempletURL>\ExcelTemplet\品质明细表.xlsx|到货单</ExcelTempletURL>
+    <FieldList>
+      <ExcelFields>
+        [SupplierNum]
+        ,[SupplierName]
+        ,[BoxCode]
+        ,[MateCode]
+        ,[MateName]
+        ,[MateNum]
+        ,[BatchCode]
+        ,[FurnaceCode]
+        ,[VersionCode]
+      </ExcelFields>
+      <ConvertFields>
+
+      </ConvertFields>
+    </FieldList>
+  </Excel>
+<Excel name="WorkWaste">
+    <tableName>WMS_BN_WorkWaste_Detail</tableName>
+    <FieldList>
+      <ExcelFields>
+        [MateCode]
+      ,[MateName]
+      ,[ConfirmNum]
+      ,[BatchCode]
+      ,[VersionCode]
+      ,[Remark]
+      </ExcelFields>
+      <ConvertFields>
+       
+      </ConvertFields>
+    </FieldList>
+  </Excel>
+</Root>

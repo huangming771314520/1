@@ -1,0 +1,1051 @@
+﻿@{
+    ViewBag.Title = "WMS_BN_BillDetail";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var typeid = HttpContext.Current.Request.Url.PathAndQuery.Substring(HttpContext.Current.Request.Url.PathAndQuery.LastIndexOf('=') + 1).ToString();
+    var btnName = "确认收货";
+    if (typeid == "2")
+    { btnName = "确认领料"; }
+    else if (typeid == "3")
+    { btnName = "确认退料"; }
+    else if (typeid == "4")
+    { btnName = "确认入库"; }
+    else if (typeid == "5")
+    { btnName = "确认出库"; }
+    else if (typeid == "6")
+    { btnName = "确认入库"; }
+    else if (typeid == "7")
+    { btnName = "确认出库"; }
+    else if (typeid == "8")
+    { btnName = "确认入库"; }
+    else if (typeid == "9")
+    { btnName = "确认出库"; }
+    else if (typeid == "10")
+    { btnName = "确认入库"; }
+
+    int user = ViewBag.user;
+    Zephyr.Models.sys_code uc = ViewBag.uc;
+
+}
+
+@section scripts{
+    <script src="/Content/js/viewModel/com.viewModel.edit.js"></script>
+    <script type="text/javascript">
+        using(['validatebox','combotree','numberspinner','combobox','lookup','datebox','datetimebox','combogrid'],easyuifix.datagrid_editor_extend);
+        using(['numberbox','datebox']);
+        var myself;
+
+        if (@user == 0) {
+            //window.location.href = "/mms/WMS_BN_BillMain/Index/1"
+            //com.openTab("下料结果明细", "/Mms/PRS_BlankingRecord/edit/" + 3);
+            com.openTab( '@uc.Text', "/Mms/WMS_BN_BillMain/Index/" + @typeid);
+        }
+        var viewModel = function(data){
+            debugger;
+            var self = this;
+            com.viewModel.edit.apply(self,arguments);
+            myself=self;
+            this.grid0.size={w:8,h:177};
+
+            this.SearchDialog = function () {
+                var gridRows = self.grid0.datagrid('getData').rows;
+                var setting = {
+                    type: this.type,
+                    targetField: this.targetField,
+                    sourceField: this.sourceField,
+                    settingArray: this.settingArray
+                }
+                //settingArray 0:width 1:height 2:xmlName
+                var target = parent.$('#CommonSearchDialog').length ? parent.$('#CommonSearchDialog') : parent.$('<div id="CommonSearchDialog"></div>').appendTo('body');
+                utils.clearIframe(target);
+                var opt;
+                opt = { title: '列表', width: setting.settingArray[0], height: setting.settingArray[1], modal: true, collapsible: false, minimizable: false, maximizable: true, closable: true };
+                opt.content = "<iframe src='/mms/home/CommonDialog2?xmlName=" + setting.settingArray[2] +"&parm=WarehouseCode:"+self.dataSource.WarehouseCode+ "' style='height:100%;width:100%;border:0;' frameborder='0'></iframe>";  //frameborder="0" for ie7
+                params = { xmlName: setting.settingArray[2] };
+                opt.paramater = params;
+                opt.onSelect = function (data) {
+                    self.pageData.form.WarehouseName()
+                    self.pageData.form.ContractCode(data[0].ContractCode);
+                    self.pageData.form.ProjectName(data[0].ProjectName);
+                    self.pageData.form.DepartmentID(data[0].DepartmentID)
+                    self.pageData.form.DepartmentName(data[0].DepartmentName)
+
+                    for (var i in data) {
+                        var flag=true;
+                        com.ajax({
+                            type: 'GET',
+                            url: self.urls.newkey,
+                            data: { type: 'grid0', key: self.pageData.scrollKeys.current() },
+                            cache:false,
+                            async:false,
+                            success: function (d) {
+                                var jsonstr=$.extend({},self.tabs[0].defaults,data[i],{ID:d,PBillCode:data[i].BillCode,MateNum:data[i].RequiredQuantity,ConfirmNum:data[i].RequiredQuantity,Unit:data[i].QuantityUnit});
+                                var flag=true;
+                                if(flag){
+                                    self.grid0.datagrid('appendRow', jsonstr);
+                                }
+                            }
+                        });
+                    }
+                };
+                target.window(opt);
+            }
+
+
+
+            this.SearchDialog1 = function () {
+                var gridRows = self.grid0.datagrid('getData').rows;
+                var setting = {
+                    type: this.type,
+                    targetField: this.targetField,
+                    sourceField: this.sourceField,
+                    settingArray: this.settingArray
+                }
+                //settingArray 0:width 1:height 2:xmlName
+                var target = parent.$('#CommonSearchDialog').length ? parent.$('#CommonSearchDialog') : parent.$('<div id="CommonSearchDialog"></div>').appendTo('body');
+                utils.clearIframe(target);
+                var opt;
+                opt = { title: '列表', width: setting.settingArray[0], height: setting.settingArray[1], modal: true, collapsible: false, minimizable: false, maximizable: true, closable: true };
+                opt.content = "<iframe src='/mms/home/CommonDialog2?xmlName=" + setting.settingArray[2] +"&parm=WarehouseCode:"+self.dataSource.WarehouseCode+ "' style='height:100%;width:100%;border:0;' frameborder='0'></iframe>";  //frameborder="0" for ie7
+                params = { xmlName: setting.settingArray[2] };
+                opt.paramater = params;
+                opt.onSelect = function (data) {
+                    self.pageData.form.WarehouseName(data[0].ContractCode)
+                    self.pageData.form.ContractCode(data[0].ContractCode);
+                    self.pageData.form.ProjectName(data[0].ProjectName);
+                    self.pageData.form.DepartmentID(data[0].DepartmentID)
+                    self.pageData.form.DepartmentName(data[0].DepartmentName)
+                    self.pageData.form.WarehouseCode(data[0].WarehouseID)
+                    //var warehousename=data[0].WarehouseName;
+                    self.pageData.form.WarehouseName(data[0].WarehouseName)
+                    self.pageData.form.SalesmanCode(data[0].SalesmanCode)
+                    self.pageData.form.Salesman(data[0].Salesman)
+                    self.pageData.form.SupplierCode(data[0].SupplierCode)
+                    self.pageData.form.SupplierName(data[0].SupplierName)
+                    //self.pageData.form.OrderBillCode(data[0].ProductPurchaseCode)
+                    //self.pageData.form.SupplierName(data[0].SupplierName)
+                    for (var i in data) {
+                        var flag=true;
+                        var totalPrice=data[i].QualifiedQuantity*data[i].UnitPrice;
+                        var newbillcode=self.pageData.form.BillCode()!=null?self.pageData.form.BillCode():"系统生成";
+                        com.ajax({
+                            type: 'GET',
+                            url: self.urls.newkey,
+                            data: { type: 'grid0', key: self.pageData.scrollKeys.current() },
+                            cache:false,
+                            async:false,
+                            success: function (d) {
+                                var jsonstr=$.extend({},self.tabs[0].defaults,data[i],{ID:d,PBillCode:data[i].BillCode,BillCode:newbillcode,MateNum:data[i].QualifiedQuantity,ConfirmNum:data[i].QualifiedQuantity,Unit:data[i].Unit,Specs:data[i].Model,BatchCode:data[i].BatchCode,UnitPrice:data[i].UnitPrice,BatchCode:data[i].BatchCode,TotalPrice:totalPrice,OrderBillCode:data[0].ProductPurchaseCode});
+                                var flag=true;
+                                if(flag){
+                                    self.grid0.datagrid('appendRow', jsonstr);
+                                }
+                            }
+                        });
+                    }
+                };
+                target.window(opt);
+            }
+
+            this. SearchDialog3= function () {
+                var gridRows = self.grid0.datagrid('getData').rows;
+                var setting = {
+                    type: this.type,
+                    targetField: this.targetField,
+                    sourceField: this.sourceField,
+                    settingArray: this.settingArray
+                }
+                //settingArray 0:width 1:height 2:xmlName
+                var target = parent.$('#CommonSearchDialog').length ? parent.$('#CommonSearchDialog') : parent.$('<div id="CommonSearchDialog"></div>').appendTo('body');
+                utils.clearIframe(target);
+                var opt;
+                opt = { title: '列表', width: setting.settingArray[0], height: setting.settingArray[1], modal: true, collapsible: false, minimizable: false, maximizable: true, closable: true };
+                opt.content = "<iframe src='/mms/home/CommonDialog2?xmlName=" + setting.settingArray[2] + "&parm=DepartmentID:" + self.dataSource.DepartmentID + "' style='height:100%;width:100%;border:0;' frameborder='0'></iframe>";  //frameborder="0" for ie7
+                params = { xmlName: setting.settingArray[2] };
+                opt.paramater = params;
+                opt.onSelect = function (data) {
+                    self.pageData.form.ContractCode(data[0].ContractCode);
+                    self.pageData.form.ProjectName(data[0].ProjectName);
+                    //self.pageData.form.WarehouseCode(data[0].WarehouseCode);
+                    //debugger;
+                    //self.pageData.form.WarehouseName(data[0].WarehouseName);
+                    com.ajax({
+                        type: 'GET',
+                        url: '/api/Mms/WMS_BN_BillDetail/GetIsExit?BillCode=' + data[0].BillCode,
+                        cache:false,
+                        async:false,
+                        success: function (d) {
+                            if (d > 0) {
+                                window.location.reload();
+                                debugger;
+                                //self.searchClick();
+                            }else
+                            {
+                                com.ajax({
+                                    type: 'GET',
+                                    url: '/api/Mms/WMS_BN_BillDetail/GetBillDetail?BillCode='+data[0].BillCode,
+                                    cache:false,
+                                    async:false,
+                                    success: function (data) {
+                                        for (var i = 0; i < data.length; i++) {
+                                            var jsonstr = new Object();
+                                            debugger;
+                                            //jsonstr.ID=id;
+                                            jsonstr.BillCode=self.pageData.form.BillCode()!=null?self.pageData.form.BillCode():"系统生成";
+                                            jsonstr.PBillCode=data[i].BillCode;
+                                            jsonstr.InventoryCode = data[i].InventoryCode;
+                                            jsonstr.BatchCode = data[i].BatchCode;
+                                            jsonstr.InventoryName=data[i].InventoryName;
+                                            jsonstr.Specs=data[i].Specs;
+                                            jsonstr.Unit=data[i].Unit;
+                                            jsonstr.Model=data[i].Model;
+                                            jsonstr.MateNum=data[i].MateNum;
+                                            jsonstr.ConfirmNum=data[i].ConfirmNum;
+                                            jsonstr.IsEnable = 1;
+                                            debugger
+                                            self.grid0.datagrid('appendRow', jsonstr);
+                                            
+
+
+                                        }
+                                        //debugger;
+                                        //self.saveClickC();
+                                    }
+                                });
+                            }
+                        }
+                    });
+
+                };
+                target.window(opt);
+            }
+
+            this. SearchDialog4= function () {
+                var gridRows = self.grid0.datagrid('getData').rows;
+                var setting = {
+                    type: this.type,
+                    targetField: this.targetField,
+                    sourceField: this.sourceField,
+                    settingArray: this.settingArray
+                }
+                //settingArray 0:width 1:height 2:xmlName
+                var target = parent.$('#CommonSearchDialog').length ? parent.$('#CommonSearchDialog') : parent.$('<div id="CommonSearchDialog"></div>').appendTo('body');
+                utils.clearIframe(target);
+                var opt;
+                opt = { title: '列表', width: setting.settingArray[0], height: setting.settingArray[1], modal: true, collapsible: false, minimizable: false, maximizable: true, closable: true };
+                opt.content = "<iframe src='/mms/home/CommonDialog2?xmlName=" + setting.settingArray[2] +"&parm=WarehouseCode:"+self.dataSource.WarehouseCode+ "' style='height:100%;width:100%;border:0;' frameborder='0'></iframe>";  //frameborder="0" for ie7
+                params = { xmlName: setting.settingArray[2] };
+                opt.paramater = params;
+                opt.onSelect = function (data) {
+                    /*
+                    ID,
+        ContractCode,
+        ProjectName,
+        WarehouseCode,
+        WarehouseName,
+                    */
+
+                    self.pageData.form.WarehouseName(data[0].ContractCode)
+                    self.pageData.form.ContractCode(data[0].ContractCode);
+                    self.pageData.form.ProjectName(data[0].ProjectName);
+                    self.pageData.form.WarehouseCode(data[0].WarehouseCode)
+                    com.ajax({
+                        type: 'GET',
+                        url: '/api/Mms/WMS_BN_BillDetail/GetIsExit?BillCode='+data[0].BillCode,
+                        cache:false,
+                        async:false,
+                        success: function (d) {
+                            if (d > 0) {
+                                window.location.reload();
+                                //self.searchClick();
+                            }else
+                            {
+                                com.ajax({
+                                    type: 'GET',
+                                    url: '/api/Mms/WMS_BN_BillDetail/GetBillDetail?BillCode='+data[0].BillCode,
+                                    cache:false,
+                                    async:false,
+                                    success: function (data) {
+                                        for (var i = 0; i < data.length; i++) {
+
+                                            var jsonstr = new Object();
+                                            debugger;
+                                            //jsonstr.ID=id;
+                                            jsonstr.BillCode=self.pageData.form.BillCode()!=null?self.pageData.form.BillCode():"系统生成";
+                                            jsonstr.PBillCode=data[i].BillCode;
+                                            jsonstr.InventoryCode=data[i].InventoryCode;
+                                            jsonstr.InventoryName=data[i].InventoryName;
+                                            jsonstr.Specs=data[i].Specs;
+                                            jsonstr.Unit=data[i].Unit;
+                                            jsonstr.Model=data[i].Model;
+                                            jsonstr.MateNum=data[i].MateNum;
+                                            jsonstr.ConfirmNum=data[i].ConfirmNum;
+                                            jsonstr.IsEnable=1;
+                                            self.grid0.datagrid('appendRow', jsonstr);
+                                        }
+                                    }
+                                });
+                            }
+                        }
+                    });
+
+                };
+                target.window(opt);
+            }
+
+            this. SearchDialog5= function () {
+                var gridRows = self.grid0.datagrid('getData').rows;
+                var setting = {
+                    type: this.type,
+                    targetField: this.targetField,
+                    sourceField: this.sourceField,
+                    settingArray: this.settingArray
+                }
+                //settingArray 0:width 1:height 2:xmlName
+                var target = parent.$('#CommonSearchDialog').length ? parent.$('#CommonSearchDialog') : parent.$('<div id="CommonSearchDialog"></div>').appendTo('body');
+                utils.clearIframe(target);
+                var opt;
+                opt = { title: '列表', width: setting.settingArray[0], height: setting.settingArray[1], modal: true, collapsible: false, minimizable: false, maximizable: true, closable: true };
+                opt.content = "<iframe src='/mms/home/CommonDialog2?xmlName=" + setting.settingArray[2] +"&parm=WarehouseCode:"+self.dataSource.WarehouseCode+ "' style='height:100%;width:100%;border:0;' frameborder='0'></iframe>";  //frameborder="0" for ie7
+                params = { xmlName: setting.settingArray[2] };
+                opt.paramater = params;
+                opt.onSelect = function (data) {
+                    /*
+                    ID,
+        ContractCode,
+        ProjectName,
+        WarehouseCode,
+        WarehouseName,
+                    */
+
+                    self.pageData.form.WarehouseName(data[0].ContractCode)
+                    self.pageData.form.ContractCode(data[0].ContractCode);
+                    self.pageData.form.ProjectName(data[0].ProjectName);
+                    self.pageData.form.WarehouseCode(data[0].WarehouseCode)
+                    com.ajax({
+                        type: 'GET',
+                        url: '/api/Mms/WMS_BN_BillDetail/GetIsExit?BillCode='+data[0].BillCode,
+                        cache:false,
+                        async:false,
+                        success: function (d) {
+                            if (d > 0) {
+                                window.location.reload();
+                                //self.searchClick();
+                            }else
+                            {
+                                com.ajax({
+                                    type: 'GET',
+                                    url: '/api/Mms/WMS_BN_BillDetail/GetBillDetail?BillCode='+data[0].BillCode,
+                                    cache:false,
+                                    async:false,
+                                    success: function (data) {
+                                        for (var i = 0; i < data.length; i++) {
+
+                                            var jsonstr = new Object();
+                                            debugger;
+                                            //jsonstr.ID=id;
+                                            jsonstr.BillCode=self.pageData.form.BillCode()!=null?self.pageData.form.BillCode():"系统生成";
+                                            jsonstr.PBillCode=data[i].BillCode;
+                                            jsonstr.InventoryCode=data[i].InventoryCode;
+                                            jsonstr.InventoryName=data[i].InventoryName;
+                                            jsonstr.Specs=data[i].Specs;
+                                            jsonstr.Unit=data[i].Unit;
+                                            jsonstr.Model=data[i].Model;
+                                            jsonstr.MateNum=data[i].MateNum;
+                                            jsonstr.ConfirmNum=data[i].ConfirmNum;
+                                            jsonstr.IsEnable=1;
+                                            self.grid0.datagrid('appendRow', jsonstr);
+                                        }
+                                    }
+                                });
+                            }
+                        }
+                    });
+
+                };
+                target.window(opt);
+            }
+
+            this.StorageClick=function(){
+                var post = {
+                    BillCode:self.dataSource.pageData.form.BillCode,
+                };
+                debugger;
+                com.ajax({
+                    type:'POST',
+                    url:self.urls.storageSave,
+                    data:JSON.stringify(post),
+                    success:function(d){
+                        com.message('success',d);
+                        window.location.reload();
+                    }
+                });
+            }
+            this.saveClickC = function () {
+                debugger;
+                //数据验证
+                var validMessage = self.fnIsPageValid();
+                if (validMessage) {
+                    com.message('warning', validMessage);
+                    return;
+                }
+
+                //取得数据
+                var post = self.fnIsPageChanged();
+                if (!post._changed) {
+                    com.message('success', '页面没有数据被修改！');
+                    return;
+                }
+                if(self.dataSource.pageData.form!=null && self.dataSource.pageData.form.ApproveState=="2"){
+                    com.message('success', '已提交的单据不能修改！');
+                    return;
+                }
+                var trs = $("#tt").prev().find('div.datagrid-body').find('tr');
+                if (trs.length==0)
+                {
+                    com.message('success', '没有明细数据！');
+                    return;
+                }
+                //if (trs.length>1) {
+
+                //        var InventoryCode=trs[0].cells[3].firstChild.innerHTML
+                //        var PBillCode=trs[0].cells[2].firstChild.innerHTML;
+
+                //        for (var t = 1; t <= trs.length-1; t++) {
+                //            if (trs[t].cells[3].firstChild.innerHTML == InventoryCode &&trs[t].cells[2].firstChild.innerHTML == PBillCode)
+                //            {
+                //                com.message('success', '物料和领料单重复！');
+                //                return;
+                //            }
+
+                //        }
+
+                //}
+                //数据提交
+                com.ajax({
+                    url: self.urls.edit,
+                    data: ko.toJSON(post),
+                    success: function (d) {
+                        com.message('success', self.resx.editSuccess);
+                        ko.mapping.fromJS(self.pageData.form, {}, data.dataSource.pageData.form);//更新旧值
+                        for (var i in self.tabs)
+                            if (self.tabs[i].type == self.tabConst.grid)
+                                self[self.tabConst.edit + i].accept();
+                            else if (self.tabs[i].type == self.tabConst.form)
+                                ko.mapping.fromJS(self.pageData[[self.tabConst.tab + i]], {}, data.dataSource.pageData[self.tabConst.tab + i]);
+                        window.location.reload();
+                    }
+                });
+            };
+        }
+        var data = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model));
+        ko.bindingViewModel(new viewModel(data));
+        myself.grid0.onAfterEdit = function(editors){
+            var row = $('#tt').datagrid('getData').rows[editors];
+            var tr = $(this).prev().find('div.datagrid-body').find('tr')[editors]
+            row.TotalPrice=row.ConfirmNum*row.UnitPrice;
+            tr.cells[11].firstChild.innerHTML=row.TotalPrice;
+        };
+
+    </script>
+}
+
+@*<div class="z-toolbar">
+        <a id="a_save" href="#" plain="true" class="easyui-linkbutton" icon="icon-save" data-bind="click:readonly()?null:saveClickC,linkbuttonDisable:readonly" title="保存">保存</a>
+        <a id="a_inStorage" href="#" plain="true" class="easyui-linkbutton" icon="icon-user-accept" data-bind="click:readonly()?null:StorageClick,linkbuttonDisable:readonly" title="确认收货">@btnName </a>
+    </div>
+
+    <div id="divother" style="width:100px; display:none;">
+        <div data-options="iconCls:'icon-add'">新增</div>
+        <div data-options="iconCls:'icon-cross'">删除</div>
+        <div data-options="iconCls:'icon-arrow_refresh'">刷新</div>
+    </div>*@
+
+
+
+<div class="z-toolbar">
+
+
+
+    <a id="a_save" href="#" plain="true" class="easyui-linkbutton" icon="icon-save" data-bind="click:readonly()?null:saveClickC,linkbuttonDisable:readonly" title="保存">保存</a>
+    <a id="a_inStorage" href="#" plain="true" class="easyui-linkbutton" icon="icon-user-accept" data-bind="click:readonly()?null:StorageClick,linkbuttonDisable:readonly" title="确认收货">@btnName </a>
+    @*<a id="a_save" href="#" plain="true" class="easyui-linkbutton" icon="icon-save" data-bind="click:readonly()?null:saveClickC,linkbuttonDisable:readonly" title="保存">保存</a>
+        <a id="a_inStorage" href="#" plain="true" class="easyui-linkbutton" icon="icon-user-accept" data-bind="click:readonly()?null:StorageClick,linkbuttonDisable:readonly" title="确认收货">@btnName </a>
+        <a id="a_undo" href="#" plain="true" class="easyui-linkbutton" icon="icon-undo" data-bind="click:readonly()?null:rejectClick,linkbuttonDisable:readonly" title="撤消">撤消</a>
+            <a id="a_audit" href="#" plain="true" class="easyui-linkbutton" icon="icon-user-accept" data-bind="click:auditClick,easyuiLinkbutton:approveButton" title="审核">审核</a>*@
+    @*<a id="a_printer" href="#" plain="true" class="easyui-linkbutton" icon="icon-printer" title="打印" data-bind="click:printClick">打印</a>*@
+
+</div>
+
+<div id="divother" style="width:100px; display:none;">
+    <div data-options="iconCls:'icon-add'">新增</div>
+    <div data-options="iconCls:'icon-cross'">删除</div>
+    <div data-options="iconCls:'icon-arrow_refresh'">刷新</div>
+</div>
+
+<div id="master" class="container_12" data-bind="inputwidth:0.9">
+    @{
+        if (typeid == "1")
+        {
+            <div class="grid_1 lbl">供应商编号</div>
+            <div class="grid_3 val">
+                <input type="text" data-bind="combogridValue:pageData.form.SupplierCode ,readOnly:true" class="z-txt easyui-combogrid" data-options="url:'/Commons/GetCommonSearchList',
+                             required:true,
+                                    queryParams : {
+                                         tableName:'[SYS_BN_Supplier]',
+                                             searchField:'[SupplierCode],[SupplierName]',
+                                             firstFightField:'[SupplierCode]',
+                                             CacheKey:'SYS_BN_Supplier',
+                                             CacheTime:'480',
+                                             connName:'Mms'
+                                    },
+                                    method: 'GET',
+                                    panelWidth:250,
+                                    fit:true,
+                                    delay: 1000,
+                                    mode: 'remote',
+                                    value: 'SupplierCode',
+                                    idField: 'SupplierCode',
+                                    textField: 'SupplierName',
+                                    columns:[[
+                                    { field: 'SupplierCode',title: '供应商编号',width: 100 },
+                                    { field: 'SupplierName',title:'供应商名称',width:150 }
+                                        ]],
+                                    onSelect: function (rowIndex, rowData) {
+                                    myself.pageData.form.SupplierName(rowData['SupplierName']);
+
+                                },
+                                keyHandler:{
+                                query:function(keyword) {
+                               var queryParams=$(this).combogrid('grid').datagrid('options').queryParams;
+                               queryParams.keyword=keyword;
+                               $(this).combogrid('grid').datagrid('options').queryParams=queryParams;
+                               $(this).combogrid('grid').datagrid('reload');
+                               }}" />
+            </div>
+            @*<div class="grid_1 lbl">仓库</div>
+
+                <div class="grid_3 val">
+                    <input type="text" id="WarehouseIDInput" data-bind="combogridValue:pageData.form.WarehouseCode ,readOnly:true" class="z-txt easyui-combogrid" data-options="url:'/Commons/GetCommonSearchList',
+                                    required:true,
+                                    queryParams : {
+                                         tableName:'[SYS_BN_Warehouse]',
+                                             searchField:'[WarehouseCode],[WarehouseName]',
+                                             firstFightField:'[WarehouseCode]',
+                                             CacheKey:'SYS_BN_Warehouse',
+                                             CacheTime:'480',
+                                             connName:'Mms'
+                                    },
+                                    method: 'GET',
+                                    panelWidth:250,
+                                    fit:true,
+                                    delay: 1000,
+                                    mode: 'remote',
+                                    value: 'WarehouseCode',
+                                    idField: 'WarehouseCode',
+                                    textField: 'WarehouseName',
+                                    columns:[[
+                                    { field: 'WarehouseCode',title: '仓库编码',width: 100 },
+                                    { field: 'WarehouseName',title:'仓库名称',width:150 }
+                                        ]],
+
+                                onSelect: function (rowIndex, rowData) {
+                                      myself.pageData.form.WarehouseName(rowData['WarehouseName']);
+
+                                    },
+
+                                keyHandler:{
+                                query:function(keyword) {
+                               var queryParams=$(this).combogrid('grid').datagrid('options').queryParams;
+                               queryParams.keyword=keyword;
+                               $(this).combogrid('grid').datagrid('options').queryParams=queryParams;
+                               $(this).combogrid('grid').datagrid('reload');
+                               }}" />
+                </div>*@
+
+
+            @*<input type="text" data-bind="Value:pageData.form.Salesman ,readOnly:readonly" class="z-txt" />*@
+            <div class="grid_1 lbl">采购员</div>
+            <div class="grid_2 val">
+                <input type="text" data-bind="combogridValue:pageData.form.Salesman ,readOnly:true" class="z-txt easyui-combogrid" data-options="url:'/Commons/GetCommonSearchList',
+                                required:true,
+                                queryParams : {
+                                     tableName:'[SYS_BN_User]',
+                                         searchField:'[UserCode],[UserName]',
+                                         firstFightField:'[UserCode]',
+                                         connName:'Mms'
+                                },
+                                method: 'GET',
+                                panelWidth:150,
+                                fit:true,
+                                delay: 1000,
+                                mode: 'remote',
+                                value: 'UserName',
+                                idField: 'UserName',
+                                textField: 'UserName',
+                                columns:[[
+                                { field: 'UserCode',title: '人员编码',width: 100 ,hidden:true},
+                                { field: 'UserName',title:'用户姓名',width:150 }
+                                    ]],
+
+                            onSelect: function (rowIndex, rowData) {
+                                  myself.pageData.form.SalesmanCode(rowData['UserCode']);
+                                },
+                            keyHandler:{
+                            query:function(keyword) {
+                           var queryParams=$(this).combogrid('grid').datagrid('options').queryParams;
+                           queryParams.keyword=keyword;
+                           $(this).combogrid('grid').datagrid('options').queryParams=queryParams;
+                           $(this).combogrid('grid').datagrid('reload');
+                           }}" />
+            </div>
+
+            <div class="clear"></div>
+        }
+
+
+        @*<div class="grid_1 lbl">审批状态</div>
+            <div class="grid_3 val"><input type="text" data-bind="value:pageData.form.ApproveState ,readOnly:readonly" class="z-txt " /></div>
+            <div class="grid_1 lbl">审批人</div>
+            <div class="grid_3 val"><input type="text" data-bind="value:pageData.form.ApprovePerson ,readOnly:readonly" class="z-txt " /></div>
+
+            <div class="clear"></div>
+
+            <div class="grid_1 lbl">审批时间</div>
+            <div class="grid_3 val"><input type="text" data-bind="dateboxValue:pageData.form.ApproveDate ,dateboxReadOnly : readonly" class="z-txt easyui-datebox" /></div>
+            <div class="grid_1 lbl">审批备注</div>
+            <div class="grid_3 val"><input type="text" data-bind="value:pageData.form.ApproveRemark ,readOnly:readonly" class="z-txt " /></div>*@
+
+
+        <div class="clear"></div>
+    }
+    <div class="grid_1 lbl">单据编号</div>
+    <div class="grid_3 val"><input type="text" data-bind="value:pageData.form.BillCode ,readOnly:true" class="z-txt " /></div>
+    @*<div class="grid_1 lbl">单据类型</div>
+        <div class="grid_2 val">
+            <input type="text" data-bind="Value:pageData.form.BillType,readOnly:true" data-options="url:'/Commons/GetComboboxList?CodeType=BillType',valueField:'value',textField:'text'" class="z-txt" />
+        </div>*@
+
+    <div class="grid_1 lbl">备注</div>
+    <div class="grid_3 val"><input type="text" data-bind="value:pageData.form.Remark ,readOnly:true" class="z-txt " /></div>
+    <div class="clear"></div>
+
+    @*<div class="grid_1 lbl">工程项目</div>
+        <div class="grid_3 val">
+            <input type="text" data-bind="Value:pageData.form.ProjectName,readOnly:true" class="z-txt" />
+        </div>*@
+
+    <div class="grid_1 lbl">工程项目</div>
+    <div class="grid_3 val"><input type="text" data-bind="value:pageData.form.ProjectName ,readOnly:true" class="z-txt " /></div>
+    @*<div class="grid_3 val">
+            <input type="text" data-bind="combogridValue:pageData.form.ProjectName" class="z-txt easyui-combogrid" data-options="url:'/Commons/GetCommonSearchList',
+                    queryParams : {
+                         tableName:'[PMS_BN_Project]',
+                             searchField:'[ContractCode],[ProjectName]',
+                             firstFightField:'[ProjectName]',
+                             connName:'Mms'
+                    },
+                    method: 'GET',
+                    panelWidth:250,
+                    fit:true,
+                    delay: 1000,
+                    mode: 'remote',
+                    value: 'ContractCode',
+                    idField: 'ProjectName',
+                    textField: 'ProjectName',
+                    columns:[[
+                    { field: 'ContractCode',title: '合同编号',width: 150 },
+                    { field: 'ProjectName',title:'项目名称',width:150 }
+                        ]],
+                     onSelect: function (rowIndex, rowData) {
+                     myself.pageData.form.ContractCode(rowData['ContractCode']);
+                   },
+                keyHandler:{
+                query:function(keyword) {
+               var queryParams=$(this).combogrid('grid').datagrid('options').queryParams;
+               queryParams.keyword=keyword;
+               $(this).combogrid('grid').datagrid('options').queryParams=queryParams;
+               $(this).combogrid('grid').datagrid('reload');
+               }}" />
+        </div>*@
+
+    <div class="grid_1 lbl">仓库</div>
+    <div class="grid_3 val"><input type="text" data-bind="value:pageData.form.WarehouseName ,readOnly:true" class="z-txt " /></div>
+    <div class="clear"></div>
+
+
+
+    @{
+
+        if (typeid != "1")
+        {
+            if (typeid == "3")
+            {
+                <div class="grid_1 lbl">责任部门</div>
+                <div class="grid_3 val">
+                    <input type="text" data-bind="Value:pageData.form.DepartmentName" class="z-txt easyui-combogrid" data-options="url:'/Commons/GetCommonSearchList',
+                queryParams : {
+                     tableName:'[SYS_BN_Department]',
+                         searchField:'[ID],[DepartmentName]',
+                         CacheTime:'480',
+                         connName:'Mms'
+                },
+                method: 'GET',
+                panelWidth:150,
+                fit:true,
+                delay: 1000,
+                mode: 'remote',
+                value: 'ID',
+                idField: 'DepartmentName',
+                textField: 'DepartmentName',
+                columns:[[
+                { field: 'ID',title: '部门编号',width: 100 ,hidden:true},
+                { field: 'DepartmentName',title:'部门名称',width:150 }
+                    ]],
+                onSelect: function (rowIndex, rowData) {
+                 myself.pageData.form.DepartmentID(rowData['ID']);
+                myself.pageData.form.DepartmentName(rowData['DepartmentName']);
+               },
+            keyHandler:{
+            query:function(keyword) {
+           var queryParams=$(this).combogrid('grid').datagrid('options').queryParams;
+           queryParams.keyword=keyword;
+           $(this).combogrid('grid').datagrid('options').queryParams=queryParams;
+           $(this).combogrid('grid').datagrid('reload');
+           }}" />
+
+                </div>
+            }
+            @*else
+                {
+                    <div class="grid_1 lbl">部门</div>
+                }*@
+
+
+
+        }
+
+    }
+</div>
+
+<div class="easyui-tabs">
+    <div title="明细">
+        <table data-bind="datagrid:grid0" id="tt">
+            <thead>
+                <tr>
+                    <th field="ID" hidden="true" sortable="true" align="left" width="80" editor="text">出入库明细表ID</th>
+                    <th field="BillCode" sortable="true" align="left" width="200">单号</th>
+                    @if (typeid == "1")
+                    {
+                        <th field="OrderBillCode" sortable="true" align="left" width="80">请购单号</th>
+                    }
+                    else
+                    {
+                        <th field="OrderBillCode" sortable="true" align="left" hidden width="80">请购单号</th>
+                    }
+                    @if (typeid == "6" || typeid == "7")
+                    {
+                        <th field="PBillCode" sortable="true" align="left" hidden width="120">上级单据号</th>
+                    }
+                    else
+                    {
+                        <th field="PBillCode" sortable="true" align="left" width="120">上级单据号</th>
+                    }
+
+                    @*<th field="InventoryCode"		sortable="true"	align="left"	width="80" editor="text" >存货编码</th>*@
+                    @if (typeid != "2" && typeid != "5" && typeid != "7")
+                    {
+                        <th field="InventoryCode" sortable="true" align="left" width="120" hidden editor="text">存货编码</th>
+
+                        <th field="InventoryName" sortable="true" align="left" width="100" editor="{type:'combogrid',options:{
+                        url:'/Commons/GetCommonSearchLists',
+                        required:true,
+                        queryParams : {
+                        tableName:'[SYS_Part]',
+                         searchField:'[InventoryCode],[InventoryName],[Model],[QuantityUnit]',
+                         firstFightField:'[InventoryName]',
+                            whereSql:'IsEnable=1',
+                                     connName:'Mms'
+                            },
+                            method: 'GET',
+                            panelWidth:400,
+                            fit:true,
+                            delay: 600,
+                            mode: 'remote',
+                            value: 'InventoryName',
+                            idField: 'InventoryName',
+                            textField: 'InventoryName',
+                            columns:[[
+                            { field: 'InventoryCode',title: '物料编码',width: 200 },
+                            { field: 'InventoryName',title: '物料名称',width: 200 },
+                            { field: 'Model',title: '型号',width: 200 },
+                            { field: 'QuantityUnit',title: '单位',width: 200 },
+                                ]],
+                    onSelect: function (rowIndex, rowData) {
+                           var index =  $('#tt').datagrid('getRowIndex',$('#tt').datagrid('getSelected'));
+                         $('#tt').datagrid('getEditor',{index:index,field:'InventoryName'}).target.val(rowData['InventoryName']);
+                         $('#tt').datagrid('getEditor',{index:index,field:'InventoryCode'}).target.val(rowData['InventoryCode']);
+                            console.log(rowData['InventoryCode'])
+                            debugger;
+                         $('#tt').datagrid('getEditor',{index:index,field:'Specs'}).target.val(rowData['Model']);
+                         $('#tt').datagrid('getEditor',{index:index,field:'Unit'}).target.val(rowData['QuantityUnit']);
+
+                },
+                 keyHandler:{
+                   query:function(keyword) {
+                   var queryParams=$(this).combogrid('grid').datagrid('options').queryParams;
+                   queryParams.keyword=keyword;
+                   $(this).combogrid('grid').datagrid('options').queryParams=queryParams;
+                   $(this).combogrid('grid').datagrid('reload');
+                  $(this).combogrid('setValue', keyword);
+                }}
+                }}">存货名称</th>
+                        @*editor="{type:'combogrid',options:{
+                                    url:'/Commons/GetCommonSearchList',
+                                    queryParams : {
+                                    tableName:'[WMS_BN_RealStock]',
+                                     searchField:'[InventoryCode],[InventoryName],[RealStock],[Model],[Unit]',
+                                     firstFightField:'[InventoryName]',
+                                     whereSql:'WarehouseCode=\''+myself.pageData.form.WarehouseCode()+'\'',
+                                                 connName:'Mms'
+                                        },
+                                        method: 'GET',
+                                        panelWidth:600,
+                                        fit:true,
+                                        delay: 1000,
+                                        mode: 'remote',
+                                        value: 'InventoryName',
+                                        idField: 'InventoryName',
+                                        textField: 'InventoryName',
+                                        columns:[[
+                                        { field: 'InventoryCode',title: '物料编码',width: 150 },
+                                        { field: 'InventoryName',title: '物料名称',width: 150 },
+                                        { field: 'Model',title: '型号规格',width: 150 },
+                                        { field: 'Unit',title: '单位',width: 150 },
+                                        { field: 'RealStock',title: '可用库存',width: 150 }
+                                            ]],
+                                onSelect: function (rowIndex, rowData) {
+                                       var index =  $('#tt').datagrid('getRowIndex',$('#tt').datagrid('getSelected'));
+                                       $('#tt').datagrid('getEditor',{index:index,field:'InventoryName'}).target.val(rowData['InventoryName']);
+                                     $('#tt').datagrid('getEditor',{index:index,field:'InventoryCode'}).target.val(rowData['InventoryCode']);
+                                     $('#tt').datagrid('getEditor',{index:index,field:'Unit'}).target.val(rowData['QuantityUnit']);
+                                     $('#tt').datagrid('getEditor',{index:index,field:'Specs'}).target.val(rowData['Model']);
+                            },
+                             keyHandler:{
+                               query:function(keyword) {
+                               var queryParams=$(this).combogrid('grid').datagrid('options').queryParams;
+                               queryParams.keyword=keyword;
+                               $(this).combogrid('grid').datagrid('options').queryParams=queryParams;
+                               $(this).combogrid('grid').datagrid('reload');
+                              $(this).combogrid('setValue', keyword);
+                            }}
+                            }}">物料名称</th>*@
+                    }
+                    else
+                    {
+                        <th field="InventoryCode" sortable="true" align="left" width="120" editor="text">存货编码</th>
+
+                        <th field="InventoryName" sortable="true" align="left" width="100" editor="{type:'combogrid',options:{
+                                url:'/Commons/GetCommonSearchList',
+                                required:true,
+                                queryParams : {
+                                tableName:'[WMS_BN_RealStock]',
+                                 searchField:'[InventoryCode],[InventoryName],[Unit],[Model],[BatchCode],[RealStock]',
+                                 firstFightField:'[InventoryCode]',
+                                 whereSql:'WarehouseCode=\''+myself.pageData.form.WarehouseCode()+'\'',
+                                             connName:'Mms'
+                                    },
+                                    method: 'GET',
+                                    panelWidth:750,
+                                    fit:true,
+                                    delay: 1000,
+                                    mode: 'remote',
+                                    value: 'InventoryCode',
+                                    idField: 'InventoryName',
+                                    textField: 'InventoryName',
+                                    columns:[[
+                                    { field: 'InventoryCode',title: '物料编码',width: 150 },
+                                    { field: 'InventoryName',title: '物料名称',width: 150 },
+                                    { field: 'Model',title: '型号规格',width: 150 },
+                                    { field: 'RealStock',title: '可用库存',width: 100 },
+                                    { field: 'BatchCode',title: '批次号',width: 100 },
+                                    { field: 'Unit',title: '单位',width: 100 }
+                                        ]],
+                            onSelect: function (rowIndex, rowData) {
+                                   var index =  $('#tt').datagrid('getRowIndex',$('#tt').datagrid('getSelected'));
+                                   $('#tt').datagrid('getEditor',{index:index,field:'InventoryName'}).target.val(rowData['InventoryName']);
+                                 $('#tt').datagrid('getEditor',{index:index,field:'InventoryCode'}).target.val(rowData['InventoryCode']);
+                                 $('#tt').datagrid('getEditor',{index:index,field:'Unit'}).target.val(rowData['Unit']);
+                                 $('#tt').datagrid('getEditor',{index:index,field:'Specs'}).target.val(rowData['Model']);
+                                 $('#tt').datagrid('getEditor',{index:index,field:'BatchCode'}).target.val(rowData['BatchCode']);
+                        },
+                         keyHandler:{
+                           query:function(keyword) {
+                           var queryParams=$(this).combogrid('grid').datagrid('options').queryParams;
+                           queryParams.keyword=keyword;
+                           $(this).combogrid('grid').datagrid('options').queryParams=queryParams;
+                           $(this).combogrid('grid').datagrid('reload');
+                          $(this).combogrid('setValue', keyword);
+                        }}
+                        }}">物料名称</th>
+                    }
+
+                    <th field="Specs" sortable="true" align="left" width="80" editor="text">型号规格</th>
+                    <th field="Unit" sortable="true" align="left" width="80"  editor="text">单位</th>
+                    <th field="MateNum" sortable="true" align="left" width="80" editor="text">物料数量</th>
+                    <th field="ConfirmNum" sortable="true" align="left" width="80" editor="text">确认数量</th>
+                    <th field="UnitPrice" sortable="true" align="left" width="80" editor="{type: 'numberbox',options:{min: 0}}">单价</th>
+                    <th field="TotalPrice" sortable="true" align="left" width="80" editor="text">总金额</th>
+                    @*<th field="PackageCode" sortable="true" align="left" width="80" editor="text">箱号</th>*@
+                    <th field="BatchCode" sortable="true" align="left" width="80" editor="text">批次号（质检批号）</th>
+                    @if (typeid == "3")
+                    {
+                        @*<th field="AccountabilityCode" sortable="true" align="left" width="80" editor="{type:'combobox',options:{}}">责任单位（工废料废使用）</th>*@
+                        <th field="AccountabilityCode" sortable="true" align="left" width="100" editor="{type:'combogrid',options:{
+                        url:'/Commons/GetCommonSearchList',
+                        required:true,
+                        queryParams : {
+                        tableName:'[SYS_BN_Department]',
+                         searchField:'[ID],[DepartmentName]',
+                         firstFightField:'[DepartmentName]',
+
+                                     CacheKey:'SYS_BN_Department',
+                                     CacheTime:'480',
+                                     connName:'Mms'
+                            },
+                            method: 'GET',
+                            panelWidth:400,
+                            fit:true,
+                            delay: 1000,
+                            mode: 'remote',
+                            value: 'ID',
+                            idField: 'ID',
+                            textField: 'DepartmentName',
+                            columns:[[
+                            { field: 'ID',title: '部门ID',width: 200 },
+                            { field: 'DepartmentName',title: '部门名称',width: 200 }
+                                ]],
+                    onSelect: function (rowIndex, rowData) {
+                           var index =  $('#tt').datagrid('getRowIndex',$('#tt').datagrid('getSelected'));
+                           $('#tt').datagrid('getEditor',{index:index,field:'AccountabilityCode'}).target.val(rowData['DepartmentID']);
+
+                },
+
+                 keyHandler:{
+                   query:function(keyword) {
+                   var queryParams=$(this).combogrid('grid').datagrid('options').queryParams;
+                   queryParams.keyword=keyword;
+                   $(this).combogrid('grid').datagrid('options').queryParams=queryParams;
+                   $(this).combogrid('grid').datagrid('reload');
+                  $(this).combogrid('setValue', keyword);
+                }}
+                }}">部门</th>
+
+                    }
+
+                    @if (typeid == "5")
+                    {
+                        <th field="PackageCode" sortable="true" align="left" width="120" editor="text">包装箱号（产成品出库时使用）</th>
+                    }
+
+                    <th field="Remark" sortable="true" align="left" width="80" editor="text">备注信息</th>
+                    <th field="CreatePerson" hidden="true" sortable="true" align="left" width="80" editor="text">创建人</th>
+                    <th field="CreateTime" hidden="true" sortable="true" align="left" width="80" editor="text">创建时间</th>
+                    <th field="ModifyPerson" hidden="true" sortable="true" align="left" width="80" editor="text">修改人</th>
+                    <th field="ModifyTime" hidden="true" sortable="true" align="left" width="80" editor="text">修改时间</th>
+                    <th field="action" sortable="true" align="left" width="60" data-options="formatter:function(value,row){return op(row);}">操作</th>
+                    <th field="action2" sortable="true" align="left" width="60" data-options="formatter:function(value,row){return dowm(row);}">操作</th>
+                </tr>
+            </thead>
+
+            <div id="gridtb0">
+                <a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-add',plain:true" data-bind="click:readonly()?null:grid0.addRowClick,linkbuttonDisable:readonly">新增</a>
+                <a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-edit',plain:true" data-bind="click:readonly()?null:grid0.onClickRow,linkbuttonDisable:readonly">编辑</a>
+                @*<a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-remove',plain:true" data-bind="click:readonly()?null:grid0.removeRowClick,linkbuttonDisable:readonly">删除</a>*@
+
+                @*@if (typeid == "1")
+                {
+                    <a id="a_add" href="#" class="easyui-linkbutton" data-options="iconCls:'icon-search',plain:true" data-bind="event: { click: function(data, event) {SearchDialog1.call({type:'form',targetField:'Name',sourceField:'Name','settingArray':['600','400','ChooseDHD']})}}">选择到货单据</a>
+                }
+                else if (typeid == "2")
+                {
+                    <a id="a_add" href="#" class="easyui-linkbutton" data-options="iconCls:'icon-search',plain:true" data-bind="event: { click: function(data, event) {SearchDialog3.call({type:'form',targetField:'Name',sourceField:'Name','settingArray':['600','400','ChoosePicking']})}}">选择领料单据</a>
+                }*@
+                @if (typeid == "4" || typeid == "6")
+                {
+                    <a id="a_add" href="#" class="easyui-linkbutton" data-options="iconCls:'icon-search',plain:true">选择入库单</a>
+                }
+                else if (typeid == "5" || typeid == "7")
+                {
+                    <a id="a_add" href="#" class="easyui-linkbutton" data-options="iconCls:'icon-search',plain:true">选择出库单</a>
+                }
+                else if (typeid == "8")
+                {
+                    <a id="a_add" href="#" class="easyui-linkbutton" data-options="iconCls:'icon-search',plain:true" data-bind="event: { click: function(data, event) {SearchDialog4.call({type:'form',targetField:'Name',sourceField:'Name','settingArray':['600','400','ChooseZXRK']})}}">选择转序入库单</a>
+                }
+                else if (typeid == "9")
+                {
+                    <a id="a_add" href="#" class="easyui-linkbutton" data-options="iconCls:'icon-search',plain:true" data-bind="event: { click: function(data, event) {SearchDialog5.call({type:'form',targetField:'Name',sourceField:'Name','settingArray':['600','400','ChooseZXCK']})}}">选择转序出库单</a>
+                }
+                else if (typeid == "10")
+                {
+                    <a id="a_add" href="#" class="easyui-linkbutton" data-options="iconCls:'icon-search',plain:true" data-bind="event: { click: function(data, event) {SearchDialog3.call({type:'form',targetField:'Name',sourceField:'Name','settingArray':['600','400','ChooseCJLL']})}}">选择领料出库单</a>
+                }
+
+
+            </div>
+        </table>
+
+
+    </div>
+</div>
+<script>
+    function RndNum(n) {
+        var rnd = "";
+        for (var i = 0; i < n; i++)
+            rnd += Math.floor(Math.random() * 10);
+        return rnd;
+    }
+    Date.prototype.Format = function (fmt) { //author: meizz
+        var o = {
+            "M+": this.getMonth() + 1,                 //月份
+            "d+": this.getDate(),                    //日
+            "h+": this.getHours(),                   //小时
+            "m+": this.getMinutes(),                 //分
+            "s+": this.getSeconds(),                 //秒
+            "q+": Math.floor((this.getMonth() + 3) / 3), //季度
+            "S": this.getMilliseconds()             //毫秒
+        };
+        if (/(y+)/.test(fmt))
+            fmt = fmt.replace(RegExp.$1, (this.getFullYear() + "").substr(4 - RegExp.$1.length));
+        for (var k in o)
+            if (new RegExp("(" + k + ")").test(fmt))
+                fmt = fmt.replace(RegExp.$1, (RegExp.$1.length == 1) ? (o[k]) : (("00" + o[k]).substr(("" + o[k]).length)));
+        return fmt;
+    }
+    function dowm(row) {
+        if (row.DocName != null) {
+            var html = "<a href='/mms/home/FileDownload2?id=" + row['ID'] + "&docName=" + row['DocName'] + "&path=" + row['FileAddress'] + "'>下载文件</a>"
+            return html;
+        }
+
+    }
+    function op(row) {
+        if (row['ID'] != "") {
+            var html = "<span param='" + row['ID'] + "' onclick='action(this);'>上传文件</span>";
+            return html;
+        }
+
+    }
+    function action(obj) {
+        SearchUpload($(obj).attr('param'));
+    };
+    function SearchUpload(id) {
+        var target = parent.$('#CommonSearchDialog').length ? parent.$('#CommonSearchDialog') : parent.$('<div id="CommonSearchDialog"></div>').appendTo('body');
+        utils.clearIframe(target);
+        var opt;
+        opt = { title: '列表', width: 550, height: 480, modal: true, collapsible: false, minimizable: false, maximizable: true, closable: true };
+        opt.content = "<iframe src='/mms/home/UploadDialog?id=" + id + "&newFileName=" + new Date().Format("yyyyMMddhhmmss") + RndNum(5) + "&xmlName=WMS_BN_BillDetail" + "' style='height:100%;width:100%;border:0;' frameborder='0'></iframe>";  //frameborder="0" for ie7
+
+        target.window(opt);
+    }
+</script>

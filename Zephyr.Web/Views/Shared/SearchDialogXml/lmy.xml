@@ -1,0 +1,375 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Root>
+  <searchDialog name='test'>
+    <!--配置datagrid的数据绑定以及查询功能-->
+    <settings defaultOrderBy='CreateTime desc'>
+      <module>Mms</module>
+      <select>
+        [Name]
+        ,[Sex]
+        ,[IdCard]
+        ,[PhoneNumber]
+        ,[HomeAddress]
+        ,[Email]
+        ,[QQ]
+        ,[CreateTime]
+      </select>
+      <from>
+        [test]
+      </from>
+      <where defaultForAll='true' defaultCp='equal' defaultIgnoreEmpty='true' >
+        <field name='Sex' cp='equal'></field>
+        <field name='Name' cp='like'></field>
+        <field name='IdCard' cp='like'></field>
+        <field name='PhoneNumber' cp='like'></field>
+        <field name='CreateTime' cp='daterange'></field>
+      </where>
+    </settings>
+    <!--配置datagrid的列属性-->
+    <ColumnList>
+      <column title='主键ID' field='Object_ID' align='left' sortable='true' width='100' checkbox='true'></column>
+      <column title='姓名' field='Name' align='left' sortable='true' width='100' searchType='text'></column>
+      <column title='性别' field='Sex' align='left' sortable='true' width='80' searchType='select' formatter='utils.fnValueToText([{value:"1",text:"男"},{value:"2",text:"女"}])'>
+        <!--搜索操作栏 combobox下拉框 的数据绑定 1.single：单表绑定 2.dictionary：字典表绑定 3.fix：固定list集合绑定-->
+        <!--<searchBinding type='single' connName='Mms' tableName='testType' selectField='Code value,Name text' whereSql='Code in(1,2)'></searchBinding>-->
+        <searchBinding type='dictionary'>SexType</searchBinding>
+        <!--<searchBinding type='fix'>
+          <item value='1'>男</item>
+          <item value='2'>女</item>
+        </searchBinding>-->
+      </column>
+      <column title='身份证' field='IdCard' align='left' sortable='true' width='150' ></column>
+      <column title='手机号' field='PhoneNumber' align='left' sortable='true' width='120' ></column>
+      <column title='创建时间' field='CreateTime' align='left' sortable='true' width='120' searchType='daterange' formatter='com.formatDate'></column>
+    </ColumnList>
+  </searchDialog>
+
+  <searchDialog name='test2'>
+    <!--配置datagrid的数据绑定以及查询功能-->
+    <settings defaultOrderBy='Name desc'>
+      <module>Mms</module>
+      <select>
+        Name,
+        Code
+      </select>
+      <from>
+        testType
+      </from>
+      <where defaultForAll='true' defaultCp='equal' defaultIgnoreEmpty='true' >
+        <field name='Name' cp='like'></field>
+        <field name='Code' cp='like'></field>
+      </where>
+    </settings>
+    <!--配置datagrid的列属性-->
+    <ColumnList>
+      <column title='Name' field='Name' align='left' sortable='true' width='100' searchType='text'></column>
+      <column title='Code' field='Code' align='left' sortable='true' width='120' searchType='text'></column>
+    </ColumnList>
+  </searchDialog>
+
+
+  <searchDialog name='sys_user'>
+    <!--配置datagrid的数据绑定以及查询功能-->
+    <settings defaultOrderBy='temp.CreateDate desc'>
+      <module>Sys</module>
+      <select>*</select>
+      <from>
+        (select a.UserCode,a.UserName,a.CreateDate,a.CreatePerson,c.OrganizeCode,c.OrganizeName from sys_user a left join sys_userOrganizeMap b
+        on a.UserCode=b.UserCode left join sys_organize c
+        on b.OrganizeCode=c.OrganizeCode) as temp
+      </from>
+      <where defaultForAll='true' defaultCp='equal' defaultIgnoreEmpty='true' >
+        <field name='temp.UserCode' cp='like'></field>
+        <field name='temp.UserName' cp='like'></field>
+        <field name='temp.OrganizeName' cp='like'></field>
+        <field name='temp.CreatePerson' cp='like'></field>
+        <field name='temp.CreateDate' cp='daterange'></field>
+      </where>
+    </settings>
+    <!--配置datagrid的列属性-->
+    <ColumnList>
+      <column title='主键ID' field='ck' align='left' sortable='true' width='100' checkbox='true'></column>
+      <column title='账号' field='UserCode' align='left' sortable='true' width='100' searchType='text'></column>
+      <column title='姓名' field='UserName' align='left' sortable='true' width='100' searchType='text'></column>
+      <column title='部门编号' field='OrganizeCode' align='left' sortable='true' width='100' searchType='text'></column>
+      <column title='部门' field='OrganizeName' align='left' sortable='true' width='100' searchType='text'></column>
+      <column title='创建人' field='CreatePerson' align='left' sortable='true' width='80' searchType='text'></column>
+      
+      <column title='创建时间' field='CreateDate' align='left' sortable='true' width='120' searchType='daterange' formatter='com.formatDate'></column>
+    </ColumnList>
+  </searchDialog>
+
+  <searchDialog name='EQP_BD_Material'>
+    <!--配置datagrid的数据绑定以及查询功能-->
+    <settings defaultOrderBy='temp.CreateTime desc'>
+      <module>Mms</module>
+      <select>*</select>
+      <from>
+        (select MaterialNo,MaterialName,BarCode,Model,Specifications,CreateTime from EQP_BD_Material where MaterialType=1) as temp
+      </from>
+      <where defaultForAll='true' defaultCp='equal' defaultIgnoreEmpty='true' >
+        <field name='temp.MaterialNo' cp='like'></field>
+        <field name='temp.MaterialName' cp='like'></field>
+        <field name='temp.BarCode' cp='like'></field>
+        <field name='temp.Model' cp='like'></field>
+        <field name='temp.Specifications' cp='like'></field>
+        <field name='temp.CreateTime' cp='daterange'></field>
+      </where>
+    </settings>
+    <!--配置datagrid的列属性-->
+    <ColumnList>
+      <column title='设备编号' field='MaterialNo' align='left' sortable='true' width='100' searchType='text'></column>
+      <column title='设备名称' field='MaterialName' align='left' sortable='true' width='100' searchType='text'></column>
+      <column title='条形码' field='BarCode' align='left' sortable='true' width='100' searchType='text'></column>
+      <column title='型号' field='Model' align='left' sortable='true' width='100' searchType='text'></column>
+      <column title='规格' field='Specifications' align='left' sortable='true' width='100' searchType='text'></column>
+      <column title='创建时间' field='CreateTime' align='left' sortable='true' width='120' searchType='daterange' formatter='com.formatDate'></column>
+    </ColumnList>
+  </searchDialog>
+
+  <searchDialog name='BD_Material_Borrow'>
+    <!--配置datagrid的数据绑定以及查询功能-->
+    <settings defaultOrderBy='CreateTime desc'>
+      <module>Mms</module>
+      <select>*</select>
+      <from>(select * from [EQP_BD_Material] where MaterialStatue=1) as temp</from>
+      <where defaultForAll='true' defaultCp='equal' defaultIgnoreEmpty='true' >
+        <field name='temp.MaterialNo' cp='like'></field>
+        <field name='temp.MaterialName' cp='like'></field>
+        <field name='temp.BarCode' cp='like'></field>
+        <field name='temp.Model' cp='like'></field>
+        <field name='temp.Specifications' cp='like'></field>
+        <field name='temp.CreateTime' cp='daterange'></field>
+      </where>
+    </settings>
+    <!--配置datagrid的列属性-->
+    <ColumnList>
+      <column title='主键ID' field='ck' align='left' sortable='true' width='100' checkbox='true'></column>
+      <column title='设备编号' field='MaterialNo' align='left' sortable='true' width='100' searchType='text'></column>
+      <column title='设备名称' field='MaterialName' align='left' sortable='true' width='100' searchType='text'></column>
+      <column title='条形码' field='BarCode' align='left' sortable='true' width='100' searchType='text'></column>
+      <column title='型号' field='Model' align='left' sortable='true' width='100' searchType='text'></column>
+      <column title='规格' field='Specifications' align='left' sortable='true' width='100' searchType='text'></column>
+      <column title='录入日期' field='CreateTime' align='left' sortable='true' width='120' searchType='daterange' formatter='com.formatDate'></column>
+      <column title='设备分类' field='TypeNo' align='left' sortable='true' width='120' formatter='gridFormat' searchType='select'>
+        <searchBinding type='tree'><![CDATA[data-options="url:'/Commons/GetCommonComboTreeList?tableName=EQP_BD_MaterialType&IdField=TypeNo&TextField=TypeName&ParentIdField=STypeNo',method: 'GET',panelWidth:300,panelHeight: 300,valueField: 'id',textField: 'text'"]]></searchBinding>
+        <gridFormat><![CDATA[data-options="formatter:function(value,row){return com.formatComboboxSingle('EQP_BD_MaterialType','TypeNo','TypeName',value);}"]]></gridFormat>
+      </column>
+      <column title='设备类型' field='MaterialType' align='left' sortable='true' width='120' searchType='select' formatter='gridFormat'>
+        <searchBinding type='dictionary'>MaterialType</searchBinding>
+        <gridFormat><![CDATA[data-options="formatter:function(value,row){return com.formatCombobox('MaterialType',value);}"]]></gridFormat>
+      </column>
+      <column title='购入日期' field='BuyDate' align='left' sortable='true' width='120' formatter='com.formatDate'></column>
+      <column title='存放地点' hidden='true' field='PlaceNo' align='left' sortable='true' width='100'></column>
+      <column title='部门' hidden='true' field='UseDepartment' align='left' sortable='true' width='100'></column>
+      <column title='保管人' hidden='true' field='Depository' align='left' sortable='true' width='100'></column>
+      <column title='使用人' hidden='true' field='UsePerson' align='left' sortable='true' width='100'></column>
+      <column title='保修天数' hidden='true' field='GuaranteeDays' align='left' sortable='true' width='100'></column>
+    </ColumnList>
+  </searchDialog>
+
+
+
+  <searchDialog name='MaterialReturn_M'>
+    <!--配置datagrid的数据绑定以及查询功能-->
+    <settings defaultOrderBy='CreateTime desc'>
+      <module>Mms</module>
+      <select>*</select>
+      <from>
+        ( select a.Object_ID,a.BillNo,a.BorrowDepartment,a.BorrowPerson,a.CreateTime,a.Remark from EQP_MaterialBorrow_M a,EQP_MaterialBorrow_D b,EQP_BD_Material c where a.Object_ID=b.MaterialBorrow_ID and b.BarCode=c.BarCode and c.MaterialStatue=2 and a.BillType=1 and b.IsReturn=0
+        group by a.Object_ID,a.BillNo,a.BorrowDepartment,a.BorrowPerson,a.CreateTime,a.Remark) as temp</from>
+      <where defaultForAll='true' defaultCp='equal' defaultIgnoreEmpty='true' >
+        <field name='temp.BillNo' cp='like'></field>
+        <field name='temp.BorrowDepartment' cp='like'></field>
+        <field name='temp.BorrowPerson' cp='like'></field>
+        <field name='temp.Remark' cp='like'></field>
+        <field name='temp.CreateTime' cp='daterange'></field>
+      </where>
+    </settings>
+    <!--配置datagrid的列属性-->
+    <ColumnList>
+      <!--<column title='主键ID' field='ck' align='left' sortable='true' width='100' checkbox='true'></column>-->
+      <column title='主键ID' field='Object_ID' align='left' sortable='true' width='100' searchType='text' hidden="true"></column>
+      <column title='领用单号' field='BillNo' align='left' sortable='true' width='100' searchType='text'></column>
+      <column title='领用部门' field='BorrowDepartment' align='left' sortable='true' width='100' searchType='text'></column>
+      <column title='领用人' field='BorrowPerson' align='left' sortable='true' width='100' searchType='text'></column>
+      <column title='备注' field='Remark' align='left' sortable='true' width='100' searchType='text'></column>
+      <column title='录入日期' field='CreateTime' align='left' sortable='true' width='120' searchType='daterange' formatter='com.formatDate'></column>
+    </ColumnList>
+  </searchDialog>
+
+
+
+
+
+  <searchDialog name='BD_Material_Repair'>
+    <!--配置datagrid的数据绑定以及查询功能-->
+    <settings defaultOrderBy='CreateTime desc'>
+      <module>Mms</module>
+      <select>*</select>
+      <from>(select * from [EQP_BD_Material] where MaterialStatue=1) as temp</from>
+      <where defaultForAll='true' defaultCp='equal' defaultIgnoreEmpty='true' >
+        <field name='temp.MaterialNo' cp='like'></field>
+        <field name='temp.MaterialName' cp='like'></field>
+        <field name='temp.BarCode' cp='like'></field>
+        <field name='temp.Model' cp='like'></field>
+        <field name='temp.Specifications' cp='like'></field>
+        <field name='temp.CreateTime' cp='daterange'></field>
+      </where>
+    </settings>
+    <!--配置datagrid的列属性-->
+    <ColumnList>
+      <column title='主键ID' field='ck' align='left' sortable='true' width='100' checkbox='true'></column>
+      <column title='设备编号' field='MaterialNo' align='left' sortable='true' width='100' searchType='text'></column>
+      <column title='设备名称' field='MaterialName' align='left' sortable='true' width='100' searchType='text'></column>
+      <column title='条形码' field='BarCode' align='left' sortable='true' width='100' searchType='text'></column>
+      <column title='型号' field='Model' align='left' sortable='true' width='100' searchType='text'></column>
+      <column title='规格' field='Specifications' align='left' sortable='true' width='100' searchType='text'></column>
+      <column title='录入日期' field='CreateTime' align='left' sortable='true' width='120' searchType='daterange' formatter='com.formatDate'></column>
+      <column title='设备分类' field='TypeNo' align='left' sortable='true' width='120' formatter='gridFormat' searchType='select'>
+        <searchBinding type='tree'><![CDATA[data-options="url:'/Commons/GetCommonComboTreeList?tableName=EQP_BD_MaterialType&IdField=TypeNo&TextField=TypeName&ParentIdField=STypeNo',method: 'GET',panelWidth:300,panelHeight: 300,valueField: 'id',textField: 'text'"]]></searchBinding>
+        <gridFormat><![CDATA[data-options="formatter:function(value,row){return com.formatComboboxSingle('EQP_BD_MaterialType','TypeNo','TypeName',value);}"]]></gridFormat>
+      </column>
+      <column title='设备类型' field='MaterialType' align='left' sortable='true' width='120' searchType='select' formatter='gridFormat'>
+        <searchBinding type='dictionary'>MaterialType</searchBinding>
+        <gridFormat><![CDATA[data-options="formatter:function(value,row){return com.formatCombobox('MaterialType',value);}"]]></gridFormat>
+      </column>
+      <column title='购入日期' field='BuyDate' align='left' sortable='true' width='120' formatter='com.formatDate'></column>
+      <column title='存放地点' hidden='true' field='PlaceNo' align='left' sortable='true' width='100'></column>
+      <column title='部门' hidden='true' field='UseDepartment' align='left' sortable='true' width='100'></column>
+      <column title='保管人' hidden='true' field='Depository' align='left' sortable='true' width='100'></column>
+      <column title='使用人' hidden='true' field='UsePerson' align='left' sortable='true' width='100'></column>
+      <column title='保修天数' hidden='true' field='GuaranteeDays' align='left' sortable='true' width='100'></column>
+    </ColumnList>
+  </searchDialog>
+
+
+  <searchDialog name='BD_M'>
+    <!--配置datagrid的数据绑定以及查询功能-->
+    <settings defaultOrderBy='CreateTime desc'>
+      <module>Mms</module>
+      <select>*</select>
+      <from>(select * from [EQP_BD_Material] where MaterialStatue=1) as temp</from>
+      <where defaultForAll='true' defaultCp='equal' defaultIgnoreEmpty='true' >
+        <field name='temp.MaterialNo' cp='like'></field>
+        <field name='temp.MaterialName' cp='like'></field>
+        <field name='temp.BarCode' cp='like'></field>
+        <field name='temp.Model' cp='like'></field>
+        <field name='temp.Specifications' cp='like'></field>
+        <field name='temp.CreateTime' cp='daterange'></field>
+      </where>
+    </settings>
+    <!--配置datagrid的列属性-->
+    <ColumnList>
+      <column title='主键ID' field='ck' align='left' sortable='true' width='100' checkbox='true'></column>
+      <column title='设备编号' field='MaterialNo' align='left' sortable='true' width='100' searchType='text'></column>
+      <column title='设备名称' field='MaterialName' align='left' sortable='true' width='100' searchType='text'></column>
+      <column title='条形码' field='BarCode' align='left' sortable='true' width='100' searchType='text'></column>
+      <column title='型号' field='Model' align='left' sortable='true' width='100' searchType='text'></column>
+      <column title='规格' field='Specifications' align='left' sortable='true' width='100' searchType='text'></column>
+      <column title='录入日期' field='CreateTime' align='left' sortable='true' width='120' searchType='daterange' formatter='com.formatDate'></column>
+      <column title='设备分类' field='TypeNo' align='left' sortable='true' width='120' formatter='gridFormat' searchType='select'>
+        <searchBinding type='tree'><![CDATA[data-options="url:'/Commons/GetCommonComboTreeList?tableName=EQP_BD_MaterialType&IdField=TypeNo&TextField=TypeName&ParentIdField=STypeNo',method: 'GET',panelWidth:300,panelHeight: 300,valueField: 'id',textField: 'text'"]]></searchBinding>
+        <gridFormat><![CDATA[data-options="formatter:function(value,row){return com.formatComboboxSingle('EQP_BD_MaterialType','TypeNo','TypeName',value);}"]]></gridFormat>
+      </column>
+      <column title='设备类型' field='MaterialType' align='left' sortable='true' width='120' searchType='select' formatter='gridFormat'>
+        <searchBinding type='dictionary'>MaterialType</searchBinding>
+        <gridFormat><![CDATA[data-options="formatter:function(value,row){return com.formatCombobox('MaterialType',value);}"]]></gridFormat>
+      </column>
+      <column title='购入日期' field='BuyDate' align='left' sortable='true' width='120' formatter='com.formatDate'></column>
+      <column title='存放地点' hidden='true' field='PlaceNo' align='left' sortable='true' width='100'></column>
+      <column title='部门' hidden='true' field='UseDepartment' align='left' sortable='true' width='100'></column>
+      <column title='保管人' hidden='true' field='Depository' align='left' sortable='true' width='100'></column>
+      <column title='使用人' hidden='true' field='UsePerson' align='left' sortable='true' width='100'></column>
+      <column title='保修天数' hidden='true' field='GuaranteeDays' align='left' sortable='true' width='100'></column>
+    </ColumnList>
+  </searchDialog>
+
+
+  <searchDialog name='Repair_feedback'>
+    <!--配置datagrid的数据绑定以及查询功能-->
+    <settings defaultOrderBy='CreateTime desc'>
+      <module>Mms</module>
+      <select>*</select>
+      <from>
+        (select a.Object_ID,a.BillNo,a.RepairDate,a.RepairDepartment,a.RepairCost,a.RepairReason,a.CreatePerson,a.CreateTime from EQP_Repair_M a,EQP_Repair_D b,EQP_BD_Material c where a.Object_ID=b.Repair_ID and b.BarCode=c.BarCode and c.MaterialStatue=4 and a.BillType=1 and isnull(b.IsRepair,0)=0
+        group by a.Object_ID,a.BillNo,a.RepairDate,a.RepairDepartment,a.RepairCost,a.RepairReason,a.CreatePerson,a.CreateTime) as temp
+      </from>
+      <where defaultForAll='true' defaultCp='equal' defaultIgnoreEmpty='true' >
+        <field name='temp.BillNo' cp='like'></field>
+        <field name='temp.RepairDepartment' cp='like'></field>
+        <field name='temp.RepairDate' cp='daterange'></field>
+        <field name='temp.RepairReason' cp='like'></field>
+        <field name='temp.CreateTime' cp='daterange'></field>
+      </where>
+    </settings>
+    <!--配置datagrid的列属性-->
+    <ColumnList>
+      <!--<column title='主键ID' field='ck' align='left' sortable='true' width='100' checkbox='true'></column>-->
+      <column title='主键ID' field='Object_ID' align='left' sortable='true' width='100' searchType='text' hidden="true"></column>
+      <column title='维修单号' field='BillNo' align='left' sortable='true' width='100' searchType='text'></column>
+      <column title='报修日期' field='RepairDate' align='left' sortable='true' width='120' searchType='daterange' formatter='com.formatDate'></column>
+      <column title='维修方' field='RepairDepartment' align='left' sortable='true' width='100' searchType='text'></column>
+      <column title='维修费用' field='RepairCost' align='left' sortable='true' width='100' searchType='text'></column>
+      <column title='故障说明' field='RepairReason' align='left' sortable='true' width='120' searchType='text'></column>
+      <column title='创建人' field='CreatePerson' align='left' sortable='true' width='120' searchType='text'></column>
+      <column title='创建时间' field='CreateTime' align='left' sortable='true' width='120' searchType='daterange' formatter='com.formatDate'></column>
+    </ColumnList>
+  </searchDialog>
+
+
+  <searchDialog name='MES_BN_ProductPlanDetail'>
+    <!--配置datagrid的数据绑定以及查询功能-->
+    <settings defaultOrderBy='CreateTime desc'>
+      <module>Mms</module>
+      <select>*</select>
+      <from>(select * from [MES_BN_ProductPlanDetail]) as temp</from>
+      <where defaultForAll='true' defaultCp='equal' defaultIgnoreEmpty='true' >
+        <field name='temp.PlanCode' cp='like'></field>
+        <field name='temp.BarCode' cp='like'></field>
+      </where>
+    </settings>
+    <!--配置datagrid的列属性-->
+    <ColumnList>
+      <column title='' field='ck' align='left' sortable='true' width='100' checkbox='true'></column>
+      <column title='主键ID' field='ID' align='left' sortable='true' width='100'  hidden="true"></column>
+      <column title='计划编号' field='PlanCode' align='left' sortable='true' width='100' searchType='text'></column>
+      <column title='序号' field='SerialNumber' align='left' sortable='true' width='100'></column>
+      <column title='单间条码' field='BarCode' align='left' sortable='true' width='100' searchType='text'></column>
+      <column title='上线时间' field='OnlineTime' align='left' sortable='true' width='100'  formatter='com.formatTime'></column>
+      <column title='下线时间' field='DownLineTime' align='left' sortable='true' width='100'  formatter='com.formatTime'></column>
+
+    </ColumnList>
+  </searchDialog>
+
+
+  <searchDialog name='MES_BD_LineRProduct'>
+    <!--配置datagrid的数据绑定以及查询功能-->
+    <settings defaultOrderBy='CreateTime desc'>
+      <module>Mms</module>
+      <select>*</select>
+      <from>(select * from [MES_BD_LineRProduct]) as temp</from>
+      <where defaultForAll='true' defaultCp='equal' defaultIgnoreEmpty='true' >
+        <field name='temp.LineCode' cp='like'></field>
+        <field name='temp.LineName' cp='like'></field>
+        <field name='temp.MateCode' cp='like'></field>
+        <field name='temp.MateName' cp='like'></field>
+      </where>
+    </settings>
+    <!--配置datagrid的列属性-->
+    <ColumnList>
+      <!--<column title='' field='ck' align='left' sortable='true' width='100' checkbox='true'></column>-->
+      <column title='主键ID' field='ID' align='left' sortable='true' width='100'  hidden="true"></column>
+      <column title='生产线' field='LineCode' align='left' sortable='true' width='100' searchType='text'></column>
+      <column title='生产线名称' field='LineName' align='left' sortable='true' width='100' searchType='text'></column>
+      <column title='产品编号' field='MateCode' align='left' sortable='true' width='100' searchType='text'></column>
+      <column title='产品名称' field='MateName' align='left' sortable='true' width='100' searchType='text' ></column>
+
+
+    </ColumnList>
+  </searchDialog>
+
+</Root>
+
+
+

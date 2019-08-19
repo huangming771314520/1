@@ -1,0 +1,62 @@
+﻿<Page x:Class="MesClient.Views.PagePlanCard"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:local="clr-namespace:MesClient.Views"
+      xmlns:vm="clr-namespace:MesClient.ViewModels"
+      mc:Ignorable="d" 
+      d:DesignHeight="450" d:DesignWidth="800"
+      Title="PagePlanCard">
+    <Page.DataContext>
+        <vm:PlanCardViewModel/>
+    </Page.DataContext>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"></RowDefinition>
+            <RowDefinition Height="*"></RowDefinition>
+        </Grid.RowDefinitions>
+        <Grid Grid.Row="0">
+            <TextBlock TextAlignment="Center" Padding="0 0 0 10">
+                <Label Content="{Binding UserInfo}" FontSize="26" Padding="2 4">
+                    <Label.Foreground>
+                        <LinearGradientBrush EndPoint="1,0.5" StartPoint="0,0.5">
+                            <GradientStop Color="#FF9DC3FF" Offset="0"/>
+                            <GradientStop Color="#FF6988FF" Offset="1"/>
+                        </LinearGradientBrush>
+                    </Label.Foreground>
+                </Label>
+            </TextBlock>
+        </Grid>
+        <Grid Grid.Row="1">
+            <ListBox x:Name="lsbPlanCardList" ItemsSource="{Binding PlanCardList}" SelectedIndex="{Binding SelectIndex}" BorderThickness="0" ScrollViewer.HorizontalScrollBarVisibility="Disabled" Style="{StaticResource PlanCardListBoxStyle}" Focusable="True" Loaded="LsbPlanCardList_Loaded">
+                <ListBox.InputBindings>
+                    <KeyBinding Key="Enter" Command="{Binding SelectCommand}"></KeyBinding>
+                    <KeyBinding Key="Esc" Command="{Binding ShutdownCommand}"></KeyBinding>
+                </ListBox.InputBindings>
+                <ListBox.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <WrapPanel></WrapPanel>
+                    </ItemsPanelTemplate>
+                </ListBox.ItemsPanel>
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <Border Style="{StaticResource PlanCardBorder}" Background="{Binding Background}">
+                            <WrapPanel Orientation="Vertical">
+                                <TextBlock Text="{Binding ContractCode}" Style="{StaticResource PlanCardTextBlock}" />
+                                <TextBlock Text="{Binding ProjectName}" Style="{StaticResource PlanCardTextBlock}"/>
+                                <TextBlock Text="{Binding ProcessName}" Style="{StaticResource PlanCardTextBlock}" />
+                                <TextBlock Text="{Binding PartNameAndFigure}" Style="{StaticResource PlanCardTextBlock}"/>
+                                <TextBlock Text="{Binding WorkStepsName}" Style="{StaticResource PlanCardTextBlock}"/>
+                                <TextBlock Text="{Binding TicketLevelName}" Style="{StaticResource PlanCardTextBlock}"/>
+                                <TextBlock Text="{Binding ApproveRemark}" Style="{StaticResource PlanCardTextBlock}"/>
+                                <TextBlock Text="{Binding PlanDate}" Style="{StaticResource PlanCardTextBlock}"/>
+                            </WrapPanel>
+                        </Border>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+        </Grid>
+    </Grid>
+</Page>

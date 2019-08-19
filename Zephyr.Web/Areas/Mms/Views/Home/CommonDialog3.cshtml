@@ -1,0 +1,226 @@
+﻿@{
+    ViewBag.Title = "CommonDialogGrid";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    string xmlName = ViewBag.xmlName;
+}
+@section head{
+    <style type="text/css">
+        .z-toolbar {
+            border-width: 0;
+            margin: 0;
+        }
+
+        .lbl {
+            text-align: right;
+            line-height: 25px;
+        }
+
+        .panel-body {
+            border-width: 0 !important;
+        }
+
+        body {
+            padding: 0 !important;
+        }
+    </style>
+}
+
+@section scripts{
+    <script type="text/javascript">
+        using(['validatebox', 'combobox', 'lookup', 'datebox', 'datetimebox', 'combogrid', 'combotree', 'extend', 'menu'], easyuifix.datagrid_editor_extend);
+        var data = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model));
+        var vmodel = function () {
+            var self = this;
+            this.xmlName = data.xmlName;
+            this.form = ko.mapping.fromJS(data.form);
+            delete this.form.__ko_mapping__;
+            this.gridSetting =  {
+                size: { w: '100%'},
+                url: '/plugins/GetCommonDialogData',
+                queryParams: ko.observable(),
+                pagination: true,
+                //singleSelect: false,
+                cache: false,
+                checkOnSelect: true,
+                selectOnCheck: false,
+                singleSelect: true
+            }
+            self.grid1 = {
+                queryParams: ko.observable(),
+                pagination: true,
+                customLoad: false
+            };
+            self.grid2 = {
+                queryParams: ko.observable(),
+                pagination: true,
+                customLoad: false
+            };
+            self.gridSetting.onClickRow = function () {
+                self.grid1.url="/api/Mms/PRS_ProcessRouteModelDetail/GetDetail";
+                var row = $('#dg').datagrid('getSelected');
+                self.grid1.queryParams({MainID:row.ID });
+                self.grid2.url="/api/Mms/PRS_ProcessRouteModelDetail/GetProjectDetail";
+                if (row.ContractCode==null || row.PartFigure==null || row.ContractCode=="" || row.PartFigure=="") {
+                    self.grid2.datagrid('loadData',{total:0,rows:[]});
+                }else
+                    self.grid2.queryParams({ContractCode:row.ContractCode,FigureNumber:row.PartFigure });
+            };
+
+
+            var param=$.extend({ xmlName: self.xmlName },ko.toJS(this.form));
+            this.gridSetting.queryParams(param);
+
+            this.searchClick = function () {
+                var param=$.extend({ xmlName: self.xmlName },ko.toJS(this.form));
+                this.gridSetting.queryParams(param);
+            }
+            this.clearClick = function () {
+                var jsonData = ko.toJS(this.form);
+                for (var key in jsonData) {
+                    jsonData[key] = '';
+                }
+                ko.mapping.fromJS(jsonData, {}, self.form);
+                jsonData=$.extend({xmlName:self.xmlName},jsonData);
+                this.gridSetting.queryParams(jsonData);
+            }
+            var iframe = getThisIframe();
+            var thiswin = parent.$(iframe).parent();
+            var options = thiswin.window("options");
+            var params = options.paramater;
+            this.gridSetting.onDblClickRow = function(index, row){
+                var allRows =self.gridSetting.datagrid('getSelections');
+                if(allRows.length>0){
+                    options.onSelect(allRows);
+                    destroyIframe(iframe);
+                    thiswin.window('destroy');
+                }
+            }
+            this.confirmClick=function(){
+                var selectRow = self.gridSetting.datagrid('getChecked');
+                if (selectRow.length > 0) {
+                    options.onSelect(selectRow);
+                    destroyIframe(iframe);
+                    thiswin.window('destroy');
+                }
+            }
+            this.cancelClick=function(){
+                destroyIframe(iframe);
+                thiswin.window('destroy');
+            }
+        }
+        ko.bindingViewModel(new vmodel());
+
+        //获取本页面所在的iframe
+        function getThisIframe() {
+            if (!parent) return null;
+            var iframes = parent.document.getElementsByTagName('iframe');
+            if (iframes.length == 0) return null;
+            for (var i = 0; i < iframes.length; ++i) {
+                var iframe = iframes[i];
+                if (iframe.contentWindow === self) { //self 指的是当前窗口
+                    return iframe;
+                }
+            }
+        }
+        function destroyIframe(iframeEl) {
+            if (!iframeEl) return;
+            iframeEl.parentNode.removeChild(iframeEl);
+            iframeEl = null;
+        };
+    </script>
+}
+<div class='container_16' style='background-color: #E0ECFF; border-bottom: 1px solid #8DB2E3;'>
+    <div class='grid_2 lbl'>工艺模型编码</div>
+    <div class='grid_4 val'><input type='text' data-bind='value:form.ProcessRouteCode' class='z-txt' /></div>
+    <div class='grid_2 lbl'>工艺模型名称</div><div class='grid_4 val'><input type='text' data-bind='value:form.ProcessRouteName' class='z-txt' /></div>
+    <div class='clear'></div><div class='grid_2 lbl'>合同号</div>
+    <div class='grid_4 val'><input type='text' data-bind='value:form.ContractCode' class='z-txt' /></div><div class='grid_2 lbl'>零件号</div>
+    <div class='grid_4 val'><input type='text' data-bind='value:form.PartCode' class='z-txt' /></div><div class='clear'></div>
+    <div class='grid_2 lbl'>图号</div><div class='grid_4 val'><input type='text' data-bind='value:form.PartFigure' class='z-txt' /></div>
+    <div class='grid_4 val' style='float:right;'>
+        <a href='#' plain='true' class='easyui-linkbutton' icon='icon-search' title='查询' data-bind='click:searchClick'>查询</a>
+        <a href='#' plain='true' class='easyui-linkbutton' icon='icon-clear' title='清空' data-bind='click:clearClick'>清空</a>
+    </div><div class='clear'></div>
+</div>
+
+<table data-bind='datagrid:gridSetting' id="dg" style="height:250px">
+    <thead>
+        <tr>
+            <th field='ID' sortable='true' align='left' width='100' checkbox='true'>主键ID</th>
+            <th field='ProcessRouteCode' sortable='true' align='left' width='100'>工艺模型编码</th>
+            <th field='ProcessRouteName' sortable='true' align='left' width='200'>工艺模型名称</th>
+            <th field='ContractCode' sortable='true' align='left' width='150'>合同号</th>
+            <th field='PartCode' sortable='true' align='left' width='150'>零件号</th>
+            <th field='PartFigure' sortable='true' align='left' width='150'>图号</th>
+            <th field='ProcessModelType' sortable='true' align='left' width='150' data-options="formatter:function(value,row){return com.formatCombobox('ProcessModelType',value);}">图号</th>
+        </tr>
+    </thead>
+</table>
+<div class="easyui-panel" title="模型明细" style="background:#fafafa;" data-options="collapsible:true,collapsed:false,height:($(window).height()/3)">
+    <table data-bind="datagrid:grid1" id="dg1">
+        <thead>
+            <tr>
+                <th field="ID" sortable="true" align="left" width="80" editor="text" hidden>主键ID</th>
+                <th field="ProcessLineCode" sortable="true" align="left" width="80" editor="text">工序行号</th>
+
+                <th field="ProcessName" sortable="true" align="left" width="100" editor="{type:'combogrid',options:{
+                        url:'/Commons/GetCommonSearchList',
+                    queryParams : {
+                     tableName:'[PRS_BD_StandardProcess]',
+                         searchField:'[ProcessCode],[ProcessName]',
+                        whereSql:' IsEnable=1 ',
+                         firstFightField:'[ProcessCode]',
+                                     connName:'Mms'
+                            },
+                            method: 'GET',
+                            panelWidth:400,
+                            fit:true,
+                            delay: 1000,
+                            mode: 'remote',
+                            value: 'ProcessCode',
+                            idField: 'ProcessName',
+                            textField: 'ProcessName',
+                            columns:[[
+                            { field: 'ProcessCode',title: '工序编码',width: 200 },
+                            { field: 'ProcessName',title: '工序名称',width: 200 }
+                                ]],
+                    onSelect: function (rowIndex, rowData) {
+                           var index =  $('#tt').datagrid('getRowIndex',$('#tt').datagrid('getSelected'));
+                           $('#tt').datagrid('getEditor',{index:index,field:'ProcessCode'}).target.val(rowData['ProcessCode']);
+                         $('#tt').datagrid('getEditor',{index:index,field:'ProcessName'}).target.val(rowData['ProcessName']);
+
+                },
+
+                 keyHandler:{
+                   query:function(keyword) {
+                   var queryParams=$(this).combogrid('grid').datagrid('options').queryParams;
+                   queryParams.keyword=keyword;
+                   $(this).combogrid('grid').datagrid('options').queryParams=queryParams;
+                   $(this).combogrid('grid').datagrid('reload');
+                  $(this).combogrid('setValue', keyword);
+                }}
+                }}">标准工序</th>
+                <th field="ProcessCode" sortable="true" align="left" width="80" editor="text" hidden></th>
+                <th field="Remark" sortable="true" align="left" width="80" editor="text">备注</th>
+            </tr>
+        </thead>
+    </table>
+</div>
+<div class="easyui-panel" title="项目信息" style="background:#fafafa;" data-options="collapsible:true,collapsed:false,height:($(window).height()/3)">
+    <table data-bind="datagrid:grid2" id="dg2">
+        <thead>
+            <tr>
+                <th field="ContractCode" sortable="true" align="left" width="100">合同编码</th>
+                <th field="ProjectName" sortable="true" align="left" width="150">项目名称</th>
+                <th field="ProductName" sortable="true" align="left" width="80">产品名称</th>
+                <th field="ProductType" sortable="true" align="left" width="100" data-options="formatter:function(value,row){return com.formatCombobox('ProductType',value);}">产品类型</th>
+                <th field="Model" sortable="true" align="left" width="150">型号</th>
+                <th field="Specifications" sortable="true" align="left" width="80">规格</th>
+            </tr>
+        </thead>
+    </table>
+</div>
+<div style="text-align:center;margin-top:10px;">
+    <a class="easyui-linkbutton" data-options="iconCls:'icon-ok'" data-bind="click:confirmClick" href="javascript:void(0)">确定</a>
+    <a class="easyui-linkbutton" data-options="iconCls:'icon-cancel'" data-bind="click:cancelClick" href="javascript:void(0)">取消</a>
+</div>

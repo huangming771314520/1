@@ -1,0 +1,1448 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Root>
+  <searchDialog name='ChoosePicking'>
+    <!--选择领料单-->
+    <settings defaultOrderBy='ID desc'>
+      <module>Mms</module>
+      <select>*</select>
+      <from>
+        (
+        SELECT * FROM MES_MaterialPickMain where IsEnable=1 and BillState=2
+        ) as tab
+
+      </from>
+      <where defaultForAll='true' defaultCp='equal' defaultIgnoreEmpty='true' >
+        <field name='BillCode' cp='like'></field>
+        <field name='DepartmentID' cp='like'></field>
+      </where>
+    </settings>
+    <!--配置datagrid的列属性-->
+    <ColumnList>
+      <column title='主键ID' field='ID' align='left' sortable='true' width='100' checkbox='true'></column>
+      <column title='领料单' field='BillCode' align='left' sortable='true' width='100' searchType='text' ></column>
+      <column title='部门编码' field='DepartmentID' align='left' sortable='true' width='200' searchType='text' ></column>
+      <column title='部门名称' field='DepartmentName' align='left' sortable='true' width='200' ></column>
+      <column title='领料仓库' field='WarehouseCode' hidden='true' align='left' sortable='true' width='200' ></column>
+      <column title='领料仓库' field='WarehouseName' align='left' sortable='true' width='200' searchType='text'></column>
+      <column title='合同编号' field='ContractCode' align='left' sortable='true' width='200' ></column>
+      <column title='工程项目' field='ProjectName' align='left' sortable='true' width='200' ></column>
+      <column title='领料日期' field='PickingDate' align='left' sortable='true' width='200' formatter='com.formatDate'></column>
+    </ColumnList>
+  </searchDialog>
+
+  <searchDialog name='ChoosePart'>
+    <!--选择物料清单-->
+    <settings defaultOrderBy='ID desc'>
+      <module>Mms</module>
+      <select>*</select>
+      <from>
+        ( select * from  SYS_Part where IsEnable=1 ) as tab
+
+
+      </from>
+      <where defaultForAll='true' defaultCp='equal' defaultIgnoreEmpty='true' >
+        <field name='InventoryName' cp='like'></field>
+        <field name='Spec' cp='like'></field>
+        <field name='Model' cp='like'></field>
+        <!--<field name='PickingDate' cp='like'></field>-->
+      </where>
+    </settings>
+    <!--配置datagrid的列属性-->
+    <ColumnList>
+      <column title='主键ID' field='ID' align='left' sortable='true' width='200' checkbox='true'></column>
+      <column title='存货名称' field='InventoryName' align='left' sortable='true' width='100' searchType='text' ></column>
+      <column title='存货编码' field='InventoryCode' align='left' sortable='true' width='100'  hidden='true'></column>
+      <column title='型号' field='Model' align='left' sortable='true' width='200'  searchType='text'></column>
+      <column title='规格' field='Spec' align='left' sortable='true' width='200' searchType='text' ></column>
+      <column title='单位' field='QuantityUnit' align='left' sortable='true' width='50' ></column>
+    </ColumnList>
+  </searchDialog>
+
+  <searchDialog name='ChooseBOM'>
+    <!--选择物料清单-->
+    <settings defaultOrderBy='ID desc'>
+      <module>Mms</module>
+      <select>*</select>
+      <from>
+        (
+        SELECT t1.ID,
+        ContractCode,
+        ProjectName,
+        t1.PartCode,
+        t1.PartName,
+        t3.PartFigureCode,
+        NeedQuantity PartQuantity,
+        t2.InventoryCode,
+        t2.InventoryName,
+        t2.Model,
+        t2.Spec,
+        t2.QuantityUnit,
+        t1.Type,
+        t2.WarehouseCode,
+        t2.WarehouseName
+        FROM MES_BN_MatchingTableDetail t1
+        INNER JOIN dbo.SYS_Part t2
+        ON t1.PartCode = t2.PartCode
+        AND t2.IsEnable = 1
+        INNER JOIN dbo.PRS_Process_BOM t3
+        ON t1.PartCode=t3.PartCode
+        WHERE t1.IsEnable = 1
+        AND t1.ApproveState = 1
+        and t1.Type != 1
+
+        <!--select t1.*,t2.Spec,t2.Model,t2.QuantityUnit,t3.ContractCode,t3.ProjectName
+        from PRS_Process_BOM t1
+        left join SYS_Part t2
+        on t1.PartCode=t2.PartCode and t2.IsEnable=1
+        left join PMS_BN_PartFile as t3 on t1.PartCode=t3.PartCode
+        where  t1.IsEnable=1 and t1. IsSelfMade=0-->
+        ) as tab
+      </from>
+      <where defaultForAll='true' defaultCp='equal' defaultIgnoreEmpty='true' >
+        <field name='PartFigureCode' cp='like'></field>
+
+        <!--<field name='PickingDate' cp='like'></field>-->
+      </where>
+    </settings>
+    <!--配置datagrid的列属性-->
+    <ColumnList>
+      <column title='主键ID' field='ID' align='left' sortable='true' width='200' checkbox='true'></column>
+      <column title='合同号' field='ContractCode' align='left' sortable='true' width='100'  ></column>
+      <column title='项目名称' field='ProjectName' align='left' sortable='true' width='100'  ></column>
+      <column title='零件图号' field='PartFigureCode' align='left' sortable='true' width='100'  ></column>
+      <column title='零件名称' field='PartName' align='left' sortable='true' width='100'  ></column>
+      <column title='存货编码' field='InventoryName' hidden='true' align='left' sortable='true' width='100'  ></column>
+      <column title='存货编码' field='InventoryCode' hidden='true' align='left' sortable='true' width='100'  ></column>
+      <!--<column title='图号' field='PartFigureCode' align='left' sortable='true' width='100' searchType='text'></column>-->
+      <column title='型号' field='Model' align='left' sortable='true' width='200' ></column>
+      <column title='规格' field='Spec' align='left' sortable='true' width='200' ></column>
+      <column title='数量' field='PartQuantity' align='left' sortable='true' width='50' ></column>
+      <column title='单位' field='QuantityUnit' align='left' sortable='true' width='50' ></column>
+    </ColumnList>
+  </searchDialog>
+
+  <searchDialog name='ChooseCJLL'>
+    <!--选择储运部门的领料出库单-->
+    <settings defaultOrderBy='ID desc'>
+      <module>Mms</module>
+      <select>*</select>
+      <from>
+        ( select * from
+        WMS_BN_BillMain where IsEnable=1 and ApproveState=2 and BillType=2) as tab
+      </from>
+      <where defaultForAll='true' defaultCp='equal' defaultIgnoreEmpty='true' >
+        <field name='BillCode' cp='like'></field>
+        <field name='ProjectName' cp='like'></field>
+        <field name='WarehouseCode' cp='equal'></field>
+        <field name='DepartmentID' cp='equal'></field>
+        <!--<field name='PickingDate' cp='like'></field>-->
+      </where>
+    </settings>
+    <!--配置datagrid的列属性-->
+    <ColumnList>
+      <column title='主键ID' field='ID' align='left' sortable='true' width='200' checkbox='true'></column>
+      <column title='单据编号' field='BillCode' align='left' sortable='true' width='100' searchType='text' ></column>
+      <column title='合同编号' field='ContractCode' align='left' sortable='true' width='100'  hidden='true'></column>
+      <column title='工程项目' field='ProjectName' align='left' sortable='true' width='100'  searchType='text' ></column>
+      <column title='部门编码' field='DepartmentID' hidden='true' align='left' sortable='true' width='200'  searchType='text'></column>
+      <column title='领料部门' field='DepartmentName' align='left' sortable='true' width='200'  ></column>
+      <column title='仓库编码' field='WarehouseCode' hidden='true' align='left' sortable='true' width='200'  searchType='text'></column>
+      <column title='仓库名称' field='WarehouseName' align='left' sortable='true' width='200'  ></column>
+      <column title='领料员编码' field='PickPersonCode' hidden='true' align='left' sortable='true' width='200' ></column>
+      <column title='领料员' field='PickPerson' align='left' sortable='true' width='200' ></column>
+    </ColumnList>
+  </searchDialog>
+
+  <searchDialog name='ChooseZXRK'>
+    <!--选择车间生产过程中的转序入库出库单-->
+    <settings defaultOrderBy='ID desc'>
+      <module>Mms</module>
+      <select>*</select>
+      <from>
+        ( select * from
+        WMS_BN_BillMain where IsEnable=1 and ApproveState=2 and BillType=8) as tab
+      </from>
+      <where defaultForAll='true' defaultCp='equal' defaultIgnoreEmpty='true' >
+        <field name='BillCode' cp='like'></field>
+        <field name='ProjectName' cp='like'></field>
+        <field name='WarehouseCode' cp='equal'></field>
+        <!--<field name='PickingDate' cp='like'></field>-->
+      </where>
+    </settings>
+    <!--配置datagrid的列属性-->
+    <ColumnList>
+      <column title='主键ID' field='ID' align='left' sortable='true' width='200' checkbox='true'></column>
+      <column title='单据编号' field='BillCode' align='left' sortable='true' width='100' searchType='text' ></column>
+      <column title='合同编号' field='ContractCode' align='left' sortable='true' width='100'  hidden='true'></column>
+      <column title='工程项目' field='ProjectName' align='left' sortable='true' width='100'  searchType='text' ></column>
+      <column title='仓库编码' field='WarehouseCode' hidden='true' align='left' sortable='true' width='200'  searchType='text'></column>
+      <column title='仓库名称' field='WarehouseName' align='left' sortable='true' width='200'  ></column>
+    </ColumnList>
+  </searchDialog>
+
+  <searchDialog name='ChooseZXCK'>
+    <!--选择车间生产过程中的转序出库出库单-->
+    <settings defaultOrderBy='ID desc'>
+      <module>Mms</module>
+      <select>*</select>
+      <from>
+        ( select * from
+        WMS_BN_BillMain where IsEnable=1 and ApproveState=2 and BillType=9) as tab
+      </from>
+      <where defaultForAll='true' defaultCp='equal' defaultIgnoreEmpty='true' >
+        <field name='BillCode' cp='like'></field>
+        <field name='ProjectName' cp='like'></field>
+        <field name='WarehouseCode' cp='equal'></field>
+        <!--<field name='PickingDate' cp='like'></field>-->
+      </where>
+    </settings>
+    <!--配置datagrid的列属性-->
+    <ColumnList>
+      <column title='主键ID' field='ID' align='left' sortable='true' width='200' checkbox='true'></column>
+      <column title='单据编号' field='BillCode' align='left' sortable='true' width='100' searchType='text' ></column>
+      <column title='合同编号' field='ContractCode' align='left' sortable='true' width='100'  hidden='true'></column>
+      <column title='工程项目' field='ProjectName' align='left' sortable='true' width='100'  searchType='text' ></column>
+      <column title='仓库编码' field='WarehouseCode' hidden='true' align='left' sortable='true' width='200'  searchType='text'></column>
+      <column title='仓库名称' field='WarehouseName' align='left' sortable='true' width='200'  ></column>
+    </ColumnList>
+  </searchDialog>
+
+  <searchDialog name='ChooseRouteModel'>
+    <!--选择工艺模型-->
+    <settings defaultOrderBy='temp.ID desc'>
+      <module>Mms</module>
+      <select>*</select>
+      <from>
+        (select * from PRS_ProcessRouteModelMain where isEnable=1 and BillState=1) temp
+      </from>
+      <where defaultForAll='true' defaultCp='equal' defaultIgnoreEmpty='true' >
+        <field name='ProcessRouteCode' cp='like'></field>
+        <field name='ProcessRouteName' cp='like'></field>
+      </where>
+    </settings>
+    <!--配置datagrid的列属性-->
+    <ColumnList>
+      <column title='主键ID' field='ID' align='left' sortable='true' width='100' checkbox='true'></column>
+      <column title='工艺模型编码' field='ProcessRouteCode' align='left' sortable='true' width='100' searchType='text' ></column>
+      <column title='工艺模型名称' field='ProcessRouteName' align='left' sortable='true' width='200' searchType='text'></column>
+      <column title='合同号' field='ContractCode' align='left' sortable='true' width='150' searchType='text' ></column>
+      <column title='零件号' field='PartCode' align='left' sortable='true' width='150' searchType='text' ></column>
+      <column title='图号' field='PartFigure' align='left' sortable='true' width='150' searchType='text'></column>
+      <column title='工艺路线模型名称' field='ProcessModelType' align='left' sortable='true' width='150' formatter='gridFormat'>
+        <gridFormat><![CDATA[data-options="formatter:function(value,row){return com.formatCombobox('ProductType',value);}"]]></gridFormat>
+      </column>
+
+    </ColumnList>
+  </searchDialog>
+
+  <searchDialog name='ChooseXM'>
+    <!--配置datagrid的数据绑定以及查询功能-->
+    <settings defaultOrderBy='temp.CreateTime desc'>
+      <module>Mms</module>
+      <select>*</select>
+      <from>
+        (select t1.ProjectID,t1.ContractCode,t1.ProjectName,t2.ProductName,t2.ProductType,t2.Model,t2.Specifications,t1.CreateTime,t2.ID as ProjectDetailID from PMS_BN_Project as t1
+        inner join PMS_BN_ProjectDetail as t2 on t1.ProjectID=t2.MainID where t2.ProjectState = '2'
+        and t1.IsEnable = '1'
+        and t2.IsEnable = '1') as temp
+      </from>
+      <where defaultForAll='true' defaultCp='equal' defaultIgnoreEmpty='true' >
+        <field name='temp.ContractCode' cp='like'></field>
+
+      </where>
+    </settings>
+    <!--配置datagrid的列属性-->
+    <ColumnList>
+      <column title='主键ID' field='ProjectID' align='left' sortable='true' width='100' checkbox='true'></column>
+      <column title='产品ID' field='ProjectDetailID' align='left' sortable='true' hidden='true' width='100'></column>
+      <column title='合同编码' field='ContractCode' align='left' sortable='true' width='100' searchType='text' ></column>
+      <column title='项目名称' field='ProjectName' align='left' sortable='true' width='200' ></column>
+      <column title='产品名称' field='ProductName' align='left' sortable='true' width='100' ></column>
+      <column title='产品类型' field='ProductType' align='left' sortable='true' width='100' ></column>
+      <column title='型号' field='Model' align='left' sortable='true' width='100' ></column>
+      <column title='规格' field='Specifications' align='left' sortable='true' width='100' ></column>
+
+    </ColumnList>
+  </searchDialog>
+
+  <searchDialog name='ChooseMatchingTableDetail'>
+    <!--选择配套-->
+    <settings defaultOrderBy='ContractCode desc'>
+      <module>Mms</module>
+      <select>*</select>
+      <from>
+        (SELECT t1.ID,
+        ContractCode,
+        ProjectName,
+        t1.PartCode,
+        t1.PartName,
+        NeedQuantity,
+        t2.InventoryCode,
+        t2.InventoryName,
+        t2.Model,
+        t2.QuantityUnit,
+        t1.Type,
+        t2.WarehouseCode,
+        t2.WarehouseName
+        FROM MES_BN_MatchingTableDetail t1
+        INNER JOIN dbo.SYS_Part t2
+        ON t1.PartCode = t2.PartCode
+        AND t2.IsEnable = 1
+        WHERE t1.IsEnable = 1
+        AND t1.ApproveState = 1
+        and t1.Type != 1
+        ) as tab1
+      </from>
+      <where defaultForAll='true' defaultCp='equal' defaultIgnoreEmpty='true' >
+        <field name='ProjectName' cp='like'></field>
+        <field name='WarehouseName' cp='like'></field>
+        <field name='Type' cp='like'></field>
+      </where>
+    </settings>
+    <!--配置datagrid的列属性-->
+    <ColumnList>
+      <column title='主键ID' field='ID' align='left' sortable='true' width='100' checkbox='true'></column>
+      <column title='合同编码' hidden='true' field='ContractCode' align='left' sortable='true' width='100' ></column>
+      <column title='项目名称' field='ProjectName' align='left' sortable='true' width='100' searchType='text' ></column>
+      <column title='存货编号' field='InventoryCode' align='left' sortable='true' width='100' ></column>
+      <column title='存货名称' field='InventoryName' align='left' sortable='true' width='100' ></column>
+      <column title='需求数量' field='NeedQuantity' align='left' sortable='true' width='100' ></column>
+      <column title='物料单位' field='QuantityUnit' align='left' sortable='true' width='100' ></column>
+      <column title='型号规格' field='Model' align='left' sortable='true' width='100' ></column>
+      <column title='仓库' field='WarehouseName' align='left' sortable='true' width='100' searchType='text'></column>
+      <column title='仓库编码' field='WarehouseCode' hidden='true' align='left' sortable='true' width='100' ></column>
+      <column title='部门' field='Type' align='left' sortable='true' width='100' hidden='true' searchType='text'></column>
+
+
+    </ColumnList>
+  </searchDialog>
+
+  <searchDialog name='WorkshopBatchingPicking'>
+    <!--车间领料选择配套车间-->
+    <settings defaultOrderBy='ContractCode desc'>
+      <module>Mms</module>
+      <select>*</select>
+      <from>
+        (
+        SELECT DISTINCT
+        t1.BatchingCode,
+        t1.RootPartCode,
+        t1.ContractCode,
+        t1.ProductID,
+        t1.WorkshopCode,
+        t2.PartName,
+        t3.ProjectName,
+        t4.ProductName,
+        t2.PartFigureCode,
+        t5.DepartmentName WorkshopName
+        FROM dbo.MES_WorkshopBatching t1
+        INNER JOIN dbo.PRS_Process_BOM t2
+        ON t1.PartCode = t2.PartCode
+        AND t2.IsEnable = 1
+        INNER JOIN dbo.PMS_BN_Project t3
+        ON t1.ContractCode = t3.ContractCode
+        AND t3.IsEnable = 1
+        AND t3.Is0tSartProduct = 1
+        INNER JOIN dbo.PMS_BN_ProjectDetail t4
+        ON t4.ID = t1.ProductID
+        AND t4.IsEnable = 1
+        AND t4.ProjectState = 2
+        INNER JOIN dbo.SYS_BN_Department t5
+        ON t5.DepartmentCode = t1.WorkshopCode
+        AND t5.IsEnable = 1
+        WHERE t1.IsEnable = 1
+        ) as tab1
+      </from>
+      <where defaultForAll='true' defaultCp='equal' defaultIgnoreEmpty='true' >
+        <field name='ProjectName' cp='like'></field>
+        <field name='ProductName' cp='like'></field>
+        <field name='PartName' cp='like'></field>
+        <field name='WorkshopCode' cp='like'></field>
+      </where>
+    </settings>
+    <!--配置datagrid的列属性-->
+    <ColumnList>
+      <!--<column title='主键ID' field='ID' align='left' hidden='true' sortable='true' width='100' checkbox='true'></column>-->
+      <column title='合同编码' field='ContractCode' align='left' sortable='true' width='100' checkbox='true'></column>
+      <column title='项目名称' field='ProjectName' align='left' sortable='true' width='100' searchType='text' ></column>
+      <column title='产品名称' field='ProductName' align='left' sortable='true' width='100' searchType='text'></column>
+      <column title='零件名称' field='PartName' align='left' sortable='true' width='100' ></column>
+      <column title='零件图号' field='PartFigureCode' align='left' sortable='true' width='100' ></column>
+      <column title='加工车间' field='WorkshopCode' align='left' hidden='true' sortable='true' width='100' searchType='text'></column>
+      <column title='加工车间' field='WorkshopName' align='left' sortable='true' width='100' searchType='text'></column>
+      <!--<column title='型号规格' field='Model' align='left' sortable='true' width='100' ></column>-->
+      <!--<column title='仓库' field='WarehouseName' align='left' sortable='true' width='100' ></column>
+      <column title='仓库编码' field='WarehouseCode' hidden='true' align='left' sortable='true' width='100' ></column>-->
+      <!--<column title='部门' field='Type' align='left' sortable='true' width='100' hidden='true' searchType='text'></column>-->
+
+
+    </ColumnList>
+  </searchDialog>
+
+  <searchDialog name='APS_ProjectProduceDetial'>
+    <!--车间领料选择生产计划-->
+    <settings defaultOrderBy='ContractCode desc'>
+      <module>Mms</module>
+      <select>*</select>
+      <from>
+        (
+        SELECT DISTINCT t1.*,
+        t2.ProjectName,
+        t3.ProductName,
+        t4.PartName,t4.PartFigureCode
+        FROM
+        (
+        SELECT
+        MAX(ID) ID,
+        PartCode,
+        ContractCode,
+        ProjectDetailID,
+        WorkshopID,
+        WorkshopName,
+        ProcessModelType
+        FROM APS_ProjectProduceDetial
+        WHERE IsEnable = 1
+        AND PlanState >= 1
+        AND ProcessLineCode=1
+        AND ProcessModelType!=1
+        GROUP BY PartCode,
+        ContractCode,
+        ProjectDetailID,
+        WorkshopID,
+        WorkshopName,
+        ProcessModelType
+        ) t1
+        LEFT JOIN dbo.PMS_BN_Project t2
+        ON t1.ContractCode = t2.ContractCode
+        AND t2.IsEnable = 1
+        AND t2.Is0tSartProduct = 1
+        LEFT JOIN dbo.PMS_BN_ProjectDetail t3
+        ON t3.ID = t1.ProjectDetailID
+        AND t3.ProjectState=2
+        AND t3.IsEnable=1
+        LEFT JOIN dbo.PRS_Process_BOM t4 ON
+        t1.PartCode=t4.PartCode
+        AND t4.IsEnable=1
+
+
+        ) as tab1
+      </from>
+      <where defaultForAll='true' defaultCp='equal' defaultIgnoreEmpty='true' >
+        <field name='ProjectName' cp='like'></field>
+        <field name='ProductName' cp='like'></field>
+        <field name='PartName' cp='like'></field>
+      </where>
+    </settings>
+    <!--配置datagrid的列属性-->
+    <ColumnList>
+      <column title='主键ID' field='ID' align='left' hidden='true' sortable='true' width='100' checkbox='true'></column>
+      <column title='合同编码' hidden='true' field='ContractCode' align='left' sortable='true' width='100' ></column>
+      <column title='项目名称' field='ProjectName' align='left' sortable='true' width='100' searchType='text' ></column>
+      <column title='产品名称' field='ProductName' align='left' sortable='true' width='100' ></column>
+      <column title='零件名称' field='PartName' align='left' sortable='true' width='100' ></column>
+      <column title='零件图号' field='PartFigureCode' align='left' sortable='true' width='100' ></column>
+      <column title='加工车间' field='WorkshopName' align='left' sortable='true' width='100' ></column>
+      <column title='型号规格' field='Model' align='left' sortable='true' width='100' ></column>
+      <column title='仓库' field='WarehouseName' align='left' sortable='true' width='100' searchType='text'></column>
+      <column title='仓库编码' field='WarehouseCode' hidden='true' align='left' sortable='true' width='100' ></column>
+      <column title='部门' field='Type' align='left' sortable='true' width='100' hidden='true' searchType='text'></column>
+
+
+    </ColumnList>
+  </searchDialog>
+  <!--选择领料出库单-->
+  <searchDialog name='ChooseLLCK'>
+    <!--配置datagrid的数据绑定以及查询功能-->
+    <settings defaultOrderBy='t1.CreateTime desc'>
+      <module>Mms</module>
+      <select>*</select>
+      <from>
+        (SELECT a.ID as aID,b.DepartmentID,b.DepartmentName,b.BillCode,c.InventoryCode,c.InventoryName,c.WarehouseCode as WarehouseCode,
+        a.ContractCode,a.ProjectName,RequiredQuantity,c.QuantityUnit,a.CreateTime as CreateTime FROM MES_MaterialPickDetail a
+        LEFT JOIN MES_MaterialPickMain b on a.MainID=b.ID
+        left join  SYS_Part c on a.InventoryCode=c.InventoryCode    ) as t1
+      </from>
+      <where defaultForAll='true' defaultCp='equal' defaultIgnoreEmpty='true' >
+        <field name='t1.ContractCode' cp='like'></field>
+        <field name='t1.WarehouseCode' cp='equal'></field>
+      </where>
+    </settings>
+    <!--配置datagrid的列属性-->
+    <ColumnList>
+      <column title='领料明细表ID' field='aID' align='left' sortable='true' width='100' checkbox='true'></column>
+      <column title='合同编号' field='ContractCode' align='left' sortable='true' width='100' hidden='true' ></column>
+      <column title='项目名称' field='ProjectName' align='left' sortable='true' width='100'  ></column>
+      <column title='领料部门编码' field='DepartmentID' align='left' sortable='true' width='200' >  </column>
+      <column title='领料部门' field='DepartmentName' align='left' sortable='true' width='100'  ></column>
+      <column title='领料单号' field='BillCode' align='left' sortable='true' width='100' searchType='text' ></column>
+      <column title='存货编号' field='InventoryCode' align='left' sortable='true' width='100' ></column>
+      <column title='存货名称' field='InventoryName' align='left' sortable='true' width='100' ></column>
+      <column title='需求数量' field='RequiredQuantity' align='left' sortable='true' width='100' ></column>
+      <column title='单位' field='QuantityUnit' align='left' sortable='true' width='100' hidden='true' ></column>
+      <column title='仓库编码' field='WarehouseCode' align='left' sortable='true' width='100'  searchType='text' hidden='true' ></column>
+
+
+
+    </ColumnList>
+  </searchDialog>
+
+  <!--;-->
+
+  <searchDialog name='ChooseProjectPartByWarehouse'>
+    <!--生产请购选择项目零件-->
+    <settings defaultOrderBy='t.ContractCode desc'>
+      <module>Mms</module>
+      <select>*</select>
+      <from>
+        (SELECT DISTINCT
+        --合同编号
+        A.ContractCode,
+        --工程项目
+        A.ProjectName,
+        --仓库编码
+        B.WarehouseCode,
+        --仓库名称
+        B.WarehouseName,
+        --零件图号
+        c.PartFigureCode,
+        a.PartCode,
+        a.PartName,
+        c.PartQuantity,
+        a.[NeedQuantity]
+        --库存数量
+        --已请购数量
+        FROM [dbo].[MES_BN_MatchingTableDetail] A
+        INNER JOIN [dbo].[SYS_Part] B
+        ON A.PartCode = B.PartCode
+        AND B.IsEnable = '1'
+        INNER JOIN [dbo].[PRS_Process_BOM] C
+        ON B.PartCode = C.PartCode
+        AND C.IsEnable = '1'
+        WHERE
+        A.IsEnable = '1') as t
+      </from>
+      <where defaultForAll='true' defaultCp='equal' defaultIgnoreEmpty='true' >
+        <field name='t.ProductPlanCode' cp='like'></field>
+        <field name='t.WarehouseCode' cp='like'></field>
+
+      </where>
+    </settings>
+    <!--配置datagrid的列属性-->
+    <ColumnList>
+      <column title='主键ID' field='ID' align='left' sortable='true' width='100' checkbox='true'></column>
+      <column title='合同编码' field='ContractCode' align='left' sortable='true' width='100' ></column>
+      <column title='工程项目' field='ProjectName' align='left' sortable='true' width='100' ></column>
+      <column title='生产批次计划编码' field='ProductPlanCode' searchType='text' align='left'  sortable='true' width='100' ></column>
+      <column title='仓库编码' field='WarehouseCode' align='left' searchType='text' hidden='true' sortable='true' width='100' ></column>
+      <column title='仓库名称' field='WarehouseName' align='left' sortable='true' width='70' ></column>
+      <column title='零件图号' field='PartFigureCode' align='left' sortable='true' width='70' ></column>
+      <column title='零件编码' field='PartCode' align='left' sortable='true' width='70' ></column>
+      <column title='零件名称' field='PartName' align='left' sortable='true' width='120' ></column>
+      <column title='单台数量' field='PartQuantity' align='left' sortable='true' width='120' ></column>
+      <column title='需求数量' field='NeedQuantity' align='left' sortable='true' width='120' ></column>
+
+    </ColumnList>
+  </searchDialog>
+
+  <searchDialog name='ChooseBlankingPlate'>
+    <!--生产请购选择项目零件-->
+    <settings defaultOrderBy='ID desc'>
+      <module>Mms</module>
+      <select>*</select>
+      <from>
+        (SELECT * from  dbo.V__Mes_BlankingResult where IsBlanking!=1  AND BlankingType != 7 ) as tmp
+      </from>
+      <where defaultForAll='true' defaultCp='equal' defaultIgnoreEmpty='true' >
+        <field name='ContractCode' cp='like'></field>
+        <!--<field name='selectID' cp='equal' hidden='true'></field>-->
+        <field name='PartName' cp='like'></field>
+        <field name='InventoryName' cp='like'></field>
+        <field name='Model' cp='like'></field>
+
+      </where>
+    </settings>
+    <!--配置datagrid的列属性-->
+    <ColumnList>
+      <column title='主键ID' field='ID' align='left' sortable='true' width='100' checkbox='true'></column>
+      <column title='合同编码' field='ContractCode' searchType='text' align='left' sortable='true' width='100' ></column>
+      <column title='零件图号' field='FigureCode' align='left' sortable='true' width='200' ></column>
+      <column title='零件编码' field='PartCode' align='left' hidden='true' sortable='true' width='100' ></column>
+      <column title='零件名称' field='PartName' searchType='text' align='left'  sortable='true' width='150' ></column>
+      <column title='拼板方案' field='ResultSize' align='left'  sortable='true' width='200' ></column>
+      <column title='要求尺寸' field='BiankingSize' align='left' sortable='true' width='150' ></column>
+      <column title='板材材质' field='InventoryName' align='left' searchType='text'  sortable='true' width='150' ></column>
+      <column title='厚度' field='Model' align='left' searchType='text' sortable='true' width='150' ></column>
+      <column title='下料方案ID' field='BlankingResultID'  align='left' hidden='true' sortable='true' width='100' ></column>
+      <!--<column title='已选ID' field='selectID'  align='left' hidden='true' searchType='text' sortable='true' width='100' ></column>-->
+    </ColumnList>
+  </searchDialog>
+  
+  
+  <searchDialog name='ChooseProjectDesign'>
+    <!--设计更改申请选择项目零件-->
+    <settings defaultOrderBy='t.ContractCode desc'>
+      <module>Mms</module>
+      <select>*</select>
+      <from>
+        (SELECT
+        -- 合同编号
+        A.ContractCode,
+        --工程项目
+        A.ProjectName,
+        --产品名称
+        B.ProductName,
+        B.ID as ProductID,
+        --任务类型
+        f.Text,f.Value as typeID,
+        --零件图号
+        E.PartFigureCode
+        FROM [dbo].[PMS_BN_Project] A
+        INNER JOIN [dbo].[PMS_BN_ProjectDetail] B
+        ON A.ProjectID = B.MainID
+        AND B.IsEnable = '1'
+        INNER JOIN [dbo].[PMS_ProductTask] C
+        ON B.ID = C.ProductID
+        AND C.TaskType = '1'
+        AND C.IsEnable = '1'
+        INNER JOIN [dbo].[PMS_DesignTaskDetail] D
+        ON C.ID = D.MainID
+        AND D.ActualFinishTime IS NOT NULL
+        AND D.IsEnable = '1'
+        INNER JOIN [dbo].[SYS_BOM] E
+        ON D.PartCode = E.PartCode
+        and e.VersionCode=(select Max(VersionCode) as VersionCode from SYS_BOM where  partcode=e.partcode)
+        and E.IsEnable=1
+        INNER JOIN [HBHC_Sys].[dbo].[sys_code] f
+        ON D.TaskType = f.Value
+        AND f.CodeType = 'TaskType'
+        AND f.IsEnable = '1'
+        ) as t
+      </from>
+      <where defaultForAll='true' defaultCp='equal' defaultIgnoreEmpty='true' >
+        <field name='t.ProjectName' cp='like'></field>
+        <field name='t.ProductName' cp='like'></field>
+      </where>
+    </settings>
+    <!--配置datagrid的列属性-->
+    <ColumnList>
+      <column title='合同编码' field='ContractCode' align='left' sortable='true' checkbox='true' width='100' ></column>
+      <column title='工程项目' field='ProjectName' searchType='text' align='left' sortable='true' width='100' ></column>
+      <column title='产品名称' field='ProductName' searchType='text' align='left'  sortable='true' width='100' ></column>
+      <column title='任务类型' field='Text' align='left'   sortable='true' width='100' ></column>
+      <column title='零件图号' field='PartFigureCode' align='left' sortable='true' width='70' ></column>
+    </ColumnList>
+  </searchDialog>
+
+
+
+
+  <searchDialog name='PlanChooseProjectPart'>
+    <!--计划选择项目零件-->
+    <settings defaultOrderBy='temp.ContractCode desc'>
+      <module>Mms</module>
+      <select>*</select>
+      <from>
+        (SELECT c.ContractCode,
+        c.ProjectName,
+        a.ProductName,
+        a.ProductType,
+        a.Model,
+        a.Specifications,
+        b.PartCode,
+        e.PartName,
+        e.PartFigureCode,
+        a.ID AS ProjectDetailID --产品信息表主键ID
+        FROM PMS_BN_ProjectDetail a
+        LEFT JOIN PMS_BN_Project c
+        ON a.MainID = c.ProjectID
+        AND c.IsEnable = 1
+        AND c.Is0tSartProduct = 1
+        INNER JOIN
+        (
+        SELECT ContractCode,
+        ProductID,
+        TaskType,
+        MAX(PartCode) PartCode
+        FROM PMS_DesignTaskResult
+        WHERE IsEnable = 1
+        GROUP BY ContractCode,
+        ProductID,
+        TaskType
+        ) AS b
+        ON b.ProductID = a.ID
+        LEFT JOIN SYS_BOM e
+        ON e.PartCode = b.PartCode
+        WHERE a.ProjectState = 2) as temp
+      </from>
+      <where defaultForAll='true' defaultCp='equal' defaultIgnoreEmpty='true' >
+        <field name='temp.ContractCode' cp='like'></field>
+      </where>
+    </settings>
+    <!--配置datagrid的列属性-->
+    <ColumnList>
+      <column title='主键ID' field='ck' align='left' sortable='true' width='100' checkbox='true'></column>
+      <column title='合同编码' field='ContractCode' align='left' sortable='true' width='70' searchType='text' ></column>
+      <column title='工程项目' field='ProjectName' align='left' sortable='true' width='100' ></column>
+      <column title='产品名称' field='ProductName' align='left' sortable='true' width='100' ></column>
+      <column title='产品类型' field='ProductType' align='left' sortable='true' width='70' formatter='gridFormat'>
+        <gridFormat><![CDATA[data-options="formatter:function(value,row){return com.formatCombobox('ProductType',value);}"]]></gridFormat>
+      </column>
+      <column title='型号' field='Model' align='left' sortable='true' width='90' ></column>
+      <column title='规格' field='Specifications' align='left' sortable='true' width='90' ></column>
+      <column title='零件图号' field='PartFigureCode' align='left' sortable='true' width='150' ></column>
+      <column title='零件编号' field='PartCode' align='left' sortable='true' width='150' ></column>
+      <column title='零件名称' field='PartName' align='left' sortable='true' width='120' ></column>
+      <column title='需排产数量' field='Quantity' align='left' sortable='true' width='70'>
+        <!--<gridEditor>{type:'validatebox',options:{required:true,validType:'compareNumber[\'#CommonDialogForm\',\'NoQuantity\']'}}</gridEditor>-->
+      </column>
+      <column title='批次生产数量' field='ProductQuantity' align='left' sortable='true' width='100' ></column>
+      <column title='未排产数量' field='NoQuantity' align='left' sortable='true' width='80'></column>
+    </ColumnList>
+  </searchDialog>
+
+  <searchDialog name='MatchingChooseProjectPart'>
+    <!--配套表选择项目零件-->
+    <settings defaultOrderBy='t.ContractCode desc'>
+      <module>Mms</module>
+      <select>*</select>
+      <from>
+        (SELECT
+        --合同编号
+        a.ContractCode,
+        --工程项目
+        a.ProjectName,
+        --产品名称
+        B.ProductName,
+        --产品类型
+        C.Value ProductType,
+        --产品类型名称
+        C.Text ProductTypeName,
+        --型号
+        B.Model,
+        --规格
+        B.Specifications,
+        E.PartCode,
+        --零件图号
+        E.DesignTaskCode,
+        F.PartFigureCode,
+        --零件名称
+        F.PartName,
+        --批产数量
+        B.Quantity,
+        CASE e.TaskType WHEN
+        1 THEN '主阀设计任务'
+        ELSE '附件设计任务'
+        END taskText,
+        G.TaskDescription,
+        G.TaskType,
+        B.ID AS ProjectDetailID
+        FROM dbo.PMS_BN_Project a
+        INNER JOIN [dbo].[PMS_BN_ProjectDetail] B
+        ON a.ProjectID = B.MainID
+        AND B.IsEnable = '1'
+        AND a.Is0tSartProduct = 1
+        INNER JOIN [HBHC_Sys].[dbo].[sys_code] C
+        ON C.CodeType = 'ProductType'
+        AND B.ProductType = C.Value
+        AND C.IsEnable = '1'
+        INNER JOIN [dbo].[PMS_DesignTaskDetail] E
+        ON B.ID = E.ProductID
+        AND E.IsEnable = '1'
+        AND E.DesignType = 1
+        AND E.ActualFinishTime IS NOT NULL
+        INNER JOIN
+        (
+        SELECT ContractCode,
+        ProductID,
+        PartCode,
+        TaskType,
+        MAX(VersionCode) VersionCode,
+        MAX(MainID) MainID,
+        MAX(IsEnable) IsEnable,
+        MAX(TaskDescription) TaskDescription,
+        MAX(CreateTime) CreateTime
+        FROM PMS_DesignTaskResult
+        GROUP BY ContractCode,
+        ProductID,
+        PartCode,
+        TaskType
+        ) AS G
+        ON E.ID = G.MainID
+        AND G.IsEnable = 1
+        INNER JOIN [dbo].[PRS_Process_BOM] F
+        ON E.PartCode = F.PartCode
+        AND F.IsEnable = '1'
+        WHERE a.IsEnable = '1'
+        AND B.ProjectState = 2
+        AND a.Is0tSartProduct = 1
+        ) as t
+      </from>
+      <where defaultForAll='true' defaultCp='equal' defaultIgnoreEmpty='true' >
+        <field name='t.ContractCode' cp='like'></field>
+
+      </where>
+    </settings>
+    <!--配置datagrid的列属性-->
+    <ColumnList>
+      <column title='主键ID' field='ID' align='left' sortable='true' width='100' checkbox='true'></column>
+      <column title='合同编码' field='ContractCode' align='left' sortable='true' width='100' searchType='text' ></column>
+      <column title='工程项目' field='ProjectName' align='left' sortable='true' width='100' ></column>
+      <column title='产品名称' field='ProductName' align='left' sortable='true' width='100' ></column>
+      <column title='产品类型' hidden='true' field='ProductType' align='left' sortable='true' width='70' ></column>
+      <column title='产品类型' field='ProductTypeName' align='left' sortable='true' width='70' ></column>
+      <column title='型号' field='Model' align='left' sortable='true' width='70' ></column>
+      <column title='规格' field='Specifications' align='left' sortable='true' width='70' ></column>
+      <column title='零件图号' field='PartFigureCode' align='left' sortable='true' width='120' ></column>
+      <column title='零件名称' field='PartName' align='left' sortable='true' width='120' ></column>
+      <column title='设计任务描述' field='taskText' align='left' sortable='true' width='70' ></column>
+      <column title='设计结果描述' field='TaskDescription' align='left' sortable='true' width='70' ></column>
+      <column title='合同数量' field='Quantity' align='left' sortable='true' width='120' ></column>
+      <!--<column title='交货日期' field='PlanFinishDate' align='left' sortable='true' width='120' formatter='com.formatDate' ></column>-->
+      <column title='明细' field='ProjectDetailID' hidden='true' align='left' sortable='true' width='120' ></column>
+      <!--<column title='生产计划批次' field='ProductPlanCode' hidden='true' align='left' sortable='true' width='120' ></column>
+      <column title='设计任务明细编号' field='DesignTaskCode' hidden='true' align='left' sortable='true' width='120' ></column>-->
+
+    </ColumnList>
+  </searchDialog>
+
+  <searchDialog name='ChooseProjectPart'>
+    <!--工艺路线选择项目零件-->
+    <settings defaultOrderBy='t.ContractCode desc'>
+      <module>Mms</module>
+      <select>*</select>
+      <from>
+        (SELECT
+        --合同编号
+        A.ContractCode,
+        --工程项目
+        A.ProjectName,
+        --产品名称
+        B.ProductName,
+        --产品类型
+        C.Text ProductType,
+        --产品ID
+        B.ID as ProductID,
+        --型号
+        B.Model,
+        --规格
+        B.Specifications,
+        --合同数量
+        B.Quantity
+        ,
+        E.PartCode,
+        --零件图号
+        E.PartFigureCode,
+        --零件名称
+        E.PartName,
+        d.DesignTaskCode,
+        CASE d.TaskType WHEN
+        1 THEN '主阀设计任务'
+        ELSE '附件设计任务'
+        END taskText,
+        F.[VersionCode],
+        f.TaskType,f.TaskDescription
+        FROM [dbo].[PMS_BN_Project] A
+        inner JOIN [dbo].[PMS_BN_ProjectDetail] B
+        ON A.ProjectID = B.MainID
+        AND B.IsEnable = '1'
+        inner JOIN [HBHC_Sys].[dbo].[sys_code] C
+        ON C.CodeType = 'ProductType'
+        AND B.ProductType = C.Value
+        AND C.IsEnable = '1'
+        inner JOIN [dbo].[PMS_DesignTaskDetail] D
+        ON B.ID = D.ProductID
+        INNER JOIN
+        (
+        SELECT ContractCode,
+        ProductID,
+        PartCode,
+        TaskType,
+        MAX(VersionCode) VersionCode,
+        MAX(MainID) MainID,
+        MAX(IsEnable) IsEnable,
+        MAX(TaskDescription) TaskDescription,
+        MAX(CreateTime) CreateTime
+        FROM PMS_DesignTaskResult
+        GROUP BY ContractCode,
+        ProductID,
+        PartCode,
+        TaskType
+        ) AS  F ON
+        f.MainID=d.ID AND f.IsEnable=1
+        and d.actualfinishtime is not null and D.DesignType=1
+        AND D.IsEnable = '1'
+        inner JOIN [dbo].[SYS_BOM] E
+        ON D.PartCode = E.PartCode
+        and d.versioncode=e.versioncode
+        AND E.IsEnable = '1'
+        WHERE A.IsEnable = '1' and B.ProjectState =2
+        ) as t
+      </from>
+      <where defaultForAll='true' defaultCp='equal' defaultIgnoreEmpty='true' >
+        <field name='t.ContractCode' cp='like'></field>
+        <field name='t.ProjectName' cp='like'></field>
+        <field name='t.Model' cp='like'></field>
+        <field name='t.Specifications' cp='like'></field>
+        <field name='t.PartFigureCode' cp='like'></field>
+
+      </where>
+    </settings>
+    <!--配置datagrid的列属性-->
+    <ColumnList>
+      <column title='主键ID' field='ID' align='left' sortable='true' width='100' checkbox='true'></column>
+      <column title='合同编码' field='ContractCode' align='left' sortable='true' width='100' searchType='text' ></column>
+      <column title='工程项目' field='ProjectName' align='left' sortable='true' width='100'  searchType='text'></column>
+      <column title='产品名称' field='ProductName' align='left' sortable='true' width='100' ></column>
+      <column title='产品类型' field='ProductType' align='left' sortable='true' width='70' ></column>
+      <column title='设计任务描述' field='taskText' align='left' sortable='true' width='70' ></column>
+      <column title='型号' field='Model' align='left' sortable='true' width='70' searchType='text' ></column>
+      <column title='规格' field='Specifications' align='left' sortable='true' width='70'  searchType='text'></column>
+      <column title='产品数量' field='Quantity' align='left' sortable='true' width='55' ></column>
+      <column title='零件图号' field='PartFigureCode' align='left' sortable='true' width='120' searchType='text' ></column>
+      <column title='设计结果描述' field='TaskDescription' align='left' sortable='true' width='70' ></column>
+      <column title='零件名称' field='PartName' align='left' sortable='true' width='120' ></column>
+
+    </ColumnList>
+  </searchDialog>
+  <searchDialog name='ChooseWorkshopPurchase'>
+    <!--选择车间请购-->
+    <settings defaultOrderBy='CreateTime desc'>
+      <module>Mms</module>
+      <select>*,'车间' as CreateType</select>
+      <from>
+        MES_WorkshopPurchaseMain
+      </from>
+      <where defaultForAll='true' defaultCp='equal' defaultIgnoreEmpty='true' >
+        <field name='ContractCode' cp='like'></field>
+      </where>
+    </settings>
+    <!--配置datagrid的列属性-->
+    <ColumnList>
+      <column title='主键ID' field='ID' align='left' sortable='true' width='100' checkbox='true'></column>
+      <column title='车间请购单编码 ' field='WorkshopPurchaseCode' align='left' sortable='true' width='100' searchType='text' ></column>
+      <column title='车间编码' field='WorkshopID' align='left' sortable='true' width='100' ></column>
+      <column title='车间名称' field='WorkshopName' align='left' sortable='true' width='100' ></column>
+    </ColumnList>
+  </searchDialog>
+
+  <searchDialog name='ChooseProductPurchase'>
+    <!--选择生产请购-->
+    <settings defaultOrderBy='CreateTime desc'>
+      <module>Mms</module>
+      <select>*</select>
+      <from>
+        (
+        SELECT DISTINCT
+        (t1.ID) AS ID,
+        PurchaseDocumentCode,
+        t1.ContractCode,
+        t1.PurchaseDate,
+        t3.DepartmentCode,
+        t3.DepartmentName,
+        t1.CreateTime,
+        t4.ProjectName,
+        t3.UserCode,
+        t3.SaleMan,
+        t3.WarehouseCode,
+        t3.WarehouseName,
+        t3.SupplierCode,
+        t3.SupplierName,
+        t3.PlanArrivelDate,
+        t3.InventoryCode,
+        t3.MatchTableID,
+        t3.Unit,
+        t5.InventoryName,
+        t5.Model
+        FROM APS_ProductPurchaseMain t1
+        LEFT JOIN APS_ProductPurchaseDetail t3
+        ON t3.MainID = t1.ID
+        LEFT JOIN PMS_BN_Project t4
+        ON t1.ContractCode = t4.ContractCode
+        LEFT JOIN dbo.SYS_Part t5
+        ON t5.InventoryCode = t3.InventoryCode
+        AND t5.IsEnable = 1
+        WHERE t3.PurchaseState = 1
+        AND t1.IsEnable = 1
+        AND t3.IsEnable = 1
+        AND t4.Is0tSartProduct = 1
+        AND t4.IsEnable = 1
+        ) as tab1
+      </from>
+      <where defaultForAll='true' defaultCp='equal' defaultIgnoreEmpty='true' >
+        <field name='ContractCode' cp='like'></field>
+
+      </where>
+    </settings>
+    <!--配置datagrid的列属性-->
+    <ColumnList>
+      <column title='主键ID' field='ID' align='left' sortable='true' width='100' checkbox='true'></column>
+      <column title='请购单编码 ' field='PurchaseDocumentCode' hidden='true' align='left' sortable='true' width='100' searchType='text' ></column>
+      <column title='合同编号' field='ContractCode' align='left' sortable='true' width='100' ></column>
+      <column title='存货编码' field='InventoryCode' align='left' hidden='true' sortable='true' width='100' ></column>
+      <column title='存货名称' field='InventoryName' align='left' sortable='true' width='100' ></column>
+      <column title='请购日期' field='PurchaseDate' align='left' sortable='true' width='100' formatter='com.formatDate'></column>
+      <column title='部门' field='DepartmentName' align='left' sortable='true' searchType='text' width='100' ></column>
+      <column title='工程项目' field='ProjectName' align='left' sortable='true' width='100' ></column>
+      <column title='采购员编码' field='UserCode' align='left' sortable='true' width='100' ></column>
+      <column title='名称' field='SaleMan' align='left' sortable='true' width='100' ></column>
+      <column title='仓库编码' field='WarehouseCode' align='left' sortable='true' width='100' ></column>
+      <column title='仓库名称' field='WarehouseName' align='left' sortable='true' width='100' ></column>
+      <column title='供应商编码' field='SupplierCode' align='left' sortable='true' width='100' ></column>
+      <column title='计划到货日期' field='PlanArrivelDate' align='left' sortable='true' width='100' formatter='com.formatDate'></column>
+      <column title='配套表ID' field='MatchTableID' align='left' sortable='true' width='100' ></column>
+      
+    </ColumnList>
+  </searchDialog>
+
+
+  <searchDialog name='ChooseFailureReport'>
+    <!--配置datagrid的数据绑定以及查询功能-->
+    <settings defaultOrderBy='CreateTime desc'>
+      <module>Mms</module>
+      <select>*</select>
+      <from>
+        EQP_FailureReport
+      </from>
+      <where defaultForAll='true' defaultCp='equal' defaultIgnoreEmpty='true' >
+        <field name='FailureReportCode' cp='like'></field>
+        <field name='FailReportState' cp='equal'></field>
+      </where>
+    </settings>
+    <!--配置datagrid的列属性-->
+    <ColumnList>
+      <column title='主键ID' field='ID' align='left' sortable='true' width='100' checkbox='true'></column>
+      <column title='故障报告编号 ' field='FailureReportCode' align='left' sortable='true' width='100' searchType='text' ></column>
+
+      <column title='设备名称' field='EquipmentName' align='left' sortable='true'  width='100' ></column>
+
+      <column title='所在车间' field='WorkshopName' align='left' sortable='true' width='100' ></column>
+
+      <column title='故障时间' field='FailTime' align='left' sortable='true' width='100' formatter='com.formatDate' ></column>
+      <column title='故障描述' field='FailDescription' align='left' sortable='true' width='100' ></column>
+      <column title='故障状态' field='FailReportState' align='left' sortable='true' width='100' searchType ='select' hidden='true'>
+        <searchBinding type='dictionary'>FailReportState</searchBinding>
+        <gridFormat><![CDATA[data-options="formatter:function(value,row){return com.formatCombobox('FailReportState',value);}"]]></gridFormat>
+      </column>
+      <!--<column title='维护标准类型' field='MaintenanceType' align='left' sortable='true' width='100'  searchType='text'></column>-->
+      <!--配置datagrid的列属性-->
+
+    </ColumnList>
+  </searchDialog>
+
+  <searchDialog name='ChooseWHBZ'>
+    <!--配置datagrid的数据绑定以及查询功能-->
+    <settings defaultOrderBy='CreateTime desc'>
+      <module>Mms</module>
+      <select>*</select>
+      <from>
+        EQP_EquipmentMaintenance
+      </from>
+      <where defaultForAll='true' defaultCp='equal' defaultIgnoreEmpty='true' >
+        <field name='MaintenanceCode' cp='like'></field>
+        <field name='MaintenanceType' cp='equal'></field>
+
+      </where>
+    </settings>
+    <!--配置datagrid的列属性-->
+    <ColumnList>
+      <column title='主键ID' field='ID' align='left' sortable='true' width='100' checkbox='true'></column>
+      <column title='维护标准编号 ' field='MaintenanceCode' align='left' sortable='true' width='100' searchType='text' ></column>
+      <column title='设备编号' field='EquipmentCode' align='left' sortable='true' width='100' ></column>
+      <column title='设备名称' field='EquipmentName' align='left' sortable='true' width='100' ></column>
+      <!--<column title='维护标准类型' field='MaintenanceType' align='left' sortable='true' width='100'  searchType='text'></column>-->
+      <!--配置datagrid的列属性-->
+      <column title='维护标准类型' field='MaintenanceType'  readyonly='true' align='left' searchType='select' sortable='true' width='120'  formatter='gridFormat'>
+        <searchBinding type='dictionary'>MaintenanceType</searchBinding>
+        <gridFormat><![CDATA[data-options="formatter:function(value,row){return com.formatCombobox('MaintenanceType',value);}"]]></gridFormat>
+      </column>
+    </ColumnList>
+  </searchDialog>
+
+
+  <searchDialog name='ChooseCheckModel'>
+    <!--配置datagrid的数据绑定以及查询功能-->
+    <settings defaultOrderBy='CreateTime desc'>
+      <module>Mms</module>
+      <select>*</select>
+      <from>
+        (
+        select * from QMS_BD_QualityCheckType where PInspectionName = '来料检验' and IsEnable=1
+        ) as tab1
+      </from>
+      <where defaultForAll='true' defaultCp='equal' defaultIgnoreEmpty='true' >
+        <field name='EquipmentName' cp='like'></field>
+        <field name='EquipmentState' cp='equal'></field>
+
+      </where>
+    </settings>
+    <!--配置datagrid的列属性-->
+    <ColumnList>
+      <column title='主键ID' field='ID' align='left' sortable='true' width='100' ></column>
+      <column title='质检类型编码 ' field='InspectionTypeCode' hidden='true' align='left' sortable='true' width='100' ></column>
+      <column title='质检类型名称' field='InspectionTypeName' align='left' sortable='true' searchType='text' width='100' ></column>
+      <column title='父级质检类型编码' field='PInspectionType' hidden='true' align='left'  sortable='true' width='120' ></column>
+      <column title='父级质检类型' field='PInspectionName'  align='left' sortable='true' width='120'> </column>
+      <column title='创建时间' field='CreateTime'   align='left' sortable='true' width='120'> </column>
+    </ColumnList>
+  </searchDialog>
+
+
+  <searchDialog name='ChooseProcessCheckModel'>
+    <!--配置datagrid的数据绑定以及查询功能-->
+    <settings defaultOrderBy='CreateTime desc'>
+      <module>Mms</module>
+      <select>*</select>
+      <from>
+        (
+        select * from QMS_BD_QualityCheckType where PInspectionName like  '%过程检验%' and IsEnable=1
+        ) as tab1
+      </from>
+      <where defaultForAll='true' defaultCp='equal' defaultIgnoreEmpty='true' >
+        <field name='EquipmentName' cp='like'></field>
+        <field name='EquipmentState' cp='equal'></field>
+
+      </where>
+    </settings>
+    <!--配置datagrid的列属性-->
+    <ColumnList>
+      <column title='主键ID' field='ID' align='left' sortable='true' width='100' ></column>
+      <column title='质检类型编码 ' field='InspectionTypeCode' hidden='true' align='left' sortable='true' width='100' ></column>
+      <column title='质检类型名称' field='InspectionTypeName' align='left' sortable='true' searchType='text' width='100' ></column>
+      <column title='父级质检类型编码' field='PInspectionType' hidden='true' align='left'  sortable='true' width='120' ></column>
+      <column title='父级质检类型' field='PInspectionName'  align='left' sortable='true' width='120'> </column>
+      <column title='创建时间' field='CreateTime'   align='left' sortable='true' width='120'> </column>
+    </ColumnList>
+  </searchDialog>
+
+  <searchDialog name='ChooseShipmentCheckModel'>
+    <!--配置datagrid的数据绑定以及查询功能-->
+    <settings defaultOrderBy='ID desc'>
+      <module>Mms</module>
+      <select>*</select>
+      <from>
+        (
+        select * from QMS_BD_QualityCheckType where PInspectionName like  '%发运检验%' and IsEnable=1
+        ) as tab1
+      </from>
+      <where defaultForAll='true' defaultCp='equal' defaultIgnoreEmpty='true' >
+        <field name='InspectionTypeName' cp='like'></field>
+      </where>
+    </settings>
+    <!--配置datagrid的列属性-->
+    <ColumnList>
+      <column title='主键ID' field='ID' align='left' sortable='true' width='100' ></column>
+      <column title='质检类型编码 ' field='InspectionTypeCode' hidden='true' align='left' sortable='true' width='100' ></column>
+      <column title='质检类型名称' field='InspectionTypeName' align='left' sortable='true' searchType='text' width='100' ></column>
+      <column title='父级质检类型编码' field='PInspectionType' hidden='true' align='left'  sortable='true' width='120' ></column>
+      <column title='父级质检类型' field='PInspectionName'  align='left' sortable='true' width='120'> </column>
+      <column title='创建时间' field='CreateTime' hidden='true'  align='left' sortable='true' width='120'> </column>
+    </ColumnList>
+  </searchDialog>
+
+
+  <searchDialog name='ChooseSBWX'>
+    <!--配置datagrid的数据绑定以及查询功能-->
+    <settings defaultOrderBy='CreateTime desc'>
+      <module>Mms</module>
+      <select>*</select>
+      <from>
+        SYS_Equipment
+      </from>
+      <where defaultForAll='true' defaultCp='equal' defaultIgnoreEmpty='true' >
+        <field name='EquipmentName' cp='like'></field>
+        <field name='EquipmentState' cp='equal'></field>
+
+      </where>
+    </settings>
+    <!--配置datagrid的列属性-->
+    <ColumnList>
+      <column title='主键ID' field='ID' align='left' sortable='true' width='100' checkbox='true'></column>
+      <column title='设备编号 ' field='EquipmentCode' align='left' sortable='true' width='100' ></column>
+      <column title='设备名称' field='EquipmentName' align='left' sortable='true' searchType='text' width='100' ></column>
+      <column title='设备类型' field='EquipmentType' align='left'  sortable='true' width='120' ></column>
+      <column title='所在车间' field='AffiliatedWorkshopID'  hidden='true' align='left' sortable='true' width='120'> </column>
+      <column title='所在车间' field='AffiliatedWorkshopName'  hidden='true' align='left' sortable='true' width='120'> </column>
+      <column title='设备参数' field='EquipmentParms' align='left' sortable='true' width='200' ></column>
+      <column title='设备状态' field='EquipmentState' align='left' sortable='true' searchType='select' width='100' formatter='gridFormat'>
+        <searchBinding type='dictionary'>EquipmentState</searchBinding>
+        <gridFormat><![CDATA[data-options="formatter:function(value,row){return com.formatCombobox('EquipmentState',value);}"]]></gridFormat>
+      </column>
+    </ColumnList>
+  </searchDialog>
+
+  <searchDialog name='ChoosePurchaseOrder'>
+    <!--选择采购订单-->
+    <settings defaultOrderBy='CreateTime desc'>
+      <module>Mms</module>
+      <select>*</select>
+      <from>
+        (select distinct( t1.ID) as ID,t1.ContractCode,t4.ProjectName,t1.ProductPurchaseCode,t1.SupplierCode,t1.SupplierName,t1.UserCode,t1.SaleMan,t1.BillCode,t1.WarehouseID,t2.WarehouseName,t1.CreateTime from MES_PurchaseOrderMain t1
+        left join SYS_BN_Warehouse t2 on t1.WarehouseID=t2.WarehouseCode
+        left join PMS_BN_Project t4 on t1.ContractCode=t4.ContractCode
+        left join MES_PurchaseOrderDetail t3 on t3.MainID=t1.ID  where t3.IsFinish=1
+        ) as tab1
+      </from>
+      <where defaultForAll='true' defaultCp='equal' defaultIgnoreEmpty='true' >
+        <field name='ProjectName' cp='like'></field>
+        <field name='BillCode' cp='like'></field>
+      </where>
+    </settings>
+    <!--配置datagrid的列属性-->
+    <ColumnList>
+      <column title='主键ID' field='ID' align='left' sortable='true' width='100' hidden='true'></column>
+      <column title='采购单号 ' field='BillCode' align='left' sortable='true' width='200' searchType='text' ></column>
+      <column title='请购单号 ' field='ProductPurchaseCode' align='left' sortable='true' width='200' ></column>
+      <column title='合同编号' field='ContractCode' align='left' sortable='true' width='150' ></column>
+      <column title='项目名称' field='ProjectName' align='left' sortable='true'  searchType='text'  width='150' ></column>
+      <column title='仓库编码' field='WarehouseID' align='left' sortable='true' width='100' hidden='true'></column>
+      <column title='仓库' field='WarehouseName' align='left' sortable='true' width='100' ></column>
+      <column title='供应商编码' field='SupplierCode' align='left' sortable='true' width='100' hidden='true'></column>
+      <column title='供应商名称' field='SupplierName' align='left' sortable='true' width='100' ></column>
+      <column title='采购员编码' field='UserCode' align='left' sortable='true' width='100' hidden='true'></column>
+      <column title='采购员' field='SaleMan' align='left' sortable='true' width='100' ></column>
+      <column title='创建日期' field='CreateTime' align='left' sortable='true' width='100' formatter='com.formatDate'></column>
+    </ColumnList>
+  </searchDialog>
+
+  <searchDialog name='ChooseGoodsInspection'>
+    <!--选择来料报检单-->
+    <settings defaultOrderBy='ID desc'>
+      <module>Mms</module>
+      <select>*</select>
+      <from>
+        (
+        select t1.*,t3.InventoryName,t3.InventoryCode,t2.model,ArrivalQuatity,t2.Unit from MES_GoodsInspection t1
+        inner join MES_GoodsInspectionDetail t2 on t1.ID=t2.MainID and t1.IsEnable=1 and t2.IsEnable=1 and t1.BillState=2
+        left join SYS_Part t3 on t3.InventoryCode=t2.InventoryCode
+        and t3.IsEnable=1
+        where t1.IsEnable=1  and t1.BillState=2
+        ) as tab1
+      </from>
+      <where defaultForAll='true' defaultCp='equal' defaultIgnoreEmpty='true' >
+        <field name='ContractCode' cp='like'></field>
+      </where>
+    </settings>
+    <!--配置datagrid的列属性-->
+    <ColumnList>
+      <column title='主键ID' field='ID' align='left' hidden='true' sortable='true' width='100' checkbox='true'></column>
+      <column title='存货编码' field='InventoryCode' align='left' sortable='true' width='100' ></column>
+      <column title='存货名称' field='InventoryName' align='left' sortable='true' width='100' ></column>
+      <column title='型号规格 ' field='Model' align='left' sortable='true' width='100' ></column>
+      <column title='材质 ' field='Material' align='left' sortable='true' width='100' ></column>
+      <column title='到货数量' field='ArrivalQuatity' align='left' sortable='true' width='100' ></column>
+      <column title='到货时间' field='ArrivalDate' align='left' sortable='true' width='100' formatter='com.formatDate'></column>
+      <column title='物料单位' field='Unit' align='left' sortable='true' width='100' ></column>
+      <column title='报检时间' field='CreateTime' align='left' sortable='true' width='100' formatter='com.formatDate' ></column>
+      <column title='报检单号 ' field='BillCode' align='left' hidden='true' sortable='true' width='100' ></column>
+      <column title='采购订单编号' field='PurchaseOrderCode' hidden='true' align='left' sortable='true' width='100' ></column>
+      <column title='合同编号' field='ContractCode' align='left' hidden='true' sortable='true' width='100' ></column>
+      <column title='项目名称' field='ProjectName' align='left' sortable='true' width='100' ></column>
+      <column title='供应商编码' field='SupplierCode' hidden='true' align='left' sortable='true' width='100' ></column>
+      <column title='供应商名称 ' field='SupplierName' align='left' sortable='true' width='100' searchType='text' ></column>
+      <column title='报检部门' field='DepartmentID'  hidden='true'  align='left' sortable='true' width='100' ></column>
+      <column title='报检部门' field='DepartmentName' align='left' sortable='true' width='100' ></column>
+      <column title='采购员编码' field='UserCode' hidden='true' align='left' sortable='true' width='100' ></column>
+      <column title='采购员' field='SaleMan' align='left' sortable='true' width='100' ></column>
+      <column title='仓库编码 ' field='WarehouseID' hidden='true' align='left' sortable='true' width='100' ></column>
+      <column title='仓库' field='WarehouseName' align='left' sortable='true' width='100' ></column>
+
+    </ColumnList>
+  </searchDialog>
+
+  <searchDialog name='ChooseProcessCheckRequest'>
+    <!--选择过程报检报检单-->
+    <settings defaultOrderBy='ID desc'>
+      <module>Mms</module>
+      <select>*</select>
+      <from>
+        (
+        select t1.*,t2.ProjectName as pName from  MES_ProcessInspectionRequest t1
+        left join PMS_BN_Project t2 on t1.ContractCode=t2.ContractCode
+        and t2.Is0tSartProduct=1 and t2.IsEnable=1
+        where t1.IsEnable=1 and t1.BillState=2
+        ) as tab1
+      </from>
+      <where defaultForAll='true' defaultCp='equal' defaultIgnoreEmpty='true' >
+        <field name='ProjectName' cp='like'></field>
+
+      </where>
+    </settings>
+    <!--配置datagrid的列属性-->
+    <ColumnList>
+      <column title='主键ID' field='ID' align='left' hidden='true' sortable='true' width='100' checkbox='true'></column>
+      <column title='报检单号 ' field='BillCode' hidden='true' align='left' sortable='true' width='100' ></column>
+      <column title='采购订单编号' field='PurchaseOrderCode' hidden='true'  align='left' sortable='true' width='100' ></column>
+      <column title='合同编号' field='ContractCode' hidden='true'  align='left' sortable='true' width='100' ></column>
+      <column title='项目名称' field='pName' align='left' sortable='true' width='100' searchType='text'></column>
+      <!--<column title='产品生产计划编码' field='ProductPlanCode' hidden='true' align='left' sortable='true' width='100' ></column>
+      <column title='产品名称 ' field='ProductName' align='left' sortable='true' width='100' searchType='text' ></column>-->
+
+      <column title='报检部门' field='DepartmentCode'  hidden='true'  align='left' sortable='true' width='100' ></column>
+      <column title='报检部门' field='DepartmentName' align='left' sortable='true' width='100' ></column>
+      <column title='零件编码' field='PartCode' hidden='true' align='left' sortable='true' width='100' ></column>
+      <column title='零件名称' field='PartName' align='left' sortable='true' width='100' ></column>
+      <column title='零件图号 ' field='PartFigure' hidden='true' align='left' sortable='true' width='100' ></column>
+      <column title='报检数量' field='CheckQuantity' align='left' sortable='true' width='100' ></column>
+      <column title='材料编码' field='MaterialCode' align='left' sortable='true' width='100' ></column>
+      <column title='操作员编码' field='OperatorCode' align='left' sortable='true' width='100' ></column>
+      <column title='设备编码' field='EquipmentCode' align='left' sortable='true' width='100' ></column>
+      <column title='设备名称' field='EquipmentName' align='left' sortable='true' width='100' ></column>
+      <column title='物料单位' field='Unit' align='left' sortable='true' width='100' ></column>
+
+    </ColumnList>
+  </searchDialog>
+
+
+
+
+  <searchDialog name='ChooseLLJY'>
+    <!--选择外购检验单-->
+    <settings defaultOrderBy='CreateTime desc'>
+      <module>Mms</module>
+      <select>*</select>
+      <from>
+        (
+        select t1.*,t3.PurchaseOrderCode,t5.UnitPrice,t4.ProductPurchaseCode from QMS_GoodsCheck t1 left join MES_GoodsInspectionDetail t2 on t1.InventoryCode=t2.InventoryCode
+        left join MES_GoodsInspection t3 on t2.MainID=t3.ID
+        left join MES_PurchaseOrderMain t4 on t3.PurchaseOrderCode=t4.BillCode
+        left join MES_PurchaseOrderDetail t5 on t4.ID=t5.MainID and t1.InventoryCode=t5.InventoryCode
+        where t3.BillState=2 and t3.IsEnable=1 and t1.IsEnable=1 and t1.BillState=2 and t2.IsEnable=1 and t4.BillState=2 and t4.IsEnable=1 and t5.IsEnable=1
+        ) as tab1
+      </from>
+      <where defaultForAll='true' defaultCp='equal' defaultIgnoreEmpty='true' >
+        <field name='ProjectName' cp='like'></field>
+        <field name='SupplierName' cp='like'></field>
+        <field name='SaleMan' cp='like'></field>
+        <field name='WarehouseName' cp='like'></field>
+      </where>
+    </settings>
+    <!--配置datagrid的列属性-->
+    <ColumnList>
+      <column title='主键ID' field='ID' align='left' sortable='true' width='100' checkbox='true'></column>
+      <column title='检验单号 ' field='BillCode' align='left' sortable='true' width='100' ></column>
+      <column title='采购订单编号' field='PurchaseOrderCode' align='left' sortable='true' width='100' ></column>
+      <column title='合同编号' field='ContractCode' hidden='true' align='left' sortable='true' width='100' ></column>
+      <column title='项目名称' field='ProjectName'  align='left' sortable='true' width='100' searchType='text'></column>
+      <column title='供应商编码' field='SupplierCode'  hidden='true' align='left' sortable='true' width='100' ></column>
+      <column title='供应商名称 ' field='SupplierName' align='left' sortable='true' width='100' searchType='text' ></column>
+      <column title='报检部门' field='DepartmentID'  hidden='true'  align='left' sortable='true' width='100' ></column>
+      <column title='报检部门' field='DepartmentName' align='left' sortable='true' width='100' ></column>
+      <column title='采购员编码' field='UserCode' hidden='true' align='left' sortable='true' width='100' ></column>
+      <column title='采购员' field='SaleMan' align='left' sortable='true' width='100' searchType='text'></column>
+      <column title='仓库编码 ' field='WarehouseID' hidden='true' align='left' sortable='true' width='100' ></column>
+      <column title='仓库' field='WarehouseName' align='left' sortable='true' width='100' searchType='text'></column>
+      <column title='存货编码' field='InventoryCode' hidden='true' align='left' sortable='true' width='100' ></column>
+      <column title='存货名称' field='InVentoryName' align='left' sortable='true' width='100' ></column>
+      <column title='型号规格 ' field='Model' hidden='true' align='left' sortable='true' width='100' ></column>
+      <column title='合格数量' field='QualifiedQuantity'  align='left' sortable='true' width='100' ></column>
+      <column title='质检批号' field='BatchCode' align='left' sortable='true' width='100' ></column>
+      <column title='物料单位' field='Unit' align='left' sortable='true' width='100' ></column>
+      <column title='采购订单号' field='PurchaseOrderCode' align='left' sortable='true' hidden='true' width='100' ></column>
+      <column title='物料单价' field='UnitPrice' align='left' sortable='true' hidden='true' width='100' ></column>
+      <column title='请购单单号' field='ProductPurchaseCode' align='left' hidden='true' sortable='true' width='100' ></column>
+    </ColumnList>
+  </searchDialog>
+
+  <searchDialog name='ChooseInspectionEquipment'>
+    <!--配置datagrid的数据绑定以及查询功能-->
+    <settings defaultOrderBy='CreateTime desc'>
+      <module>Mms</module>
+      <select>*</select>
+      <from>
+        QMS_BN_InspectionEquipment
+      </from>
+      <where defaultForAll='true' defaultCp='equal' defaultIgnoreEmpty='true' >
+        <field name='InspectionEquipmentName' cp='like'></field>
+
+      </where>
+    </settings>
+    <!--配置datagrid的列属性-->
+    <ColumnList>
+      <column title='主键ID' field='ID' align='left' sortable='true' width='100' checkbox='true'></column>
+
+      <column title='质检设备编码' field='InspectionEquipmentCode' align='left' sortable='true' width='100'  ></column>
+      <column title='质检设备' field='InspectionEquipmentName' align='left' sortable='true' width='100' searchType='text'></column>
+
+    </ColumnList>
+  </searchDialog>
+
+  <searchDialog name='ChoosePJH'>
+    <!--配置datagrid的数据绑定以及查询功能-->
+    <settings defaultOrderBy='CreateTime desc'>
+      <module>Mms</module>
+      <select>*</select>
+      <from>
+        PMS_BN_ProjectPlanDetail
+      </from>
+      <where defaultForAll='true' defaultCp='equal' defaultIgnoreEmpty='true' >
+        <field name='DepartmentName' cp='like'></field>
+
+      </where>
+    </settings>
+    <!--配置datagrid的列属性-->
+    <ColumnList>
+      <column title='主键ID' field='ID' align='left' sortable='true' width='100' checkbox='true'></column>
+
+      <column title='部门编码' field='DepartmentCode' align='left' sortable='true' width='100' searchType='text' ></column>
+      <column title='部门名称' field='DepartmentName' align='left' sortable='true' width='100' ></column>
+      <column title='父级部门编码' field='ParentCode' align='left' sortable='true' width='100' ></column>
+      <column title='产品名称' field='ProductName' align='left' sortable='true' width='100' ></column>
+      <!--<<column title='供应商编码' field='SupplierNum' align='left' sortable='true' width='100' ></column>
+      <column title='供应商名称' field='SupplierName' align='left' sortable='true' width='100' searchType='text'></column>
+      <column title='单号' field='PBillCode' align='left' sortable='true' width='100' searchType='text'></column>
+      <column title='单据状态' field='ApproveState' align='left' sortable='true' width='100' ></column>-->
+      <!--<column title='发货单号' field='TakeGoodsCode' align='left' sortable='true' width='100' searchType='text'></column>-->
+      <!--<column title='收货仓库' field='WarehouseCode' align='left' sortable='true' width='100' searchType='text'></column>
+      <column title='仓库名称' field='WarehouseName' align='left' sortable='true' width='100' searchType='text'></column>
+      <column title='外检结果' field='CheckResult' align='left' sortable='true' width='100' searchType='text'></column>
+      <column title='发货时间' field='SendGoodsTime' align='left' sortable='true' width='120' searchType='daterange' formatter='com.formatDate'></column>
+      <column title='到货时间' field='ArriveTime' align='left' sortable='true' width='120' searchType='daterange' formatter='com.formatDate'></column>
+      <column title='备注信息' field='Remark' align='left' sortable='true' width='100' searchType='text'></column>-->
+    </ColumnList>
+  </searchDialog>
+
+  <searchDialog name='ChooseTemporaryTask'>
+    <!--选择临时任务-->
+    <settings defaultOrderBy='ID desc'>
+      <module>Mms</module>
+      <select>*</select>
+      <from>
+        APS_ProjectProduceTemporaryTask
+      </from>
+      <where defaultForAll='true' defaultCp='equal' defaultIgnoreEmpty='true' >
+      </where>
+    </settings>
+    <!--配置datagrid的列属性-->
+    <ColumnList>
+      <column title='主键ID' field='ID' align='left' hidden='true' sortable='true' width='100' checkbox='true'></column>
+      <column title='任务描述 ' field='TemporaryTaskDec' align='left' sortable='true' width='100' ></column>
+      <column title='整改车间' field='WorkshopName' align='left' sortable='true' width='100' ></column>
+      <column title='车间编码' field='WorkshopID' hidden='true' align='left' sortable='true' width='100' ></column>
+    </ColumnList>
+  </searchDialog>
+  <searchDialog name='ChooseEqp'>
+    <!--选择设备-->
+    <settings defaultOrderBy='ID desc'>
+      <module>Mms</module>
+      <select>*</select>
+      <from>
+        (
+        select t1.ID,t1.EquipmentCode,t1.EquipmentName,t1.AffiliatedWorkshopID,t1.AffiliatedWorkshopName,t3.ProcessType,t3.ProcessCode from SYS_Equipment as t1
+        left join SYS_EquipmentDetail as t2 on t1.ID=t2.MainID
+        left join PRS_BD_StandardProcess as t3 on t2.ProcessType=t3.ProcessType) as temp
+      </from>
+      <where defaultForAll='true' defaultCp='equal' defaultIgnoreEmpty='true' >
+      </where>
+    </settings>
+    <!--配置datagrid的列属性-->
+    <ColumnList>
+      <column title='主键ID' field='ID' align='left' sortable='true' width='100' checkbox='true'></column>
+      <column title='设备编码' field='EquipmentCode' align='left' sortable='true' width='100' ></column>
+      <column title='设备名称 ' field='EquipmentName' align='left' sortable='true' width='100' ></column>
+      <column title='车间ID' field='AffiliatedWorkshopID' align='left' sortable='true' width='100' ></column>
+      <column title='所在车间' field='AffiliatedWorkshopName' align='left' sortable='true' width='100' ></column>
+      <column title='工艺编号' field='ProcessCode' align='left' sortable='true' width='100' searchType='text'></column>
+
+    </ColumnList>
+  </searchDialog>
+</Root>

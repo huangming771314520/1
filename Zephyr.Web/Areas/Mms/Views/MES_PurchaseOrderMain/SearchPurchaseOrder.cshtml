@@ -1,0 +1,91 @@
+﻿@{
+
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title></title>
+
+    <link href="~/Content/js/jquery-easyui-1.7.0/themes/icon.css" rel="stylesheet" />
+    <link href="~/Content/js/jquery-easyui-1.7.0/themes/default/easyui.css" rel="stylesheet" />
+    <style type="text/css">
+        * {
+            font-family: "微软雅黑";
+        }
+    </style>
+
+</head>
+<body>
+    <div class="easyui-panel" title="采购订单报表" style="padding:20px;">
+        <div style="margin-bottom:10px;">
+            <label class="tile-content">采购日期：</label>
+            <input id="OrderDate" class="easyui-datebox" prompt="" style="width:250px">
+            <input class="easyui-textbox" label="采购员:" id="SaleMan" prompt="" style="width:250px" >
+            <input class="easyui-textbox" label="供应商:" id="SupplierName" prompt="" style="width:250px">
+            <a id="search" href="#"  class="easyui-linkbutton" icon="icon-search"><span style="font-size:16px">查询</span></a>
+        </div>
+        <hr style=" height:1px;border:none;border-top:1px solid #efefef;margin:20px 0px;" />
+        <table id="DataShow" rownumbers="true" class="easyui-datagrid" style="width:100%;height:300px;"></table>
+    </div>
+
+
+    <script src="~/Content/js/jquery-easyui-1.7.0/jquery.min.js"></script>
+    <script src="~/Content/js/jquery-easyui-1.7.0/jquery.easyui.min.js"></script>
+    <script src="~/Content/js/jquery-easyui-1.7.0/locale/easyui-lang-zh_CN.js"></script>
+    <script type="text/javascript">
+        $().ready(function () {
+            //DateTime? purchaseDate, string saleMan, string SupplierName
+            $("#search").click(function () {
+                $('#DataShow').datagrid({
+                    queryParams: {
+                        purchaseDate: $("#OrderDate").datebox("getValue"),
+                        saleMan: $("#SaleMan").textbox("getValue"),
+                        SupplierName: $("#SupplierName").textbox("getValue"),
+                    }
+                });
+            })
+            $('#DataShow').datagrid({
+                method: 'get',
+                url: "/api/Mms/MES_PurchaseOrderMain/GetPurchaseOrderData",
+                queryParams: {
+                    purchaseDate: "",
+                    saleMan: "",
+                    SupplierName: ""
+                },
+                columns: [[
+                    { field: 'BillCode', title: '采购订单号', width: 120 },
+                    { field: 'ProductPurchaseCode', title: '生产请购单号', width: 120 },
+                    { field: 'OrderDate', title: '采购日期', width: 100 },
+                    { field: 'WarehouseID', title: '仓库编码', width: 100, hidden: true },
+                    { field: 'WarehouseName', title: '仓库名称', width: 100 },
+                    { field: 'SupplierCode', title: '供应商编码', width: 100, hidden: true },
+                    { field: 'SupplierName', title: '供应商名称', width: 100 },
+                    { field: 'UserCode', title: '采购员编码', width: 100, hidden: true },
+                    { field: 'SaleMan', title: '采购员名称', width: 100 },
+                    { field: 'BillState', title: '单据状态', width: 100 , formatter: function (value) {
+                         return  value==2?'已审核':'未审核';
+                    }},
+
+                    { field: 'InventoryCode', title: '存货编码', width: 100 },
+                    { field: 'InventoryName', title: '存货名称', width: 150 },
+                    { field: 'OrderQuantity', title: '采购数量', width: 150 },
+                    { field: 'GoodsQuantity', title: '到货数量', width: 120 },
+                    { field: 'Model', title: '型号规格', width: 120 },
+                    { field: 'Unit', title: '单位', width: 60 },
+                    { field: 'UnitPrice', title: '单价', width: 120 },
+                    { field: 'TotalPrice', title: '总价', width: 200 },
+                    { field: 'IsFinish', title: '是否完成', width: 200,formatter:function(value){
+                        return  value==1?'已完成':'未完成';
+                    }
+                    },
+                    
+                ]]
+            });
+        })
+    </script>
+
+</body>
+</html>

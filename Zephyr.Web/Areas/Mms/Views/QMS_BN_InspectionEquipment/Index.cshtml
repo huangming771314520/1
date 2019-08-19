@@ -1,0 +1,74 @@
+﻿
+@{
+    /**/
+
+    ViewBag.Title = "QMS_BN_InspectionEquipment";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var Cols = new Zephyr.Models.sys_roleMenuColumnMapService().GetCurrentUserMenuColumns();
+}
+
+@section scripts{
+    <script src="/Content/js/viewModel/com.viewModel.search.js"></script>
+    <script type="text/javascript">
+
+        var data = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model));
+        var viewModel = function(){
+            com.viewModel.search.apply(this,arguments);
+            var self=this;
+
+        }
+        ko.bindingViewModel(new viewModel(data));
+    </script>
+}
+
+<div class="z-toolbar">
+    <a href="#" plain="true" class="easyui-linkbutton" icon="icon-arrow_refresh" title="刷新" data-bind="click:refreshClick">刷新</a>
+    <a href="#" plain="true" class="easyui-linkbutton" icon="icon-add" title="新增" data-bind="click:addClick">新增</a>
+    <a href="#" plain="true" class="easyui-linkbutton" icon="icon-edit" title="编辑" data-bind="click:editClick">编辑</a>
+    @*<a href="#" plain="true" class="easyui-linkbutton" icon="icon-cross" title="删除" data-bind="click:deleteClick">删除</a>*@
+</div>
+
+<div class="container_12" style="position:relative;">
+    <div class="grid_1 lbl">质检设备名称</div>
+    <div class="grid_2 val"><input type="text" data-bind="value:form.InspectionEquipmentName" class="z-txt " /></div>
+    <div class="grid_1 lbl">质检设备状态</div>
+    @*<div class="grid_2 val"><input type="text" data-bind="comboboxValue:form.InspectionEquipmenState" class="z-txt easyui-combobox" /></div>*@
+
+    <div class="grid_2 val">
+        <input type="text" data-bind="comboboxValue:form.InspectionEquipmenState" data-options="url:'/Commons/GetComboboxList?CodeType=InspectionEquipmenState',
+                   valueField:'value',textField:'text'" class="z-txt easyui-combobox" />
+    </div>
+
+    <div class="grid_1 lbl">是否可用</div>
+
+    <div class="grid_2 val"><input type="text" data-bind="comboboxValue:form.IsEnable" data-options="data:[{value:'',text:'所有'},{value:1,text:'是'},{value:0,text:'否'}],valueField: 'value',textField: 'text'" class="z-txt easyui-combobox" /></div>
+
+    <div class="clear"></div>
+    <div class="grid_1 lbl">&nbsp;</div>
+    <div class="grid_2 val">&nbsp;</div>
+    <div class="clear"></div>
+
+    <div class="prefix_9" style="position:absolute;top:5px;height:0;">
+        <a id="a_search" href="#" class="buttonHuge button-blue" data-bind="click:searchClick" style="margin:0 15px;">查询</a>
+        <a id="a_reset" href="#" class="buttonHuge button-blue" data-bind="click:clearClick">清空</a>
+    </div>
+</div>
+
+<table data-bind="datagrid:grid">
+    <thead>
+        <tr>
+            <th field="ID" sortable="true" align="left" width="150" hidden="true">质检设备ID</th>
+            <th field="InspectionEquipmentCode" sortable="true" align="left" width="150" @Html.HideColumn(Cols, "InspectionEquipmentCode")>质检设备编号</th>
+            <th field="InspectionEquipmentName" sortable="true" align="left" width="150" @Html.HideColumn(Cols, "InspectionEquipmentName")>质检设备名称</th>
+            <th field="InspectionEquipmenState" sortable="true" align="left" width="150" @Html.HideColumn(Cols, "InspectionEquipmenState")>质检设备状态</th>
+            <th field="SpecModel" sortable="true" align="left" width="150" @Html.HideColumn(Cols, "SpecModel")>规格型号</th>
+            <th field="FactoryName" sortable="true" align="left" width="150" @Html.HideColumn(Cols, "FactoryName")>制造厂名</th>
+            <th field="FactoryNumber" sortable="true" align="left" width="150" @Html.HideColumn(Cols, "FactoryNumber")>出厂编号</th>
+            <th field="EquipmentCode" sortable="true" align="left" width="150" @Html.HideColumn(Cols, "EquipmentCode")>设备编号</th>
+            <th field="PrecisionLevel" sortable="true" align="left" width="150" @Html.HideColumn(Cols, "PrecisionLevel")>精度等级</th>
+            <th field="PurchaseDate" sortable="true" align="left" width="150" @Html.HideColumn(Cols, "PurchaseDate")>采购日期</th>
+            <th field="IsEnable" sortable="true" align="left" width="150" data-options="formatter:function(value,row){ return value == 1 ? '是':'否';}">是否可用</th>
+        </tr>
+    </thead>
+</table>
+

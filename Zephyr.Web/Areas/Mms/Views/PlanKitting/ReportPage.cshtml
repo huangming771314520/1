@@ -1,0 +1,93 @@
+﻿<link href="~/Content/js/jquery-easyui-1.7.0/themes/icon.css" rel="stylesheet" />
+<link href="~/Content/js/jquery-easyui-1.7.0/themes/default/easyui.css" rel="stylesheet" />
+
+<style type="text/css">
+    body {
+        margin: 2px;
+    }
+</style>
+
+<div id="z-toolbar">
+    <a class="easyui-linkbutton" plain="true" onclick="SearchDialog()" icon="icon-search">选择项目零件</a>
+</div>
+<table id="tt" style="height: 92%;"></table>
+
+<script src="~/Content/js/jquery-easyui-1.7.0/jquery.min.js"></script>
+<script src="~/Content/js/jquery-easyui-1.7.0/jquery.easyui.min.js"></script>
+<script src="~/Content/js/core/utils.js"></script>
+<script src="~/Content/js/core/common.js"></script>
+
+<script type="text/javascript">
+    $().ready(function () {
+
+        $('#tt').treegrid({
+            queryParams: { PartCode: '0', VersionCode: '1' },
+            //url: '/api/Mms/PlanKitting/GetReportPageBomTreeGrid?PartCode=3030JA000000000493&VersionCode=1',
+            url: '/api/Mms/PlanKitting/GetReportPageBomTreeGrid',
+            method: 'get',
+            toolbar: '#z-toolbar',
+            animate: true,
+            rownumbers: true,
+            striped: true,
+            singleSelect: true,
+            idField: 'PartCode',
+            treeField: 'PartFigureCode',
+            columns: [[
+                { title: '图号', field: 'PartFigureCode', width: 400 },
+                { title: 'ID', field: 'ID', hidden: 'true', width: 60 },
+                { title: '零件名称', field: 'PartName', width: 210 },
+                { title: '物料需求数量', field: 'PartQuantity', width: 120 },
+                { title: '物料库存数量', field: 'RealStockSum', width: 120 },
+                { title: '物料采购到货时间', field: 'PurchaseDate', formatter: com.formatTime, width: 180 },
+                { title: '下料', field: 'Blanking', width: 120, formatter: function (value) { return value == -1 ? '不需要' : value == 0 ? "<font style='color:#FFFFFF;'>未齐套</font>" : "<font style='color:#FFFFFF;'>已齐套</font>" }, styler: function (value, row, index) { if (value == -1) { } else if (value == 0) { return 'background-color: red;' } else { return 'background-color: green;' } } },
+                { title: '焊接', field: 'Welding', width: 120, formatter: function (value) { return value == -1 ? '不需要' : value == 0 ? "<font style='color:#FFFFFF;'>未齐套</font>" : "<font style='color:#FFFFFF;'>已齐套</font>" }, styler: function (value, row, index) { if (value == -1) { } else if (value == 0) { return 'background-color: red;' } else { return 'background-color: green;' } } },
+                { title: '机加', field: 'Machining', width: 120, formatter: function (value) { return value == -1 ? '不需要' : value == 0 ? "<font style='color:#FFFFFF;'>未齐套</font>" : "<font style='color:#FFFFFF;'>已齐套</font>" }, styler: function (value, row, index) { if (value == -1) { } else if (value == 0) { return 'background-color: red;' } else { return 'background-color: green;' } } },
+                { title: '装配', field: 'Assembling', width: 120, formatter: function (value) { return value == -1 ? '不需要' : value == 0 ? "<font style='color:#FFFFFF;'>未齐套</font>" : "<font style='color:#FFFFFF;'>已齐套</font>" }, styler: function (value, row, index) { if (value == -1) { } else if (value == 0) { return 'background-color: red;' } else { return 'background-color: green;' } } }
+            ]],
+            //rowStyler: function (row, index) {
+            //    if (row.Blanking == 0||row.Welding == 0||row.Machining == 0||row.Assembling == 0) {
+            //        return 'background-color:#FFCACA;';
+            //    }
+            //    else {
+            //        //return 'background-color:#FBECDB;';
+            //    }
+            //},
+            loadFilter: function (d) {
+                if (d != null && d.length > 0) {
+                    var jsonData = eval(d);
+                    return utils.toTreeData(jsonData, 'PartCode', 'ParentCode', "children");
+                }
+                else {
+                    return '';
+                }
+            }
+        });
+
+    })
+
+    //查询工艺bom树
+    function SearchDialog() {
+        var target = parent.$('#CommonSearchDialog').length ? parent.$('#CommonSearchDialog') : parent.$('<div id="CommonSearchDialog"></div>').appendTo('body');
+        utils.clearIframe(target);
+        var opt;
+        opt = { title: '列表', width: 800, height: 650, modal: true, collapsible: false, minimizable: false, maximizable: true, closable: true };
+        opt.content = "<iframe src='/mms/home/CommonDialog?xmlName=ChooseProjectPart' style='height:100%;width:100%;border:0;' frameborder='0'></iframe>";  //frameborder="0" for ie7
+        params = { xmlName: 'ChooseProjectPart' };
+        opt.paramater = params;
+        opt.onSelect = function (data) {
+            //console.log(data);
+            var params = {
+                PartCode: data[0].PartCode,
+                VersionCode: data[0].VersionCode
+            };
+            $('#tt').treegrid("options").queryParams = params;
+            $('#tt').treegrid('reload');//重新加载树
+            $('#tt').treegrid('collapseAll');//默认折叠所有节点
+        };
+        target.window(opt);
+    };
+
+
+
+
+</script>

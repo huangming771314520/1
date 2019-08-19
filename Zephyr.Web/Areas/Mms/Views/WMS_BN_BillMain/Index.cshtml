@@ -1,0 +1,205 @@
+﻿
+@{
+    ViewBag.Title = "WMS_BN_BillMain";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var Cols = new Zephyr.Models.sys_roleMenuColumnMapService().GetCurrentUserMenuColumns();
+    
+}
+
+@section scripts{
+    <script src="/Content/js/viewModel/com.viewModel.search.js"></script>
+    <script type="text/javascript">
+        using(['validatebox','combotree','numberspinner','combobox','lookup','datebox','datetimebox','combogrid'],easyuifix.datagrid_editor_extend);
+        using(['numberbox','datebox']);
+        var data = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model));
+        var viewModel = function(){ 
+            com.viewModel.search.apply(this,arguments);
+        }
+        ko.bindingViewModel(new viewModel(data));
+    </script>
+}
+
+    @Html.RenderToolbar()
+
+    <div class="container_12" style="position:relative;">
+        <div class="grid_1 lbl">单据编号</div>
+        <div class="grid_2 val"><input type="text" data-bind="value:form.BillCode" class="z-txt " /></div>
+        <div class="grid_1 lbl">合同编号</div>
+        
+        <div class="grid_2 val">
+            <input type="text" data-bind="combogridValue:form.ContractCode" class="z-txt easyui-combogrid" data-options="url:'/Commons/GetCommonSearchList',
+                queryParams : {
+                     tableName:'[PMS_BN_Project]',
+                         searchField:'[ContractCode],[ProjectName]',
+                         firstFightField:'[ProjectName]',
+                         CacheKey:'PMS_BN_Project',
+                         CacheTime:'480',
+                         connName:'Mms'
+                },
+                method: 'GET',
+                panelWidth:250,
+                fit:true,
+                delay: 1000,
+                mode: 'remote',
+                value: 'ContractCode',
+                idField: 'ContractCode',
+                textField: 'ProjectName',
+                columns:[[
+                { field: 'ContractCode',title: '合同编号',width: 100 },
+                { field: 'ProjectName',title:'项目名称',width:150 }
+                    ]],
+            keyHandler:{
+            query:function(keyword) {
+           var queryParams=$(this).combogrid('grid').datagrid('options').queryParams;
+           queryParams.keyword=keyword;
+           $(this).combogrid('grid').datagrid('options').queryParams=queryParams;
+           $(this).combogrid('grid').datagrid('reload');
+           }}" />
+        </div>
+        <div class="grid_1 lbl">部门</div>
+        <div class="grid_2 val">
+            <input type="text" data-bind="combogridValue:form.DepartmentName" class="z-txt easyui-combogrid" data-options="url:'/Commons/GetCommonSearchList',
+                queryParams : {
+                     tableName:'[SYS_BN_Department]',
+                         searchField:'[DepartmentCode],[DepartmentName]',
+                         firstFightField:'[DepartmentName]',
+                         CacheKey:'SYS_BN_Department',
+                         CacheTime:'480',
+                         connName:'Mms'
+                },
+                method: 'GET',
+                panelWidth:250,
+                fit:true,
+                delay: 1000,
+                mode: 'remote',
+                value: 'ID',
+                idField: 'ID',
+                textField: 'DepartmentName',
+                columns:[[
+                { field: 'DepartmentCode',title: '部门',width: 100 },
+                { field: 'DepartmentName',title:'部门名称',width:150 }
+                    ]],
+            keyHandler:{
+            query:function(keyword) {
+           var queryParams=$(this).combogrid('grid').datagrid('options').queryParams;
+           queryParams.keyword=keyword;
+           $(this).combogrid('grid').datagrid('options').queryParams=queryParams;
+           $(this).combogrid('grid').datagrid('reload');
+           }}" />
+        </div>
+        
+        
+        <div class="clear"></div>
+        @{
+            if (HttpContext.Current.Request.Url.PathAndQuery.Last() == '1')
+            {
+                <div class="grid_1 lbl">供应商编号</div>
+               
+    <div class="grid_2 val">
+        <input type="text" data-bind="combogridValue:form.SupplierCode" class="z-txt easyui-combogrid" data-options="url:'/Commons/GetCommonSearchList',
+                queryParams : {
+                     tableName:'[SYS_BN_Supplier]',
+                         searchField:'[SupplierCode],[SupplierName]',
+                         firstFightField:'[SupplierName]',
+                         CacheKey:'SYS_BN_Supplier',
+                         CacheTime:'480',
+                         connName:'Mms'
+                },
+                method: 'GET',
+                panelWidth:250,
+                fit:true,
+                delay: 1000,
+                mode: 'remote',
+                value: 'SupplierCode',
+                idField: 'SupplierCode',
+                textField: 'SupplierName',
+                columns:[[
+                { field: 'SupplierCode',title: '供应商编号',width: 100 },
+                { field: 'SupplierName',title:'供应商名称',width:150 }
+                    ]],
+            keyHandler:{
+            query:function(keyword) {
+           var queryParams=$(this).combogrid('grid').datagrid('options').queryParams;
+           queryParams.keyword=keyword;
+           $(this).combogrid('grid').datagrid('options').queryParams=queryParams;
+           $(this).combogrid('grid').datagrid('reload');
+           }}" />
+    </div>
+            }
+}
+        
+        <div class="grid_1 lbl">仓库编号</div>
+        <div class="grid_2 val">
+            <input type="text" data-bind="combogridValue:form.WarehouseCode" class="z-txt easyui-combogrid" data-options="url:'/Commons/GetCommonSearchList',
+                queryParams : {
+                     tableName:'[SYS_BN_Warehouse]',
+                         searchField:'[WarehouseCode],[WarehouseName]',
+                         firstFightField:'[WarehouseName]',
+                         CacheKey:'SYS_BN_Warehouse',
+                         CacheTime:'480',
+                         connName:'Mms'
+                },
+                method: 'GET',
+                panelWidth:250,
+                fit:true,
+                delay: 1000,
+                mode: 'remote',
+                value: 'WarehouseCode',
+                idField: 'WarehouseCode',
+                textField: 'WarehouseName',
+                columns:[[
+                { field: 'WarehouseCode',title: '仓库编号',width: 100 },
+                { field: 'WarehouseName',title:'供应商名称',width:150 }
+                    ]],
+            keyHandler:{
+            query:function(keyword) {
+           var queryParams=$(this).combogrid('grid').datagrid('options').queryParams;
+           queryParams.keyword=keyword;
+           $(this).combogrid('grid').datagrid('options').queryParams=queryParams;
+           $(this).combogrid('grid').datagrid('reload');
+           }}" />
+        </div>
+            <div class="clear"></div>
+
+            <div class="prefix_9" style="position:absolute;top:5px;height:0;">
+                <a id="a_search" href="#" class="buttonHuge button-blue" data-bind="click:searchClick" style="margin:0 15px;">查询</a>
+                <a id="a_reset" href="#" class="buttonHuge button-blue" data-bind="click:clearClick">清空</a>
+            </div>
+        </div>
+ 
+    <table data-bind="datagrid:grid">
+            <thead>  
+            <tr>  
+                <th field="ID"    sortable="true" align="left"    width="80"     hidden="true" >主表ID</th>
+                <th field="BillCode"    sortable="true" align="left"    width="80"     @Html.HideColumn(Cols,"BillCode") >单据编号</th>
+                <th field="BillType"    sortable="true" align="left"    width="80"     hidden="true" >单据类型</th>
+                <th field="ContractCode" sortable="true" align="left" width="80" hidden="true" @Html.HideColumn(Cols, "ContractCode")>合同编号</th>
+                <th field="ProjectName" sortable="true" align="left" width="80" @Html.HideColumn(Cols, "ProjectName")>项目名称</th>
+                <th field="DepartmentID" sortable="true" align="left" width="80" hidden="true" @Html.HideColumn(Cols, "DepartmentCode")>部门编号</th>
+                <th field="DepartmentName" sortable="true" align="left" width="80" @Html.HideColumn(Cols, "DepartmentName")>部门名称</th>
+                @{
+                    
+                if (HttpContext.Current.Request.Url.PathAndQuery.Last() == '7')
+                {
+                    <th field="PackageCode" sortable="true" align="left" width="120" editor="text">箱号</th>
+                }
+}
+                <th field="SupplierCode" sortable="true" align="left" width="80" hidden="true" @Html.HideColumn(Cols, "SupplierCode")>供应商编号</th>
+                <th field="SupplierName" sortable="true" align="left" width="80" @Html.HideColumn(Cols, "SupplierName")>供应商名称</th>
+                <th field="WarehouseCode"    sortable="true" align="left"    width="80"     hidden="true" >仓库编号</th>
+                <th field="WarehouseName"    sortable="true" align="left"    width="80"     @Html.HideColumn(Cols,"WarehouseName") >仓库名称</th>
+                <th field="ApproveState" sortable="true" align="left" width="80" @Html.HideColumn(Cols, "ApproveState") data-options="formatter:function(value,row){return (value==1||value=='1')?'未审核':'已审核';}">
+                    审批状态
+                </th>
+                <th field="ApprovePerson"    sortable="true" align="left"    width="80"     @Html.HideColumn(Cols,"ApprovePerson") >审批人</th>
+                <th field="ApproveDate"    sortable="true" align="left"    width="80"     @Html.HideColumn(Cols,"ApproveDate") >审批时间</th>
+                <th field="ApproveRemark"    sortable="true" align="left"    width="80"     @Html.HideColumn(Cols,"ApproveRemark") >审批备注</th>
+                <th field="Remark"    sortable="true" align="left"    width="80"     @Html.HideColumn(Cols,"Remark") >备注</th>
+                <th field="CreatePerson"    sortable="true" align="left"    width="80"     hidden="true" >创建人</th>
+                <th field="CreateTime"    sortable="true" align="left"    width="80"     hidden="true" >创建时间</th>
+                <th field="ModifyPerson"    sortable="true" align="left"    width="80"     hidden="true" >更新人</th>
+                <th field="ModifyTime"    sortable="true" align="left"    width="80"     hidden="true" >更新时间</th>
+            </tr>                            
+        </thead>      
+    </table>
+ 

@@ -1,0 +1,225 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Root>
+  <searchDialog name='MatchingChooseProjectPart'>
+    <!--配套表选择项目零件-->
+    <settings defaultOrderBy='t.ContractCode desc'>
+      <module>Mms</module>
+      <select>*</select>
+      <from>
+        (
+        --配套管理弹窗SQL
+        SELECT A.ContractCode,   --合同编号
+        A.ProjectName,           --工程项目
+        B.ID AS ProjectDetailID, --产品ID(不用显示)
+        B.ProductName,           --产品名称
+        d.Text ProductType,      --产品类型
+        B.Model,                 --产品型号
+        B.Specifications,        --产品规格
+        e.PartCode,              --根零件编号
+        e.PartFigureCode,        --根零件图号
+        f.Text PartType,         --跟零件类型名称
+        e.PartName,              --零件名称
+        B.Quantity               --合同数量
+        FROM dbo.PMS_BN_Project A
+        INNER JOIN [dbo].[PMS_BN_ProjectDetail] B
+        ON A.ProjectID = B.MainID
+        AND B.IsEnable = '1'
+        AND A.Is0tSartProduct = 1
+        INNER JOIN dbo.PMS_DesignTaskResult C
+        ON C.ContractCode = A.ContractCode
+        AND C.ProductID = B.ID
+        INNER JOIN [HBHC_Sys].[dbo].[sys_code] d
+        ON d.CodeType = 'ProductType'
+        AND B.ProductType = d.Value
+        AND d.IsEnable = '1'
+        INNER JOIN [HBHC_Sys].[dbo].[sys_code] f
+        ON f.CodeType = 'TaskType'
+        AND C.TaskType = f.Value
+        AND f.IsEnable = 1
+        INNER JOIN [dbo].[PRS_Process_BOM] e
+        ON e.PartCode = C.PartCode
+        AND e.IsEnable = '1'
+        WHERE A.IsEnable = '1'
+        AND B.ProjectState = 2 --项目状态
+        ) as t
+      </from>
+      <where defaultForAll='true' defaultCp='equal' defaultIgnoreEmpty='true' >
+        <field name='t.ContractCode' cp='like'></field>
+      </where>
+    </settings>
+    <!--配置datagrid的列属性-->
+    <ColumnList>
+      <column title='主键ID' field='ID' align='left' sortable='true' width='100' checkbox='true'></column>
+      <column title='合同编码' field='ContractCode' align='left' sortable='true' width='100' searchType='text' ></column>
+      <column title='工程项目' field='ProjectName' align='left' sortable='true' width='100' ></column>
+      <column title='产品名称' field='ProductName' align='left' sortable='true' width='100' ></column>
+      <column title='产品类型' field='ProductType' align='left' sortable='true' width='70' ></column>
+      <column title='型号' field='Model' align='left' sortable='true' width='70' ></column>
+      <column title='规格' field='Specifications' align='left' sortable='true' width='70' ></column>
+      <column title='零件图号' field='PartFigureCode' align='left' sortable='true' width='120' ></column>
+      <column title='零件名称' field='PartName' align='left' sortable='true' width='120' ></column>
+      <column title='零件类型' field='PartType' align='left' sortable='true' width='120' ></column>
+      <column title='合同数量' field='Quantity' align='left' sortable='true' width='120' ></column>
+      <!--<column title='交货日期' field='PlanFinishDate' align='left' sortable='true' width='120' formatter='com.formatDate' ></column>-->
+      <column title='产品ID' field='ProjectDetailID' hidden='true' align='left' sortable='true' width='120' ></column>
+    </ColumnList>
+  </searchDialog>
+
+  <searchDialog name='BlankingRecord_NewIndex'>
+    <!--下料方案管理主页面弹窗-->
+    <settings defaultOrderBy=' t.New_PartName,t.New_Model,t.PartFigureCode,t.ContractCode desc '>
+      <module>Mms</module>
+      <select>*</select>
+      <from>
+        (
+        SELECT tbA.*,
+        tbB.Quantity,                                                      --合同台数
+        tbB.ProductName,
+        ISNULL(tbA.PartQuantity, 0) * ISNULL(tbB.Quantity, 0) AS DemandNum --需求数量
+        FROM
+        (
+        SELECT ID AS pbom_ID,
+        PartFigureCode, --零件图号
+        PartName,       --零件名称
+        MaterialCode,   --材质
+        PartQuantity,   --单台数量
+        BlankingNum,    --下料数量
+        ProductID,
+        ContractCode,
+        MateType,
+        CASE MateType
+        WHEN 1 THEN
+        '板材'
+        WHEN 2 THEN
+        '棒材'
+        WHEN 3 THEN
+        '铸件'
+        ELSE
+        ''
+        END AS MateTypeName,
+        BlankingSize,
+        SetMateNum,
+        SetMateName,--定料材料
+        InPlanceSize,
+        New_PartName,
+        New_Model
+        FROM dbo.PRS_Process_BOM_Blanking
+        WHERE IsEnable = 1
+        AND IsSelfMade = 1
+        AND MateType IN ( 1, 2, 3 )
+        ) tbA
+        LEFT JOIN
+        (
+        SELECT ID AS product_ID,
+        ProductName,
+        Quantity --合同台数
+        FROM dbo.PMS_BN_ProjectDetail
+        WHERE IsEnable = 1
+        ) tbB
+        ON tbA.ProductID = tbB.product_ID
+        ) as t
+      </from>
+      <where defaultForAll='true' defaultCp='equal' defaultIgnoreEmpty='true' >
+        <field name='t.ContractCode' cp='like'></field>
+        <field name='t.PartName' cp='like'></field>
+        <field name='t.PartFigureCode' cp='like'></field>
+        <field name='t.MaterialCode' cp='like'></field>
+        <field name='t.MateType' cp='equal'></field>
+      </where>
+    </settings>
+    <!--配置datagrid的列属性-->
+    <ColumnList>
+      <column title='选择' field='Num' align='left' sortable='true' width='100' checkbox='true'></column>
+
+      <column title='合同号' field='ContractCode' align='left' sortable='true' width='70' searchType='text' ></column>
+      <column title='产品名称' field='ProductName' align='left' sortable='true' width='120' searchType='text' ></column>
+
+      <column title='零件图号' field='PartFigureCode' align='left' sortable='true' width='100' searchType='text'></column>
+      <column title='零件名称' field='PartName' align='left' sortable='true' width='100' searchType='text' ></column>
+      <column title='材质' field='MaterialCode' align='left' sortable='true' width='100' searchType='text' ></column>
+      <column title='材料类型' field='MateType' align='left' sortable='true' width='60' searchType='select' hidden='true'>
+        <searchBinding type='fix'>
+          <item value='1'>板材</item>
+          <item value='2'>棒材</item>
+          <item value='3'>铸件</item>
+        </searchBinding>
+      </column>
+      <column title='材料类型' field='MateTypeName' align='left' sortable='true' width='60' ></column>
+      <column title='单台数量' field='PartQuantity' align='left' sortable='true' width='100'  hidden='true'></column>
+      <column title='合同台数' field='Quantity' align='left' sortable='true' width='70'  hidden='true'></column>
+      <column title='需求数量' field='DemandNum' align='left' sortable='true' width='70'  hidden='true'></column>
+      <column title='下料数量' field='BlankingNum' align='left' sortable='true' width='70' ></column>
+      <column title='材料名称' field='New_PartName' align='left' sortable='true' width='115' ></column>
+      <column title='型号规格' field='New_Model' align='left' sortable='true' width='70' ></column>
+
+      <column title='工艺BOM ID' field='pbom_ID' hidden='true' align='left' sortable='true' width='120' ></column>
+      <column title='产品 ID' field='ProductID' hidden='true' align='left' sortable='true' width='120' ></column>
+      <column title='BlankingSize' field='BlankingSize' hidden='true' align='left' sortable='true' width='120' ></column>
+      <column title='SetMateNum' field='SetMateNum' hidden='true' align='left' sortable='true' width='120' ></column>
+      <column title='InPlanceSize' field='InPlanceSize' hidden='true' align='left' sortable='true' width='120' ></column>
+      <column title='定料材料' field='SetMateName' hidden='true' align='left' sortable='true' width='120' ></column>
+    </ColumnList>
+  </searchDialog>
+
+  <searchDialog name='BlankingRecord_NewIndex_Add2'>
+    <!--下料方案管理主页面弹窗-->
+    <settings defaultOrderBy='t.ContractCode desc'>
+      <module>Mms</module>
+      <select>*</select>
+      <from>
+        (
+        SELECT tbA.*,
+        tbB.Quantity,                                                      --合同台数
+        ISNULL(tbA.PartQuantity, 0) * ISNULL(tbB.Quantity, 0) AS DemandNum --需求数量
+        FROM
+        (
+        SELECT ID AS pbom_ID,
+        PartFigureCode, --零件图号
+        PartName,       --零件名称
+        MaterialCode,   --材质
+        PartQuantity,   --单台数量
+        BlankingNum,    --下料数量
+        ProductID,
+        ContractCode
+        FROM dbo.PRS_Process_BOM_Blanking
+        WHERE IsEnable = 1
+        AND IsSelfMade = 1
+        AND MateType IN ( 1, 2, 3 )
+        ) tbA
+        LEFT JOIN
+        (
+        SELECT ID AS product_ID,
+        Quantity --合同台数
+        FROM dbo.PMS_BN_ProjectDetail
+        WHERE IsEnable = 1
+        ) tbB
+        ON tbA.ProductID = tbB.product_ID
+        ) as t
+      </from>
+      <where defaultForAll='true' defaultCp='equal' defaultIgnoreEmpty='true' >
+        <field name='t.ContractCode' cp='like'></field>
+        <field name='t.PartName' cp='like'></field>
+        <field name='t.PartFigureCode' cp='like'></field>
+        <field name='t.MaterialCode' cp='like'></field>
+      </where>
+    </settings>
+    <!--配置datagrid的列属性-->
+    <ColumnList>
+      <column title='选择' field='Num' align='left' sortable='true' width='100' checkbox='true'></column>
+
+      <column title='合同号' field='ContractCode' align='left' sortable='true' width='70' searchType='text' ></column>
+
+      <column title='零件图号' field='PartFigureCode' align='left' sortable='true' width='100' searchType='text'></column>
+      <column title='零件名称' field='PartName' align='left' sortable='true' width='100' searchType='text' ></column>
+      <column title='材质' field='MaterialCode' align='left' sortable='true' width='100' searchType='text' ></column>
+      <column title='单台数量' field='PartQuantity' align='left' sortable='true' width='100' ></column>
+      <column title='合同台数' field='Quantity' align='left' sortable='true' width='70' ></column>
+      <column title='需求数量' field='DemandNum' align='left' sortable='true' width='70' ></column>
+      <column title='下料数量' field='BlankingNum' align='left' sortable='true' width='70' ></column>
+
+      <column title='工艺BOM ID' field='pbom_ID' hidden='true' align='left' sortable='true' width='120' ></column>
+      <column title='产品 ID' field='ProductID' hidden='true' align='left' sortable='true' width='120' ></column>
+    </ColumnList>
+  </searchDialog>
+  
+</Root>

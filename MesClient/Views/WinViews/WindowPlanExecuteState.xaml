@@ -1,0 +1,90 @@
+﻿<Window x:Class="MesClient.Views.WinViews.WindowPlanExecuteState"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:MesClient.Views.WinViews"
+        mc:Ignorable="d"
+        Title="工票执行状态" Height="250" Width="500" WindowStartupLocation="CenterScreen">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"></RowDefinition>
+            <RowDefinition Height="100"></RowDefinition>
+            <RowDefinition Height="*" MinHeight="80"></RowDefinition>
+        </Grid.RowDefinitions>
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"></ColumnDefinition>
+                <ColumnDefinition Width="100"></ColumnDefinition>
+                <ColumnDefinition Width="25"></ColumnDefinition>
+                <ColumnDefinition Width="100"></ColumnDefinition>
+                <ColumnDefinition Width="25"></ColumnDefinition>
+                <ColumnDefinition Width="100"></ColumnDefinition>
+                <ColumnDefinition Width="*"></ColumnDefinition>
+            </Grid.ColumnDefinitions>
+            <Grid Grid.Column="1">
+                <Button x:Name="btnComplete" GotFocus="BtnComplete_GotFocus" Background="#FFA8EB6F" Content="完工" Style="{DynamicResource ProceStateCompleteButton}">
+                    <Button.InputBindings>
+                        <KeyBinding Key="Enter" Command="{Binding CompleteCommand}" CommandParameter="{Binding ElementName=txtNum, Path=Text}"></KeyBinding>
+                        <KeyBinding Key="Up" Command="{Binding UpNumCommand}" CommandParameter="{Binding ElementName=txtNum, Path=Text}"></KeyBinding>
+                        <KeyBinding Key="Down" Command="{Binding DownNumCommand}" CommandParameter="{Binding ElementName=txtNum, Path=Text}"></KeyBinding>
+                    </Button.InputBindings>
+                </Button>
+            </Grid>
+            <Grid Grid.Column="3">
+                <Button x:Name="btnStop" GotFocus="BtnStop_GotFocus" Background="#FFF6BA5B" Content="暂停" Style="{DynamicResource ProceStateStopButton}">
+                    <Button.InputBindings>
+                        <KeyBinding Key="Enter" Command="{Binding StopCommand}" ></KeyBinding>
+                        <KeyBinding Key="Up" Command="{Binding RdbChangeCommand}" CommandParameter="Up"></KeyBinding>
+                        <KeyBinding Key="Down" Command="{Binding RdbChangeCommand}" CommandParameter="Down"></KeyBinding>
+                    </Button.InputBindings>
+                </Button>
+            </Grid>
+            <Grid Grid.Column="5">
+                <Button x:Name="btnCancel" GotFocus="BtnCancel_GotFocus" Background="#FF6EC3EE" Content="取消" Style="{DynamicResource ProceStateCancelButton}">
+                    <Button.InputBindings>
+                        <KeyBinding Key="Enter" Command="{Binding CancelCommand}" ></KeyBinding>
+                    </Button.InputBindings>
+                </Button>
+            </Grid>
+        </Grid>
+        <Grid Grid.Row="2" x:Name="CompleteNumContainer" Visibility="Hidden">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*"></RowDefinition>
+                <RowDefinition Height="Auto"></RowDefinition>
+                <RowDefinition Height="2*"></RowDefinition>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"></ColumnDefinition>
+                <ColumnDefinition Width="80"></ColumnDefinition>
+                <ColumnDefinition Width="160"></ColumnDefinition>
+                <ColumnDefinition Width="*"></ColumnDefinition>
+            </Grid.ColumnDefinitions>
+            <Grid Grid.Row="1" Grid.Column="1">
+                <Label HorizontalAlignment="Right" VerticalAlignment="Center" Background="{x:Null}" Foreground="Black" BorderThickness="0" Content="完工数量："></Label>
+            </Grid>
+            <Grid Grid.Row="1" Grid.Column="2">
+                <TextBox x:Name="txtNum" Text="{Binding Num}" BorderThickness="0" Padding="5 2 5 2" HorizontalAlignment="Stretch" VerticalAlignment="Center"></TextBox>
+            </Grid>
+        </Grid>
+        <Grid Grid.Row="2" x:Name="PauseResonContainer" Visibility="Visible">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*"></RowDefinition>
+                <RowDefinition Height="Auto"></RowDefinition>
+                <RowDefinition Height="2*"></RowDefinition>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"></ColumnDefinition>
+                <ColumnDefinition Width="3*"></ColumnDefinition>
+                <ColumnDefinition Width="*"></ColumnDefinition>
+            </Grid.ColumnDefinitions>
+            <Grid Grid.Row="1" Grid.Column="1">
+                <WrapPanel Orientation="Vertical" >
+                    <RadioButton  Content="休息或下班" Focusable="False" IsChecked="{Binding RdbA}" GroupName="rdbPauseReson"></RadioButton>
+                    <RadioButton Content="物料问题" Focusable="False" IsChecked="{Binding RdbB}" GroupName="rdbPauseReson"></RadioButton>
+                    <RadioButton Content="质量问题" Focusable="False" IsChecked="{Binding RdbC}" GroupName="rdbPauseReson"></RadioButton>
+                </WrapPanel>
+            </Grid>
+        </Grid>
+    </Grid>
+</Window>

@@ -1,0 +1,81 @@
+﻿<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width" />
+    <link href="~/Content/js/uploader/Content/bootstrap.css" rel="stylesheet" />
+    <link href="~/Content/js/uploader/Content/jquery.fileupload-ui-noscript.css" rel="stylesheet" />
+    <link href="~/Content/js/uploader/Content/jquery.fileupload-ui.css" rel="stylesheet" />
+</head>
+<body>
+    <div class="container_12">
+        <form id="formUpload" action="/api/upload" enctype="multipart/form-data">
+            <div class="controls fileupload-buttonbar">
+                <div>
+                    <div class="well">
+                        <i class="icon-plus"></i><span>&nbsp;&nbsp;</span>
+                        <input type="file" id="fileupload" name="fileupload" accept=".pdf,image/*,.docx" multiple="multiple">
+                        <button id="btnUploadAll" class="btn btn-success pull-right" type="button">
+                            上传
+                        </button>
+                        <div class="clearfix">
+                        </div>
+                        <div class="progress">
+                            <div class="bar" id="overallbar" style="width: 0%">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div>
+                    <div class="well hide" id="filelistholder">
+                    </div>
+                </div>
+            </div>
+        </form>
+
+    </div>
+    <script src="~/Content/js/uploader/jquery-1.8.3.js"></script>
+    <script src="~/Content/js/uploader/jquery-ui-1.9.2.js"></script>
+    <script src="~/Content/js/uploader/jquery.fileupload.js"></script>
+    <script src="~/Content/js/uploader/jquery.iframe-transport.js"></script>
+    <script src="~/Content/js/uploader/bootstrap.js"></script>
+    <script src="~/Content/js/core/utils.js"></script>
+    <script src="~/Content/js/core/common.js"></script>
+
+    <script type="text/javascript">
+        var iframe = utils.getThisIframe();
+        var thiswin = parent.$(iframe).parent();
+        var options = thiswin.window("options");
+        var params = options.params;
+        $(function () {
+            $('#fileupload').fileupload({
+                dataType: "json",
+                limitConcurrentUploads: 1,
+                sequentialUploads: true,
+                progressInterval: 1,
+                maxChunkSize: 10000,
+                add: function (e, data) {
+                    $('#filelistholder').removeClass('hide');
+                    data.context = $('<div />').text(data.files[0].name).appendTo('#filelistholder');
+                    $('<div class="progress"><div class="bar" style="width:0%"></div></div>').appendTo(data.context);
+                    //<div>netdisk_logo.ico<div class="progress"><div class="bar" style="width:0%"></div></div></div>
+                    $('#btnUploadAll').click(function () {
+                        $("#formUpload").attr("action", "/api/Mms/COM_UploadFileManage/PostUpload?BindTableName=" + params.BindTableName + "&BindCode=" + params.BindCode);
+                        data.submit();
+                    });
+                },
+                done: function (e, data) {
+                    data.context.text(data.files[0].name + '...已完成');
+                },
+                progressall: function (e, data) {
+                    var progress = parseInt(data.loaded / data.total * 100, 10);
+                    $('#overallbar').css('width', progress + '%');
+                },
+                progress: function (e, data) {
+                    var progress = parseInt(data.loaded / data.total * 100, 10);
+                    data.context.find('.bar').css('width', progress + '%');
+                }
+            });
+        });
+    </script>
+</body>
+</html>

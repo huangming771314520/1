@@ -1,0 +1,253 @@
+﻿
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>ChooseDispatchModel</title>
+    <link href="~/Content/js/jquery-easyui-1.7.0/themes/icon.css" rel="stylesheet" />
+    <link href="~/Content/js/jquery-easyui-1.7.0/themes/default/easyui.css" rel="stylesheet" />
+    <link href="~/Content/js/uploader/Content/themes/base/jquery-ui.css" rel="stylesheet" />
+    <link href="~/Content/js/uploader/Content/themes/base/jquery.ui.accordion.css" rel="stylesheet" />
+    <link href="~/Content/js/uploader/Content/themes/base/jquery.ui.all.css" rel="stylesheet" />
+    <link href="~/Content/js/uploader/Content/themes/base/jquery.ui.autocomplete.css" rel="stylesheet" />
+    <link href="~/Content/js/uploader/Content/themes/base/jquery.ui.base.css" rel="stylesheet" />
+    <link href="~/Content/js/uploader/Content/themes/base/jquery.ui.button.css" rel="stylesheet" />
+    <link href="~/Content/js/uploader/Content/themes/base/jquery.ui.core.css" rel="stylesheet" />
+    <link href="~/Content/js/uploader/Content/themes/base/jquery.ui.datepicker.css" rel="stylesheet" />
+    <link href="~/Content/js/uploader/Content/themes/base/jquery.ui.dialog.css" rel="stylesheet" />
+    <link href="~/Content/js/uploader/Content/themes/base/jquery.ui.menu.css" rel="stylesheet" />
+    <link href="~/Content/js/uploader/Content/themes/base/jquery.ui.progressbar.css" rel="stylesheet" />
+    <link href="~/Content/js/uploader/Content/themes/base/jquery.ui.resizable.css" rel="stylesheet" />
+    <link href="~/Content/js/uploader/Content/themes/base/jquery.ui.selectable.css" rel="stylesheet" />
+    <link href="~/Content/js/uploader/Content/themes/base/jquery.ui.slider.css" rel="stylesheet" />
+    <link href="~/Content/js/uploader/Content/themes/base/jquery.ui.spinner.css" rel="stylesheet" />
+    <link href="~/Content/js/uploader/Content/themes/base/jquery.ui.tabs.css" rel="stylesheet" />
+    <link href="~/Content/js/uploader/Content/themes/base/jquery.ui.theme.css" rel="stylesheet" />
+    <link href="~/Content/js/uploader/Content/themes/base/jquery.ui.tooltip.css" rel="stylesheet" />
+
+
+    @*<script src="~/Content/js/jquery-easyui-1.7.0/jquery.easyui.min.js"></script>
+    <script src="~/Content/js/core/utils.js"></script>
+    <script src="~/Content/js/core/common.js"></script>*@
+
+
+
+    <script src="~/Content/js/jquery-easyui-1.7.0/jquery.min.js"></script>
+    <script src="~/Content/js/jquery-easyui-1.7.0/jquery.easyui.min.js"></script>
+    <script src="~/Content/js/core/utils.js"></script>
+    <script src="~/Content/js/core/common.js"></script>
+    @*<script src="~/Content/js/core/jquery.easyui.fix.js"></script>
+    <script src="~/Content/js/jquery-plugin/jnotify/jquery.jnotify.js"></script>*@
+</head>
+<body style="margin:5px;">
+    <div class="easyui-layout" id="layout_model" data-options="height:$(window).height()-10">
+
+        <div data-options="region:'west',title:'调度分类',split:true" style="width:30%;padding: 20px 10px;">
+
+            <table id="model_type_dg" style="height:100%;width:100%;"></table>
+        </div>
+        <div data-options="region:'center',title:'调度任务明细'">
+            <form style="padding: 10px;">
+                <div style="margin-bottom:10px">
+                    @*<input id="c_MainID" type="text" hidden />*@
+                    <input id="c_MainID" style="display: none;" />
+                    @*<input class="easyui-combogrid" id="PartCode" label="合同编号:" labelwidth="80" labelalign="right" prompt="" style="width: 49%;">*@
+
+                    <select class="easyui-combogrid easyui-validatebox" id="ContractCode" label="合同编号:" style="width: 30%;" labelwidth="80" labelalign="right" prompt="请选择合同"  data-options="required:true,url:'/Commons/GetCommonSearchList',
+                            queryParams : {
+                            tableName:'[PMS_BN_Project]',
+                            searchField:'[ProjectID],[ContractCode],[ProjectName]',
+                            firstFightField:'[ProjectName]',
+                            whereSql:'IsEnable=1 and Is0tSartProduct=1',
+                                //CacheKey:'SYS_Part',
+                    //CacheTime:'480',
+                    //connName:'Mms'
+                    },
+                    method: 'GET',
+                    panelWidth:680,
+                    delay: 1000,
+                    mode: 'remote',
+                    value: '',
+                    idField: 'ContractCode',
+                    textField: 'ProjectName',
+                    fitColumns: true,
+                    columns:[[
+                    { field: 'ProjectID',title: '合同编号',width: 200,hidden:true },
+                    { field: 'ContractCode',title: '合同编号',width: 200 },
+                    { field: 'ProjectName',title: '项目名称',width: 200 }
+
+                    ]],
+                    onSelect: function (rowIndex, rowData) {
+                     $('#ProductID').combogrid('grid').datagrid('options').queryParams.whereSql = 'IsEnable=1 and MainID=' + rowData.ProjectID;
+                     $('#ProductID').combogrid('grid').datagrid('reload');
+
+                    },
+                    keyHandler:{
+                    query:function(keyword) {
+                    var queryParams=$(this).combogrid('grid').datagrid('options').queryParams;
+                    queryParams.keyword=keyword;
+                    $(this).combogrid('grid').datagrid('options').queryParams=queryParams;
+                    $(this).combogrid('grid').datagrid('reload');
+                    $(this).combogrid('setValue', keyword);
+                    }}"></select>
+
+                    @*<input class="easyui-combogrid" id="PartCode" label="产品名称:" labelwidth="80" labelalign="right" prompt="" style="width: 49%; ">*@
+                    <select class="easyui-combogrid easyui-validatebox" id="ProductID" label="合同编号:" labelwidth="80" style="width: 30%;" labelalign="right" prompt="请选择产品" data-options="required:true,url:'/Commons/GetCommonSearchList',
+                     queryParams : {
+                            tableName:'[PMS_BN_ProjectDetail]',
+                            searchField:'[ID],[MainID],[ProductName],[Model],[Specifications],[Quantity]',
+                            firstFightField:'[ProductName]',
+                                whereSql:'IsEnable=1 ',
+                                //CacheKey:'SYS_Part',
+                                //CacheTime:'480',
+                                //connName:'Mms'
+                            },
+                            method: 'GET',
+                            panelWidth:680,
+                            delay: 1000,
+                            mode: 'remote',
+                            value: '',
+                            idField: 'ID',
+                            textField: 'ProductName',
+                            fitColumns: true,
+                            columns:[[
+                             { field: 'ID',title: '产品ID',width: 200 ,hidden:true},
+                            { field: 'MainID',title: '项目ID',width: 200 ,hidden:true},
+                            { field: 'ProductName',title: '产品名称',width: 200 },
+                              { field: 'Model',title: '型号',width: 200 },
+                              { field: 'Specifications',title: '规格',width: 200 },
+                            { field: 'Quantity',title: '合同数量',width: 200 }
+
+                                ]],
+                     onSelect: function (rowIndex, rowData) {
+                     $.ajax({
+                    type: 'GET',
+                    url: '/api/Mms/APS_DispatchPlan/GetPlanedQuantity',
+                    data: { contractCode: $('#ContractCode').combogrid('getValue'), ProductID: $('#ProductID').combogrid('getValue'), mainID: rowData.MainID },
+                    success: function (data) {
+
+                        $('#PlanQuantity').numberbox({
+                            min: 0,
+                            max: data
+                        });
+                    }
+                });
+                    },
+                 keyHandler:{
+                   query:function(keyword) {
+                   var queryParams=$(this).combogrid('grid').datagrid('options').queryParams;
+                   queryParams.keyword=keyword;
+                   $(this).combogrid('grid').datagrid('options').queryParams=queryParams;
+                   $(this).combogrid('grid').datagrid('reload');
+                  $(this).combogrid('setValue', keyword);
+                }}"></select>
+
+                    <input type="text" label="排产数量:" id="PlanQuantity" class="easyui-numberbox" value="" data-options="min:0,precision:0" style="width: 24%;">
+
+                    <a href="#" class="easyui-linkbutton" id="SaveModel" style="width: 8%;">确 定</a>
+
+                </div>
+                <div>
+                    <table id="model_item_dg" style="height:500px;width:100%;"></table>
+                </div>
+            </form>
+
+        </div>
+    </div>
+
+    <script>
+        (function ($) {
+            "use strict";
+            var Page = {
+                init: function () {
+                    this.bind();
+                    this.load_model_type_dg();
+                    this.load_model_item_dg(0);
+                },
+                bind: function () {
+
+                },
+                
+                load_model_type_dg: function () {
+                    $('#model_type_dg').datagrid({
+                        url: '/api/Mms/APS_DispatchPlan/GetModelType',
+                        method: 'get',
+                        width: '100%',
+                        columns: [[
+                            { field: 'ck', title: '', checkbox: 'true', width: Page.fixWidth(0.1) },
+                            { field: 'Code', title: '调度计划模型编码', width: Page.fixWidth(0.1) },
+                            { field: 'Name', title: '调度计划模板名称', width: Page.fixWidth(0.18) }
+                        ]],
+                        checkOnSelect: true,
+                        selectOnCheck: false,
+                        singleSelect: true,
+                        onClickRow: this.click_row_model_type_dg
+                    });
+                },
+                load_model_item_dg: function (MainID) {
+                    $('#model_item_dg').datagrid({
+                        url: '/api/Mms/APS_DispatchPlan/GetModelItem',
+                        method: 'get',
+                        width: '100%',
+                        columns: [[
+                            { field: 'Name', title: '任务名称', width: 300 },
+                            { field: 'TaskCycle', title: '任务周期', width: 300 }
+                        ]],
+                        checkOnSelect: true,
+                        selectOnCheck: false,
+                        singleSelect: true,
+                        queryParams: {
+                            MainID: MainID
+                        }
+                    });
+                },
+                click_row_model_type_dg: function (index, row) {
+                    console.log(row);
+                    Page.load_model_item_dg(row.ID);
+                },
+                fixWidth: function (percent) {
+                    return document.body.clientWidth * percent;//根据自身情况更改
+                }
+            };
+            //string contractCode,string ProductID,string mainID
+            $(document).ready(function () {
+                Page.init();
+                $('#SaveModel').bind('click', function () {
+                    var row = $('#model_type_dg').datagrid('getChecked');
+                    if (row.length == 0 || row == null) {
+                        com.message('warning', "请先选择调度活动模板！");
+                        return;
+                    }
+                    if ($("#ContractCode").combogrid("getValue") == "") {
+                        com.message('warning', "合同不能为空！");
+                        return;
+                    }
+                    if ($("#ProductID").combogrid("getValue") == "") {
+                        com.message('warning',  "产品不能为空！");
+                    return;
+                    }
+                    if ($("#PlanQuantity").numberbox("getValue") == "") {
+                        com.message('warning', "排产数量不能为空！");
+                        return;
+                    }
+                   
+                    var pModel = {
+                       //var post = { DispatchModelCode: 5, ContractCode: '160802', ProductID: 40, PlanQuantity: 1 };
+
+                        ContractCode: $("#ContractCode").combogrid("getValue"),
+                        ProductID: $("#ProductID").combogrid("getValue"),
+                        PlanQuantity: $("#PlanQuantity").numberbox("getValue"),
+                        DispatchModelCode: row[0].Code
+
+                    }
+                    return pModel;
+                });
+
+            });
+        })(window.jQuery);
+    </script>
+
+</body>
+
+</html>

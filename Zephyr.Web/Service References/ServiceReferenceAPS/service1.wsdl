@@ -1,0 +1,484 @@
+<?xml version="1.0" encoding="utf-8"?>
+<wsdl:definitions xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:tm="http://microsoft.com/wsdl/mime/textMatching/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:tns="http://tempuri.org/" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:s="http://www.w3.org/2001/XMLSchema" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" targetNamespace="http://tempuri.org/" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+  <wsdl:types>
+    <s:schema elementFormDefault="qualified" targetNamespace="http://tempuri.org/">
+      <s:element name="GET_APS_DISPATCH">
+        <s:complexType />
+      </s:element>
+      <s:element name="GET_APS_DISPATCHResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="GET_APS_DISPATCHResult" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="GET_OVER_ORDER">
+        <s:complexType />
+      </s:element>
+      <s:element name="GET_OVER_ORDERResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="GET_OVER_ORDERResult" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="GET_APS_MATERIASET">
+        <s:complexType />
+      </s:element>
+      <s:element name="GET_APS_MATERIASETResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="GET_APS_MATERIASETResult" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="Get_material">
+        <s:complexType />
+      </s:element>
+      <s:element name="Get_materialResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="Get_materialResult" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="Get_line">
+        <s:complexType />
+      </s:element>
+      <s:element name="Get_lineResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="Get_lineResult" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="Get_technology">
+        <s:complexType />
+      </s:element>
+      <s:element name="Get_technologyResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="Get_technologyResult" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="GET_lineRproduct">
+        <s:complexType />
+      </s:element>
+      <s:element name="GET_lineRproductResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="GET_lineRproductResult" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="Get_completeproductplan">
+        <s:complexType />
+      </s:element>
+      <s:element name="Get_completeproductplanResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="Get_completeproductplanResult" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="Get_realstock">
+        <s:complexType />
+      </s:element>
+      <s:element name="Get_realstockResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="Get_realstockResult" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="Get_stopplan">
+        <s:complexType />
+      </s:element>
+      <s:element name="Get_stopplanResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="Get_stopplanResult" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="Get_takegoods">
+        <s:complexType />
+      </s:element>
+      <s:element name="Get_takegoodsResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="Get_takegoodsResult" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="GET_ALL_ONECE">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="user" type="s:string" />
+            <s:element minOccurs="1" maxOccurs="1" name="pwd" type="s:int" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="GET_ALL_ONECEResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="GET_ALL_ONECEResult" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+    </s:schema>
+  </wsdl:types>
+  <wsdl:message name="GET_APS_DISPATCHSoapIn">
+    <wsdl:part name="parameters" element="tns:GET_APS_DISPATCH" />
+  </wsdl:message>
+  <wsdl:message name="GET_APS_DISPATCHSoapOut">
+    <wsdl:part name="parameters" element="tns:GET_APS_DISPATCHResponse" />
+  </wsdl:message>
+  <wsdl:message name="GET_OVER_ORDERSoapIn">
+    <wsdl:part name="parameters" element="tns:GET_OVER_ORDER" />
+  </wsdl:message>
+  <wsdl:message name="GET_OVER_ORDERSoapOut">
+    <wsdl:part name="parameters" element="tns:GET_OVER_ORDERResponse" />
+  </wsdl:message>
+  <wsdl:message name="GET_APS_MATERIASETSoapIn">
+    <wsdl:part name="parameters" element="tns:GET_APS_MATERIASET" />
+  </wsdl:message>
+  <wsdl:message name="GET_APS_MATERIASETSoapOut">
+    <wsdl:part name="parameters" element="tns:GET_APS_MATERIASETResponse" />
+  </wsdl:message>
+  <wsdl:message name="Get_materialSoapIn">
+    <wsdl:part name="parameters" element="tns:Get_material" />
+  </wsdl:message>
+  <wsdl:message name="Get_materialSoapOut">
+    <wsdl:part name="parameters" element="tns:Get_materialResponse" />
+  </wsdl:message>
+  <wsdl:message name="Get_lineSoapIn">
+    <wsdl:part name="parameters" element="tns:Get_line" />
+  </wsdl:message>
+  <wsdl:message name="Get_lineSoapOut">
+    <wsdl:part name="parameters" element="tns:Get_lineResponse" />
+  </wsdl:message>
+  <wsdl:message name="Get_technologySoapIn">
+    <wsdl:part name="parameters" element="tns:Get_technology" />
+  </wsdl:message>
+  <wsdl:message name="Get_technologySoapOut">
+    <wsdl:part name="parameters" element="tns:Get_technologyResponse" />
+  </wsdl:message>
+  <wsdl:message name="GET_lineRproductSoapIn">
+    <wsdl:part name="parameters" element="tns:GET_lineRproduct" />
+  </wsdl:message>
+  <wsdl:message name="GET_lineRproductSoapOut">
+    <wsdl:part name="parameters" element="tns:GET_lineRproductResponse" />
+  </wsdl:message>
+  <wsdl:message name="Get_completeproductplanSoapIn">
+    <wsdl:part name="parameters" element="tns:Get_completeproductplan" />
+  </wsdl:message>
+  <wsdl:message name="Get_completeproductplanSoapOut">
+    <wsdl:part name="parameters" element="tns:Get_completeproductplanResponse" />
+  </wsdl:message>
+  <wsdl:message name="Get_realstockSoapIn">
+    <wsdl:part name="parameters" element="tns:Get_realstock" />
+  </wsdl:message>
+  <wsdl:message name="Get_realstockSoapOut">
+    <wsdl:part name="parameters" element="tns:Get_realstockResponse" />
+  </wsdl:message>
+  <wsdl:message name="Get_stopplanSoapIn">
+    <wsdl:part name="parameters" element="tns:Get_stopplan" />
+  </wsdl:message>
+  <wsdl:message name="Get_stopplanSoapOut">
+    <wsdl:part name="parameters" element="tns:Get_stopplanResponse" />
+  </wsdl:message>
+  <wsdl:message name="Get_takegoodsSoapIn">
+    <wsdl:part name="parameters" element="tns:Get_takegoods" />
+  </wsdl:message>
+  <wsdl:message name="Get_takegoodsSoapOut">
+    <wsdl:part name="parameters" element="tns:Get_takegoodsResponse" />
+  </wsdl:message>
+  <wsdl:message name="GET_ALL_ONECESoapIn">
+    <wsdl:part name="parameters" element="tns:GET_ALL_ONECE" />
+  </wsdl:message>
+  <wsdl:message name="GET_ALL_ONECESoapOut">
+    <wsdl:part name="parameters" element="tns:GET_ALL_ONECEResponse" />
+  </wsdl:message>
+  <wsdl:portType name="Service1Soap">
+    <wsdl:operation name="GET_APS_DISPATCH">
+      <wsdl:input message="tns:GET_APS_DISPATCHSoapIn" />
+      <wsdl:output message="tns:GET_APS_DISPATCHSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="GET_OVER_ORDER">
+      <wsdl:input message="tns:GET_OVER_ORDERSoapIn" />
+      <wsdl:output message="tns:GET_OVER_ORDERSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="GET_APS_MATERIASET">
+      <wsdl:input message="tns:GET_APS_MATERIASETSoapIn" />
+      <wsdl:output message="tns:GET_APS_MATERIASETSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="Get_material">
+      <wsdl:input message="tns:Get_materialSoapIn" />
+      <wsdl:output message="tns:Get_materialSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="Get_line">
+      <wsdl:input message="tns:Get_lineSoapIn" />
+      <wsdl:output message="tns:Get_lineSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="Get_technology">
+      <wsdl:input message="tns:Get_technologySoapIn" />
+      <wsdl:output message="tns:Get_technologySoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="GET_lineRproduct">
+      <wsdl:input message="tns:GET_lineRproductSoapIn" />
+      <wsdl:output message="tns:GET_lineRproductSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="Get_completeproductplan">
+      <wsdl:input message="tns:Get_completeproductplanSoapIn" />
+      <wsdl:output message="tns:Get_completeproductplanSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="Get_realstock">
+      <wsdl:input message="tns:Get_realstockSoapIn" />
+      <wsdl:output message="tns:Get_realstockSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="Get_stopplan">
+      <wsdl:input message="tns:Get_stopplanSoapIn" />
+      <wsdl:output message="tns:Get_stopplanSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="Get_takegoods">
+      <wsdl:input message="tns:Get_takegoodsSoapIn" />
+      <wsdl:output message="tns:Get_takegoodsSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="GET_ALL_ONECE">
+      <wsdl:input message="tns:GET_ALL_ONECESoapIn" />
+      <wsdl:output message="tns:GET_ALL_ONECESoapOut" />
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:binding name="Service1Soap" type="tns:Service1Soap">
+    <soap:binding transport="http://schemas.xmlsoap.org/soap/http" />
+    <wsdl:operation name="GET_APS_DISPATCH">
+      <soap:operation soapAction="http://tempuri.org/GET_APS_DISPATCH" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GET_OVER_ORDER">
+      <soap:operation soapAction="http://tempuri.org/GET_OVER_ORDER" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GET_APS_MATERIASET">
+      <soap:operation soapAction="http://tempuri.org/GET_APS_MATERIASET" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="Get_material">
+      <soap:operation soapAction="http://tempuri.org/Get_material" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="Get_line">
+      <soap:operation soapAction="http://tempuri.org/Get_line" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="Get_technology">
+      <soap:operation soapAction="http://tempuri.org/Get_technology" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GET_lineRproduct">
+      <soap:operation soapAction="http://tempuri.org/GET_lineRproduct" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="Get_completeproductplan">
+      <soap:operation soapAction="http://tempuri.org/Get_completeproductplan" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="Get_realstock">
+      <soap:operation soapAction="http://tempuri.org/Get_realstock" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="Get_stopplan">
+      <soap:operation soapAction="http://tempuri.org/Get_stopplan" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="Get_takegoods">
+      <soap:operation soapAction="http://tempuri.org/Get_takegoods" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GET_ALL_ONECE">
+      <soap:operation soapAction="http://tempuri.org/GET_ALL_ONECE" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:binding name="Service1Soap12" type="tns:Service1Soap">
+    <soap12:binding transport="http://schemas.xmlsoap.org/soap/http" />
+    <wsdl:operation name="GET_APS_DISPATCH">
+      <soap12:operation soapAction="http://tempuri.org/GET_APS_DISPATCH" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GET_OVER_ORDER">
+      <soap12:operation soapAction="http://tempuri.org/GET_OVER_ORDER" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GET_APS_MATERIASET">
+      <soap12:operation soapAction="http://tempuri.org/GET_APS_MATERIASET" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="Get_material">
+      <soap12:operation soapAction="http://tempuri.org/Get_material" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="Get_line">
+      <soap12:operation soapAction="http://tempuri.org/Get_line" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="Get_technology">
+      <soap12:operation soapAction="http://tempuri.org/Get_technology" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GET_lineRproduct">
+      <soap12:operation soapAction="http://tempuri.org/GET_lineRproduct" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="Get_completeproductplan">
+      <soap12:operation soapAction="http://tempuri.org/Get_completeproductplan" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="Get_realstock">
+      <soap12:operation soapAction="http://tempuri.org/Get_realstock" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="Get_stopplan">
+      <soap12:operation soapAction="http://tempuri.org/Get_stopplan" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="Get_takegoods">
+      <soap12:operation soapAction="http://tempuri.org/Get_takegoods" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GET_ALL_ONECE">
+      <soap12:operation soapAction="http://tempuri.org/GET_ALL_ONECE" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name="Service1">
+    <wsdl:port name="Service1Soap" binding="tns:Service1Soap">
+      <soap:address location="http://192.168.1.100/Service1.asmx" />
+    </wsdl:port>
+    <wsdl:port name="Service1Soap12" binding="tns:Service1Soap12">
+      <soap12:address location="http://192.168.1.100/Service1.asmx" />
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>

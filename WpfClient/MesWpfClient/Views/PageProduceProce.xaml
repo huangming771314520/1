@@ -1,0 +1,167 @@
+﻿<Page x:Class="MesWpfClient.Views.PageProduceProce"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:local="clr-namespace:MesWpfClient.Views"
+      mc:Ignorable="d" 
+      d:DesignHeight="450" d:DesignWidth="800"
+      Title="PageProduceProce">
+
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="220" ></ColumnDefinition>
+            <ColumnDefinition Width="*"></ColumnDefinition>
+            <ColumnDefinition Width="240"></ColumnDefinition>
+        </Grid.ColumnDefinitions>
+        <Grid Grid.Column="0">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"></RowDefinition>
+                <RowDefinition Height="Auto"></RowDefinition>
+                <RowDefinition Height="Auto"></RowDefinition>
+                <RowDefinition Height="*" ></RowDefinition>
+                <RowDefinition Height="340"></RowDefinition>
+            </Grid.RowDefinitions>
+            <Grid Grid.Row="0">
+                <!--<Label Content="{Binding ProjectName}" Style="{DynamicResource ProduceProceTitleLabel}" Width="100" Background="#FFBFE9F3"></Label>-->
+                <TextBlock Text="{Binding ProjectName}" Style="{DynamicResource ProduceProceTitleTextBlock}" Background="#FFBFE9F3" />
+            </Grid>
+            <Grid Grid.Row="1">
+                <!--<Label Content="{Binding PartName}" Style="{DynamicResource ProduceProceTitleLabel}" Background="#FFADF6D0"></Label>-->
+                <TextBlock Text="{Binding PartName}" Style="{DynamicResource ProduceProceTitleTextBlock}" Background="#FFADF6D0" />
+            </Grid>
+            <Grid Grid.Row="2">
+                <!--<Label Content="{Binding PartFigure}" Style="{DynamicResource ProduceProceTitleLabel}" Background="#FFEFC7F6"></Label>-->
+                <TextBlock Text="{Binding PartFigure}" Style="{DynamicResource ProduceProceTitleTextBlock}" Background="#FFF6F5C7" />
+            </Grid>
+            <Grid Grid.Row="3">
+                <TextBlock Text="{Binding WorkStep.WorkStepsInfo}" Style="{DynamicResource ProduceProceWorkStepsInfoTextBlock}"></TextBlock>
+            </Grid>
+            <Grid Grid.Row="4">
+                <ListBox Style="{StaticResource WorkStepsListBox}" ItemsSource="{Binding WorkSteps}" SelectedIndex="{Binding SelectWorkStepsIndex}" >
+                    <ListBox.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <StackPanel></StackPanel>
+                        </ItemsPanelTemplate>
+                    </ListBox.ItemsPanel>
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <Grid Height="Auto" Margin="2 4">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="60"></ColumnDefinition>
+                                    <ColumnDefinition Width="*"></ColumnDefinition>
+                                </Grid.ColumnDefinitions>
+                                <Grid Grid.Column="0">
+                                    <Label Style="{DynamicResource ProduceProceWorkStepsLineNumLabel}">
+                                        <Border Style="{DynamicResource ProduceProceWorkStepsLineNumBorder}">
+                                            <ContentControl Content="{Binding LineNum}" Style="{DynamicResource ProduceProceWorkStepsLineNumBorder.ContentControl}"></ContentControl>
+                                        </Border>
+                                    </Label>
+                                </Grid>
+                                <Grid Grid.Column="1" Margin="10 0 0 0" Height="Auto">
+                                    <TextBlock Text="{Binding WorkStepsName}" Style="{DynamicResource ProduceProceWorkStepsNameTextBlock}" />
+                                </Grid>
+                            </Grid>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+            </Grid>
+        </Grid>
+        <Grid Grid.Column="1">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" MinHeight="50" MaxHeight="80"></RowDefinition>
+                <RowDefinition Height="*"></RowDefinition>
+            </Grid.RowDefinitions>
+            <Grid Grid.Row="0">
+                <ListBox ItemsSource="{Binding Drawings}" SelectedIndex="{Binding SelectDrawingsIndex}" Style="{DynamicResource DrawingListBoxStyle}" >
+                    <ListBox.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <StackPanel Orientation="Horizontal"></StackPanel>
+                        </ItemsPanelTemplate>
+                    </ListBox.ItemsPanel>
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <Grid Height="Auto" Margin="2 4">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="40"></ColumnDefinition>
+                                    <ColumnDefinition Width="*"></ColumnDefinition>
+                                </Grid.ColumnDefinitions>
+                                <Grid Grid.Column="0">
+                                    <Label Style="{DynamicResource ProduceProceDrawingsLineNumLabel}">
+                                        <Border Style="{DynamicResource ProduceProceDrawingsLineNumBorder}">
+                                            <ContentControl Content="{Binding LineNum}" Style="{DynamicResource ProduceProceDrawingsLineNumBorder.ContentControl}"></ContentControl>
+                                        </Border>
+                                    </Label>
+                                </Grid>
+                                <Grid Grid.Column="1" Margin="6 0 0 0" Height="Auto">
+                                    <TextBlock Text="{Binding DrawName}" Style="{DynamicResource ProduceProceDrawingsTextBlock}" />
+                                </Grid>
+                            </Grid>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+            </Grid>
+            <Grid Grid.Row="1">
+                <Grid x:Name="mxDraw" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                    <Grid.InputBindings>
+                        <KeyBinding Key="Enter" Command="{Binding MxDrawCommand}" CommandParameter="{Binding RelativeSource={RelativeSource Mode=Self}, Path=Key}"></KeyBinding>
+                        <KeyBinding Key="Up" Command="{Binding MxDrawCommand}" CommandParameter="{Binding RelativeSource={RelativeSource Mode=Self}, Path=Key}"></KeyBinding>
+                        <KeyBinding Key="Down" Command="{Binding MxDrawCommand}" CommandParameter="{Binding RelativeSource={RelativeSource Mode=Self}, Path=Key}"></KeyBinding>
+                        <KeyBinding Key="Left" Command="{Binding MxDrawCommand}" CommandParameter="{Binding RelativeSource={RelativeSource Mode=Self}, Path=Key}"></KeyBinding>
+                        <KeyBinding Key="Right" Command="{Binding MxDrawCommand}" CommandParameter="{Binding RelativeSource={RelativeSource Mode=Self}, Path=Key}"></KeyBinding>
+                        <KeyBinding Key="OemPlus" Command="{Binding MxDrawCommand}" CommandParameter="{Binding RelativeSource={RelativeSource Mode=Self}, Path=Key}"></KeyBinding>
+                        <KeyBinding Key="OemMinus" Command="{Binding MxDrawCommand}" CommandParameter="{Binding RelativeSource={RelativeSource Mode=Self}, Path=Key}"></KeyBinding>
+                        <KeyBinding Key="OemOpenBrackets" Command="{Binding MxDrawCommand}" CommandParameter="{Binding RelativeSource={RelativeSource Mode=Self}, Path=Key}"></KeyBinding>
+                        <KeyBinding Key="OemCloseBrackets" Command="{Binding MxDrawCommand}" CommandParameter="{Binding RelativeSource={RelativeSource Mode=Self}, Path=Key}"></KeyBinding>
+                        <KeyBinding Key="Multiply" Command="{Binding MxDrawCommand}" CommandParameter="{Binding RelativeSource={RelativeSource Mode=Self}, Path=Key}"></KeyBinding>
+                        <KeyBinding Key="Add" Command="{Binding MxDrawCommand}" CommandParameter="{Binding RelativeSource={RelativeSource Mode=Self}, Path=Key}"></KeyBinding>
+                        <KeyBinding Key="Subtract" Command="{Binding MxDrawCommand}" CommandParameter="{Binding RelativeSource={RelativeSource Mode=Self}, Path=Key}"></KeyBinding>
+                    </Grid.InputBindings>
+                </Grid>
+            </Grid>
+        </Grid>
+        <Grid Grid.Column="2">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" MinHeight="50" MaxHeight="80"></RowDefinition>
+                <RowDefinition Height="*"></RowDefinition>
+            </Grid.RowDefinitions>
+            <Grid Grid.Row="0">
+                <TextBox x:Name="QrCode" Text="{Binding QrCode}" Style="{DynamicResource MaintainQrCodeTextBox}" InputMethod.IsInputMethodEnabled="False">
+                    <TextBox.InputBindings>
+                        <KeyBinding Key="Enter" Command="{Binding QrCodeScanCommand}" CommandParameter="{Binding ElementName=QrCode, Path=Text}"></KeyBinding>
+                    </TextBox.InputBindings>
+                </TextBox>
+            </Grid>
+            <Grid Grid.Row="1">
+                <ListBox Style="{StaticResource MaintainListBox}" ItemsSource="{Binding Maintains}" SelectedIndex="{Binding SelectMaintainIndex}" >
+                    <ListBox.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <StackPanel></StackPanel>
+                        </ItemsPanelTemplate>
+                    </ListBox.ItemsPanel>
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <Grid Height="Auto" Margin="2 4">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"></RowDefinition>
+                                    <RowDefinition Height="Auto"></RowDefinition>
+                                    <RowDefinition Height="Auto"></RowDefinition>
+                                </Grid.RowDefinitions>
+                                <Grid Grid.Row="0">
+                                    <TextBlock Text="{Binding PartFigureCode}" Style="{DynamicResource ProduceProceMaintainNameTextBlock}" />
+                                </Grid>
+                                <Grid Grid.Row="1">
+                                    <TextBlock Text="{Binding PartName}" Style="{DynamicResource ProduceProceMaintainNameTextBlock}" />
+                                </Grid>
+                                <Grid Grid.Row="2">
+                                    <TextBlock Text="{Binding Proportion}" Style="{DynamicResource ProduceProceMaintainNameTextBlock}" />
+                                </Grid>
+                            </Grid>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+            </Grid>
+        </Grid>
+
+    </Grid>
+</Page>

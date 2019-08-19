@@ -1,0 +1,16 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<settings lookupType="StorageList" defaultOrderBy='temp.ParentWHCode'>
+  <module>Mms</module>
+  <select>
+    *
+  </select>
+  <from>
+    (select bd.ParentWHCode,hr.WH_Code,hr.WH_Name,hr.WH_Code as RWH_Code,hr.WH_Name as RWH_Name,hr.Material_No from HouseRstorage hr left join W_BD_Depot bd on bd.WH_Code=hr.WH_Code) as temp
+  </from>
+  <where defaultForAll='true' defaultCp='equal' defaultIgnoreEmpty='true' >
+    <field name='temp.WH_Code'         cp='like'  ></field>
+    <field name='temp.WH_Name'         cp='like'       ></field>
+    <field name='temp.ParentWHCode'    cp='equal'       ></field>
+    <field name='temp.Material_No'    cp='equal'       ></field>
+  </where>
+</settings>

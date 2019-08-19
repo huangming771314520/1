@@ -1,0 +1,320 @@
+﻿@{
+    Zephyr.Models.PMS_DesignTaskDetail task = ViewData["DesignTask"] as Zephyr.Models.PMS_DesignTaskDetail;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title></title>
+
+    <link href="~/Content/js/jquery-easyui-1.7.0/themes/icon.css" rel="stylesheet" />
+    <link href="~/Content/js/jquery-easyui-1.7.0/themes/default/easyui.css" rel="stylesheet" />
+    <style type="text/css">
+        * {
+            font-family: "微软雅黑";
+        }
+
+        .icon-resultset_previous {
+            background-image: url('../../../../Content/js/jquery-easyui-1.7.0/themes/icons/resultset_first.png');
+        }
+
+        .icon-resultset_next {
+            background-image: url('../../../../Content/js/jquery-easyui-1.7.0/themes/icons/resultset_last.png');
+        }
+
+        .icon-edit {
+            background: url('../../../../Content/js/jquery-easyui-1.7.0/themes/icons/edit.png') no-repeat center center;
+        }
+    </style>
+
+</head>
+<body>
+    <div style="width:360px;height:100%;float:left;margin-right:5px;">
+        <div class="easyui-panel" title="详细信息" style="padding:20px;">
+            <ul data-bind="easyuiTree:tree" id="Ctree"></ul>
+        </div>
+    </div>
+    <div class="easyui-panel" title="设计任务明细" style="padding:20px;float:left;">
+        <div style="margin-bottom:10px" id="toolBtn">
+            <a href="/mms/PMS_ContractInfo/TaskInfoIndex?pID=@ViewData["pID"]&contractCode=@ViewData["contractcode"]&productid=@ViewData["projectdetailid"]&pState=@ViewData["pState"]" class=" easyui-linkbutton" icon="icon-back">返回任务信息</a>
+            <a id="add" href="#" onclick="onAdd()" class="easyui-linkbutton" icon="icon-add">新增</a>
+            <a id="cal" onclick="onCancle()" href="#" class="easyui-linkbutton" icon="icon-cancel">取消</a>
+            <a id="edit" onclick="onEdit()" href="#" class="easyui-linkbutton" icon="icon-edit">编辑</a>
+            <a id="save" href="#" class="easyui-linkbutton" onclick="OnSave()" icon="icon-save">保存</a>
+            <a id="remove" onclick="onDelete()" href="#" class="easyui-linkbutton" icon="icon-remove">删除</a>
+            <a onclick="onUpEntryData('up')" href="#" class="easyui-linkbutton" icon="icon-resultset_previous">上一条</a>
+            <a onclick="onUpEntryData('down')" href="#" class="easyui-linkbutton" icon="icon-resultset_next">下一条</a>
+
+        </div>
+        <hr style=" height:1px;border:none;border-top:1px solid #efefef;margin:20px 0px;" />
+        <div style="margin-bottom:10px">
+            <input id="ProjectID" hidden value="@ViewData["pID"]" />
+            <input id="DesignTaskDetailID" hidden value="@task.ID">
+            <input id="MainID" hidden value="@ViewData["MainID"]">
+            <input id="ContractCode" class="easyui-textbox" label="合同编号:" prompt="" disabled="disabled" style="width:100%" value="@ViewData["contractCode"]">
+        </div>
+        <div style="margin-bottom:10px">
+            <input id="DesignTaskCode" hidden value="@task.DesignTaskCode">
+            <input id="ProductID" hidden value="@ViewData["ProductID"]">
+            <input class="easyui-textbox" id="ProductName" label="产品名称:" prompt="" disabled="disabled" style="width:100%" value="@ViewData["pName"]">
+        </div>
+        <div style="margin-bottom:10px">
+            <input class="easyui-textbox" label="型号:" prompt="" disabled="disabled" style="width:100%" value="@ViewData["pModel"]">
+        </div>
+        <div style="margin-bottom:10px">
+            <input class="easyui-textbox" label="规格:" prompt="" disabled="disabled" style="width:100%" value="@ViewData["pSpecifications"]">
+        </div>
+        <div style="margin-bottom:10px;height:30px;width:300px">
+            <input id="WorkshopID" label="设计部门:" style="width:300px" data-options="url:'/Commons/GetComboboxList?CodeType=DesignDepartment',valueField:'value',textField:'text'" class="z-txt easyui-combobox">
+        </div>
+        <div style="margin-bottom:10px">
+            <input id="TaskType" label="设计任务类型:" style="width:300px" data-options="url:'/Commons/GetComboboxList?CodeType=TaskType',valueField:'value',textField:'text'" class="z-txt easyui-combobox">
+            @*<select id="TaskType" class="easyui-combobox" label="任务类型:" prompt="" style="width:300px">
+                    <option value="1">主阀</option>
+                    <option value="2">旁通</option>
+                    <option value="3">上下游管</option>
+                    <option value="4">伸缩节</option>
+                    <option value="5">附件</option>
+                    <option value="6">其他</option>
+                </select>*@
+        </div>
+        <div style="margin-bottom:10px">
+            <input id="TaskDescription" class="easyui-textbox" label="任务描述:" prompt="" style="width:100%">
+        </div>
+        <div style="margin-bottom:10px">
+            <input id="TaskStartDate" class="easyui-datebox" label="开始日期:" prompt="" style="width:300px;">
+        </div>
+        <div style="margin-bottom:10px">
+            <input id="TaskFinishDate" class="easyui-datebox" label="结束日期:" prompt="" style="width:300px;">
+        </div>
+    </div>
+
+
+    <script src="~/Content/js/jquery-easyui-1.7.0/jquery.min.js"></script>
+    <script src="~/Content/js/jquery-easyui-1.7.0/jquery.easyui.min.js"></script>
+    <script src="~/Content/js/jquery-easyui-1.7.0/locale/easyui-lang-zh_CN.js"></script>
+    <script src="~/Content/js/core/common.js"></script>
+    <script src="~/Content/js/core/utils.js"></script>
+    <script type="text/javascript">
+        function onCancle() {
+            window.location.reload();
+        }
+        function onEdit() {
+            $("#save").linkbutton('enable');
+            $("#TaskType").combobox('enable');
+            $("#TaskDescription").textbox('enable');
+            $("#TaskStartDate").datebox('enable');
+            $("#TaskFinishDate").datebox('enable');
+            $("#WorkshopID").combobox('enable');
+        }
+        function setControlDisable() {
+            $("#TaskType").combobox('disable');
+            $("#TaskDescription").textbox('disable');
+            $("#TaskStartDate").datebox('disable');
+            $("#TaskFinishDate").datebox('disable');
+            $("#WorkshopID").combobox('disable');
+
+            var pState =@ViewData["pState"];
+            if (pState == 1) {
+                $("#add").linkbutton('disable');
+                $("#edit").linkbutton('disable');
+                $("#remove").linkbutton('disable');
+            }
+            else {
+                $("#add").linkbutton('enable');
+                $("#edit").linkbutton('enable');
+                $("#remove").linkbutton('enable');
+            }
+        }
+        $().ready(function () {
+            setControlDisable();
+            $("#save").linkbutton('disable');
+            $("#cal").linkbutton('disable');
+            $.get("/api/Mms/PMS_ContractInfo/GetProductTaskDetailData?pID=" + $("#ContractCode").val() + "&productID=" + $("#ProductID").val()+"&dkdID="+$("#DesignTaskDetailID").val(), function (result) {
+                //console.log(result)
+                if (result.result) {
+                    $("#DesignTaskDetailID").val(result.data[0].ID);
+                    //$("#DesignTaskDetailID").val(result.data[0].ID);
+                    $("#TaskDescription").textbox("setValue", result.data[0].TaskDescription);
+                    $("#TaskStartDate").datebox("setValue", result.data[0].TaskStartDate);
+                    $("#TaskFinishDate").datebox("setValue", result.data[0].TaskFinishDate);
+                    //$("#Remark").textbox("setValue", result.data[0].Remark);
+                    $("#TaskType").combobox("setValue", result.data[0].TaskType);
+                    $("#WorkshopID").combobox('setValue', result.data[0].DesignDepartment);
+                    //$("#ProjectState").textbox("setValue", result.data[0].ProjectState);
+                }
+            })
+        })
+
+        function OnSave() {
+            if ($('#WorkshopID').combobox('getValue') == '') {
+                com.message('success', "部门不能为空！");
+                return;
+            }
+            var model = [];
+            model.push({
+                ID: $("#DesignTaskDetailID").val(),
+                MainID: $("#MainID").val(),
+                ContractCode: $("#ContractCode").val(),
+                ProductID: $("#ProductID").val(),
+                //DesignTaskCode:
+                DesignTaskCode: $("#DesignTaskCode").val(),
+                TaskDescription: $("#TaskDescription").textbox("getValue"),
+                //Remark: $("#Remark").textbox("getValue"),
+                TaskType: $("#TaskType").combobox("getValue"),
+                IsEnable: 1,
+                TaskStartDate: $("#TaskStartDate").datebox("getValue"),
+                TaskFinishDate: $("#TaskFinishDate").datebox("getValue"),
+                BillState: 0,
+                DesignType: 1,
+                DesignDepartment: $('#WorkshopID').combobox('getValue'),
+            });
+            $.ajax({
+                type: "POST",
+                url: '/api/Mms/PMS_ContractInfo/PostDesignDetailOnSave',
+                data: JSON.stringify(model),
+                contentType: 'application/json;charset=utf-8',
+                async: false,
+                success: function (result) {
+                    if (result.result) {
+                        com.message('success', "保存成功！");
+                        window.location.reload();
+                    }
+                    $('#Ctree').tree("options").queryParams = { cCode: $("#ContractCode").val() };
+                    $('#Ctree').tree('reload');
+                }
+            })
+        }
+
+        function onUpEntryData(type) {
+
+            var post = {
+                tid: $("#DesignTaskDetailID").val(),
+                whereSql: " and ContractCode='" + $("#ContractCode").val() + "' and ProductID='" + $("#ProductID").val() + "'" + " and MainID=" + $("#MainID").val(),
+                table: 'PMS_DesignTaskDetail',
+                type: type
+            }
+            com.ajax({
+                type: "POST",
+                url: '/api/Mms/PMS_ContractInfo/PostProjectUpOrDownData',
+                data: JSON.stringify(post),
+                success: function (result) {
+                    if (result.length > 0) {
+                        $("#DesignTaskDetailID").val(result[0].ID);
+                        $("#TaskDescription").textbox("setValue", result[0].TaskDescription);
+                        $("#TaskStartDate").datebox("setValue", result[0].TaskStartDate);
+                        $("#TaskFinishDate").datebox("setValue", result[0].TaskFinishDate);
+                        //$("#Remark").textbox("setValue", result.data.Remark);
+                        $("#TaskType").combobox("setValue", result[0].TaskType);
+                        //$("#ProjectState").textbox("setValue", result.ProjectState);
+                        $("#WorkshopID").combobox('setValue', result[0].DesignDepartment);
+                    }
+                    else {
+                        com.message('success', "没有数据了！");
+                    }
+                }
+            })
+        }
+
+        function onAdd() {
+            $("#toolBtn a").linkbutton('disable');
+            $("#cal").linkbutton('enable');
+            onEdit();
+            $("#DesignTaskDetailID").val("");
+            //$("#DesignTaskDetailID").val(result.data[0].ID);
+            $("#TaskDescription").textbox("setValue", "");
+            $("#TaskStartDate").datebox("setValue", "");
+            $("#TaskFinishDate").datebox("setValue", "");
+            //$("#Remark").textbox("setValue", result.data[0].Remark);
+            $("#TaskType").combobox("setValue", 1);
+            //$("#ProjectState").textbox("setValue", "");
+            $("#WorkshopID").combobox("setValue", 1);
+        }
+
+        function onDelete() {
+
+            if (confirm("确定要删除设计任务明细吗?")) {
+                var pid = $("#DesignTaskDetailID").val();
+                if (pid == "") {
+                    com.message('success', "只能删除已保存的数据！");
+                    return;
+                }
+                else {
+                    $.get("/api/Mms/PMS_ContractInfo/GetDeleteProductTaskDetailData?id=" + pid, function (result) {
+                        //console.log(result)
+                        if (result.result) {
+                            $("#DesignTaskDetailID").val("");
+                            $("#TaskDescription").textbox("setValue", "");
+                            $("#TaskStartDate").datebox("setValue", "");
+                            $("#TaskFinishDate").datebox("setValue", "");
+                            //$("#Remark").textbox("setValue", result.data[0].Remark);
+                            $("#TaskType").combobox("setValue", 1);
+                            $("#WorkshopID").combobox('setValue', "");
+                            //$("#ProjectState").textbox("setValue", result.data[0].ProjectState);
+                            window.location.reload();
+                        }
+                    })
+                }
+            }
+        }
+
+
+        //function onReturnTask() {
+        //    var contractCode = $("#ContractCode").val();
+        //    window.location.href = '/mms/PMS_ContractInfo/TaskInfoIndex?contractCode=' + contractCode + "&productID=" + $("#ProductID").val();
+        //}
+
+        $('#Ctree').tree({
+            method: 'GET',
+            queryParams: { cCode: $("#ContractCode").val() },
+            lines: true,
+            animate: true,
+            url: '/api/Mms/PMS_ContractInfo/GetTaskTree',
+            loadFilter: function (d) {
+                if (d != null && d.length > 0) {
+                    var jsonData = eval(d);
+                    return utils.toTreeData(jsonData, 'id', 'pid', "children");
+                }
+                else {
+                    return '';
+                }
+            },
+            onSelect: function (node) {
+                var pState =@ViewData["pState"];
+
+                if (node.pid == "0") {
+                    window.location.href = "/mms/PMS_ContractInfo/ContractInfoIndex?projectID=" + node.id.substring(1, node.id.length);
+                } else if (node.pid.substring(0, 1) == "P") {
+                    window.location.href = "/mms/PMS_ContractInfo/ProductInfoIndex?pID=" + $("#ProjectID").val() + "&cCode=" + $("#ContractCode").val() + "&pName=0&projectDetailID=0&sousid=" + node.id.substring(1, node.id.length)+ "&pState=" + pState;
+                } else if (node.pid.substring(0, 1) == "A") {
+                    $.get("/api/Mms/PMS_ContractInfo/GetProjectDetailData2?id=" + node.pid.substring(1, node.pid.length), function (result) {
+                        if (result.result) {
+                            window.location.href = '/mms/PMS_ContractInfo/TaskInfoIndex?pID=' + $("#ProjectID").val() + '&contractCode=' + $("#ContractCode").val() + "&productID=" + node.pid.substring(1, node.pid.length) + "&pName=" + result.data[0].ProductName + "&pModel=" + result.data[0].Model + "&pSpecifications=" + result.data[0].Specifications + "&DeliveryTime=" + result.data[0].DeliveryTime + "&Quantity=" + result.data[0].Quantity+ "&pState=" + pState;
+                        }
+                    })
+
+                }
+                else if (node.pid.substring(0, 1) == "B") {
+                    $.get("/api/Mms/PMS_ContractInfo/GetProjectDetailData2?id=" + node.text.substr(node.text.indexOf('&') + 1, node.text.lastIndexOf('&') - node.text.indexOf('&') - 1), function (result) {
+                        if (result.result) {
+                            window.location.href = '/mms/PMS_ContractInfo/DesignTaskDetailedIndex?pID=' + $("#ProjectID").val() + '&contractCode=' + $("#ContractCode").val() + "&productID=" + node.text.substr(node.text.indexOf('&') + 1, node.text.lastIndexOf('&') - node.text.indexOf('&') - 1) + "&pName=" + result.data[0].ProductName + "&pModel=" + result.data[0].Model + "&pSpecifications=" + result.data[0].Specifications + "&MainID=" + node.pid.substring(1, node.pid.length) + "&id=" + node.id+ "&pState=" + pState;
+                        }
+                    })
+                }
+                else if (node.pid.substring(0, 1) == "D") {
+                    $.get("/api/Mms/PMS_ContractInfo/GetProjectDetailData2?id=" + node.text.substr(node.text.indexOf('&') + 1, node.text.lastIndexOf('&') - node.text.indexOf('&') - 1), function (result) {
+                        if (result.result) {
+                            window.location.href = '/mms/PMS_ContractInfo/ProductionTaskDetailedIndex?pID=' + $("#ProjectID").val() + '&contractCode=' + $("#ContractCode").val() + "&productID=" + node.text.substr(node.text.indexOf('&') + 1, node.text.lastIndexOf('&') - node.text.indexOf('&') - 1) + "&pName=" + result.data[0].ProductName + "&pModel=" + result.data[0].Model + "&pSpecifications=" + result.data[0].Specifications + "&Quantity=" + result.data[0].Quantity + "&DeliveryTime=" + result.data[0].DeliveryTime + "&MainID=" + node.pid.substring(1, node.pid.length) + "&id=" + node.id+ "&pState=" + pState;
+                        }
+                    })
+                }
+            }
+
+        });
+
+    </script>
+
+</body>
+</html>

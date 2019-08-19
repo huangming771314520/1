@@ -1,0 +1,215 @@
+﻿<link href="~/Content/js/jquery-easyui-1.7.0/themes/icon.css" rel="stylesheet" />
+<link href="~/Content/js/jquery-easyui-1.7.0/themes/default/easyui.css" rel="stylesheet" />
+
+<style type="text/css">
+
+    body {
+        margin: 2px;
+    }
+</style>
+
+@*<input id="topContCode" style="display: none;" />
+    <input id="topProjectName" style="display: none;" />
+    <input id="topPartCode" style="display: none;" />
+    <input id="topProductID" style="display: none;" />*@
+<div id="z-toolbar">
+    <a class="easyui-linkbutton" plain="true" onclick="SearchDialog()" icon="icon-search">选择项目零件</a>
+</div>
+<table id="tt" style="height: 92%;"></table>
+
+<script src="~/Content/js/jquery-easyui-1.7.0/jquery.min.js"></script>
+<script src="~/Content/js/jquery-easyui-1.7.0/jquery.easyui.min.js"></script>
+<script src="~/Content/js/core/utils.js"></script>
+<script src="~/Content/js/core/common.js"></script>
+
+<script type="text/javascript">
+    $().ready(function () {
+
+        var editRow = undefined;
+
+        $('#tt').treegrid({
+            queryParams: { PartCode: '0', VersionCode: '1', ContractCode: '0', ProductID: 0 },
+            //url: '/api/Mms/MES_BN_ProductProcessRoute/GetIsSalefyMadeBomTree?PartCode=3030JA000000000493&VersionCode=1',
+            url: '/api/Mms/MES_BN_ProductProcessRoute/GetProduceNumBomTree',
+            method: 'get',
+            toolbar: '#z-toolbar',
+            animate: true,
+            rownumbers: true,
+            striped: true,
+            singleSelect: true,
+            idField: 'PartCode',
+            treeField: 'PartFigureCode',
+            columns: [[
+                { title: '图号', field: 'PartFigureCode', width: 300 },
+                { title: 'ID', field: 'ID', hidden: 'true', width: 60 },
+                { title: '零件名称', field: 'PartName', width: 210 },
+                { title: '材质', field: 'MaterialCode', width: 150 },
+                { title: '单台数量', field: 'PartQuantity', width: 65 },
+                { title: '合同台数', field: 'Quantity', width: 65 },
+                { title: '下料需求总数量', field: 'BlankingTotal', width: 106 },
+                { title: '物料属性', field: 'IsSelfMade', width: 65, formatter: function (value) { return value == 1 ? '加工件' : value == 0 ? "成品件" : "未知" } },
+                { title: '下料数量', field: 'BlankingNum', width: 65, editor: 'text' },
+                { title: '外购数量', field: 'PurchaseNum', width: 65, editor: 'text' },
+                { title: '改制数量', field: 'RestructNum', width: 65 }
+            ]],
+            rowStyler: function (row, index) {
+                if (row.IsSelfMade == "1") {
+                    return 'background-color:#D8FEFE;';
+                }
+                else {
+                    return 'background-color:#FBECDB;';
+                }
+            },
+            loadFilter: function (d) {
+                if (d != null && d.length > 0) {
+                    var jsonData = eval(d);
+                    return utils.toTreeData(jsonData, 'PartCode', 'ParentCode', "children");
+                }
+                else {
+                    return '';
+                }
+            },
+            onAfterEdit: function (row, changes) {
+
+            },
+            onDblClickRow: function (row) {
+                var selectRow = $('#tt').datagrid('getSelected');
+                if (editRow == undefined) {
+
+                    if (row.IsSelfMade == "1") {
+                        var tt = $('#tt').datagrid('getColumnOption', 'BlankingNum');
+                        tt.editor = { type: "text" };
+                    } else {
+                        var tt = $('#tt').datagrid('getColumnOption', 'BlankingNum');
+                        tt.editor = {};
+                    }
+
+                    $('#tt').treegrid("beginEdit", row.PartCode);
+                    editRow = row;
+                }
+            },
+            onClickRow: function (row) {
+                if (editRow != undefined) {
+
+                    $("#tt").treegrid('endEdit', editRow.PartCode);
+
+                    var BlankingTotal = editRow.BlankingTotal;
+                    var BlankingNum = parseInt(editRow.BlankingNum);
+                    var PurchaseNum = parseInt(editRow.PurchaseNum);
+
+                    if (BlankingNum < 0 || BlankingNum > BlankingTotal) {
+                        com.message("warning", '下料数量填写不符合要求！');
+                        editRow = undefined;
+                        return;
+                    }
+
+                    if (PurchaseNum < 0 || PurchaseNum > BlankingTotal) {
+                        com.message("warning", '外购数量填写不符合要求！');
+                        editRow = undefined;
+                        return;
+                    }
+
+                    if ((BlankingNum + PurchaseNum) > BlankingTotal) {
+                        com.message("warning", '下料数量与外购数量总和超过下料需求总数量！');
+                        editRow = undefined;
+                        return;
+                    }
+
+                    $.ajax({
+                        type: "GET",
+                        url: '/api/Mms/MES_BN_ProductProcessRoute/GetUpdateProcessMaterialNum?pCode=' + editRow.PartCode + "&blankingNum=" + BlankingNum + "&purchaseNum=" + PurchaseNum + "&restructNum=" + (BlankingTotal - BlankingNum - PurchaseNum),
+                        async: false,
+                        success: function (model) {
+                            if (model > 0) {
+                                com.message("success", '设置成功！');
+                            }
+                            else {
+                                com.message("warning", '设置失败！');
+                            }
+                            $('#tt').treegrid('reload');
+                        }
+                    });
+
+                    editRow = undefined;
+                }
+            }
+        });
+    })
+
+    //查询工艺bom树
+    function SearchDialog() {
+        var target = parent.$('#CommonSearchDialog').length ? parent.$('#CommonSearchDialog') : parent.$('<div id="CommonSearchDialog"></div>').appendTo('body');
+        utils.clearIframe(target);
+        var opt;
+        opt = { title: '列表', width: 800, height: 650, modal: true, collapsible: false, minimizable: false, maximizable: true, closable: true };
+        opt.content = "<iframe src='/mms/home/CommonDialog?xmlName=ChooseProjectPart' style='height:100%;width:100%;border:0;' frameborder='0'></iframe>";  //frameborder="0" for ie7
+        params = { xmlName: 'ChooseProjectPart' };
+        opt.paramater = params;
+        opt.onSelect = function (data) {
+            var ContractCode = data[0].ContractCode;
+            var ProductID = data[0].ProductID;
+            var PartCode = data[0].PartCode;
+
+
+            com.ajax({
+                type: 'post',
+                url: '/api/mms/MES_BN_WorkShopMatching/PostIsExistBlankingProcessBomData',
+                data: JSON.stringify({ ContractCode: ContractCode, ProductID: ProductID, ParentCode: PartCode }),
+                async: false,
+                success: function (d) {
+                    if (d) {
+                        //if (confirm("是否覆盖！")) {
+                        com.ajax({
+                            type: 'post',
+                            url: '/api/mms/MES_BN_WorkShopMatching/PostCreateBlankingProcessBomData',
+                            data: JSON.stringify({ ContractCode: ContractCode, ProductID: ProductID, ParentCode: PartCode, OperationType: 'update' }),
+                            async: false,
+                            success: function (d) {
+                                //self.grid.queryParams({ RootPartCode: PartCode });
+                            }
+                        });
+                        //}
+                    }
+                    else {
+                        com.ajax({
+                            type: 'post',
+                            url: '/api/mms/MES_BN_WorkShopMatching/PostCreateBlankingProcessBomData',
+                            data: JSON.stringify({ ContractCode: ContractCode, ProductID: ProductID, ParentCode: PartCode, OperationType: 'add' }),
+                            async: false,
+                            success: function (d) {
+                                //self.grid.queryParams({ RootPartCode: PartCode });
+                            }
+                        });
+                    }
+                }
+            });
+
+            //$("#topContCode").val(data[0].ContractCode);
+            //$("#topProjectName").val(data[0].ProjectName);
+            //$("#topPartCode").val(data[0].PartCode);
+            //$("#topProductID").val(data[0].ProductID);
+
+
+            $.ajax({
+                type: "GET",
+                url: '/api/Mms/MES_BN_ProductProcessRoute/GetAutoUpdateBlankingNum?partCode=' + data[0].PartCode,
+                async: false,
+                success: function (result) {
+                    console.log(result);
+                }
+            });
+
+            var params = {
+                PartCode: data[0].PartCode,
+                VersionCode: data[0].VersionCode,
+                ContractCode: ContractCode,
+                ProductID: ProductID
+            };
+            $('#tt').treegrid("options").queryParams = params;
+            $('#tt').treegrid('reload');//重新加载树
+            $('#tt').treegrid('collapseAll');//默认折叠所有节点
+        };
+        target.window(opt);
+    };
+
+</script>

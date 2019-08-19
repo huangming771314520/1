@@ -1,0 +1,218 @@
+﻿
+@{
+    ViewBag.Title = "SYS_DrawingApplication";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@section scripts{
+    <script src="/Content/js/viewModel/com.viewModel.searchEdit.js"></script>
+    <script type="text/javascript">
+        using(['validatebox', 'combobox', 'lookup', 'numberbox', 'datebox', 'datetimebox', 'combogrid', 'combotree', 'extend', 'menu'], easyuifix.datagrid_editor_extend);
+        var myself;
+    var viewModel = function(data){
+        var self = this;
+        myself = self;
+        com.viewModel.searchEdit.apply(self,arguments);
+    }
+    var data = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model));
+    ko.bindingViewModel(new viewModel(data));
+    </script>
+}
+<div class="z-toolbar">
+    <a href="#" plain="true" class="easyui-linkbutton" icon="icon-arrow_refresh" title="刷新" data-bind="click:refreshClick">刷新</a>
+    <a href="#" plain="true" class="easyui-linkbutton" icon="icon-add" title="新增" data-bind="click:addClick">新增</a>
+    <a href="#" plain="true" class="easyui-linkbutton" icon="icon-edit" title="编辑" data-bind="click:editClick">编辑</a>
+    <a href="#" plain="true" class="easyui-linkbutton" icon="icon-cross" title="删除" data-bind="click:deleteClick">删除</a>
+    <a href="#" plain="true" class="easyui-linkbutton" icon="icon-save" title="保存" data-bind="click:saveClick">保存</a>
+    <a href="#" plain="true" class="easyui-splitbutton" data-options="menu:'#dropdown',iconCls:'icon-download'">导出</a>
+</div>
+
+<div id="dropdown" style="width:100px; display:none;">
+    <div data-options="iconCls:'icon-ext-xls'" suffix="xls" data-bind="click:downloadClick">Excel2003   </div>
+    <div data-options="iconCls:'icon-page_excel'" suffix="xlsx" data-bind="click:downloadClick">Excel2007   </div>
+    <div data-options="iconCls:'icon-ext-doc'" suffix="doc" data-bind="click:downloadClick">Word2003    </div>
+</div>
+
+<div class="container_12" style="position:relative;">
+    <div class="grid_1 lbl">申请单号</div>
+    <div class="grid_2 val"><input type="text" data-bind="value:form.RequestCode" class="z-txt " /></div>
+    <div class="grid_1 lbl">合同编号</div>
+    <div class="grid_2 val"><input type="text" data-bind="value:form.ContractCode" class="z-txt " /></div>
+    <div class="grid_1 lbl">产品名称</div>
+    <div class="grid_2 val"><input type="text" data-bind="value:form.ProductName" class="z-txt " /></div>
+
+    <div class="clear"></div>
+
+    <div class="grid_1 lbl">子零件图号</div>
+    <div class="grid_2 val"><input type="text" data-bind="value:form.FigureCode" class="z-txt " /></div>
+    <div class="grid_1 lbl">申请状态</div>
+    <div class="grid_2 val"><input type="text" data-bind="comboboxValue:form.RequestStatus,datasource:[{value:'0',text:'已保存'},{value:'1',text:'待确认'},{value:'2',text:'已完成'}]" class="z-txt easyui-combobox" /></div>
+
+    <div class="clear"></div>
+
+    <div class="prefix_9" style="position:absolute;top:5px;height:0;">
+        <a id="a_search" href="#" class="buttonHuge button-blue" data-bind="click:searchClick" style="margin:0 15px;">查询</a>
+        <a id="a_reset" href="#" class="buttonHuge button-blue" data-bind="click:clearClick">清空</a>
+    </div>
+</div>
+
+<table data-bind="datagrid:grid" style="display:none">
+    <thead>
+        <tr>
+            <th field="ID" hidden="true" sortable="true" align="left" width="120" editor="text">主键ID</th>
+            <th field="RequestCode" sortable="true" align="left" width="120">申请单号</th>
+            <th field="ContractCode" sortable="true" align="left" width="120" editor="{type:'combogrid',options:{url:'/Commons/GetCommonSearchList',
+                            queryParams : {
+                            tableName:'[PMS_BN_Project]',
+                            searchField:'[ProjectID],[ContractCode],[ProjectName]',
+                            firstFightField:'[ProjectName]',
+                            whereSql:'IsEnable=1 and Is0tSartProduct=1'
+                    },
+                    method: 'GET',
+                    panelWidth:400,
+                    delay: 1000,
+                    mode: 'remote',
+                    value: 'ContractCode',
+                    idField: 'ContractCode',
+                    textField: 'ProjectName',
+                    fitColumns: true,
+                    columns:[[
+                    { field: 'ProjectID',title: 'ProjectID',hidden:true,width: 200 },
+                    { field: 'ContractCode',title: '合同编号',width: 200 },
+                    { field: 'ProjectName',title: '项目名称',width: 200 }
+                    ]],
+                    onSelect: function (rowIndex, rowData) {
+                           var index =  myself.grid.datagrid('getRowIndex',myself.grid.datagrid('getSelected'));
+                           var ed = myself.grid.datagrid('getEditor',{index:index,field:'ProductName'});
+                           $(ed.target).combogrid('grid').datagrid('options').queryParams.whereSql=' MainID='+rowData['ProjectID'];
+                           $(ed.target).combogrid('grid').datagrid('reload');
+                    },
+                    keyHandler:{
+                    query:function(keyword) {
+                    var queryParams=$(this).combogrid('grid').datagrid('options').queryParams;
+                    queryParams.keyword=keyword;
+                    $(this).combogrid('grid').datagrid('options').queryParams=queryParams;
+                    $(this).combogrid('grid').datagrid('reload');
+                    $(this).combogrid('setValue', keyword);
+                    }}}}">合同编号</th>
+            <th field="ProductID" hidden="true" sortable="true" align="left" width="120" editor="text">产品ID</th>
+            <th field="ProductName" sortable="true" align="left" width="120" editor="{type:'combogrid',options:{required:true,url:'/Commons/GetCommonSearchList',
+                     queryParams : {
+                            tableName:'[PMS_BN_ProjectDetail]',
+                            searchField:'[ID],[MainID],[ProductName],[Model],[Specifications]',
+                            firstFightField:'[ProductName]',
+                                whereSql:'0=1'
+                            },
+                            method: 'GET',
+                            panelWidth:680,
+                            delay: 1000,
+                            mode: 'remote',
+                            value: 'ProductName',
+                            idField: 'ProductName',
+                            textField: 'ProductName',
+                            fitColumns: true,
+                            columns:[[
+                             { field: 'ID',title: '产品ID',width: 200 ,hidden:true},
+                            { field: 'MainID',title: '项目ID',width: 200 ,hidden:true},
+                            { field: 'ProductName',title: '产品名称',width: 200 },
+                              { field: 'Model',title: '型号',width: 200 },
+                              { field: 'Specifications',title: '规格',width: 200 }
+                                ]],
+                             onSelect: function (rowIndex, rowData) {
+                           var index =  myself.grid.datagrid('getRowIndex',myself.grid.datagrid('getSelected'));
+                           myself.grid.datagrid('getEditor',{index:index,field:'ProductID'}).target.val(rowData['ID']);
+
+
+                           var ed = myself.grid.datagrid('getEditor',{index:index,field:'RootPartCode'});
+                           $(ed.target).combogrid('grid').datagrid('options').queryParams.whereSql='ProductID='+rowData['ID'];
+                           $(ed.target).combogrid('grid').datagrid('reload');
+                },
+                 keyHandler:{
+                   query:function(keyword) {
+                   var queryParams=$(this).combogrid('grid').datagrid('options').queryParams;
+                   queryParams.keyword=keyword;
+                   $(this).combogrid('grid').datagrid('options').queryParams=queryParams;
+                   $(this).combogrid('grid').datagrid('reload');
+                  $(this).combogrid('setValue', keyword);
+                }}}}">产品名称</th>
+            <th field="RootPartCode" sortable="true" align="left" data-options="formatter:function(value,row){return com.formatComboboxSingle('PMS_DesignTaskResult','PartCode','TaskDescription',value);}" width="120" editor="{type:'combogrid',options:{required:true,url:'/Commons/GetCommonSearchList',
+                            queryParams : {
+                            tableName:'[PMS_DesignTaskResult]',
+                            searchField:'[PartCode],[TaskDescription]',
+                            firstFightField:'[TaskDescription]',
+                            whereSql:'0=1'
+                    },
+                    method: 'GET',
+                    panelWidth:400,
+                    delay: 1000,
+                    mode: 'remote',
+                    value: 'PartCode',
+                    idField: 'PartCode',
+                    textField: 'TaskDescription',
+                    fitColumns: true,
+                    columns:[[
+                    { field: 'PartCode',title: '零件编号',width: 200 },
+                    { field: 'TaskDescription',title: '类型',width: 200 }
+                    ]],
+                    onSelect: function (rowIndex, rowData) {
+                           var index =  myself.grid.datagrid('getRowIndex',myself.grid.datagrid('getSelected'));
+                           var ed = myself.grid.datagrid('getEditor',{index:index,field:'FigureCode'});
+                           $(ed.target).combogrid('grid').datagrid('options').queryParams.tableName='[dbo].[Get_SYSBOM](\''+rowData['PartCode']+'\')';
+                           $(ed.target).combogrid('grid').datagrid('reload');
+                    },
+                    keyHandler:{
+                    query:function(keyword) {
+                    var queryParams=$(this).combogrid('grid').datagrid('options').queryParams;
+                    queryParams.keyword=keyword;
+                    $(this).combogrid('grid').datagrid('options').queryParams=queryParams;
+                    $(this).combogrid('grid').datagrid('reload');
+                    $(this).combogrid('setValue', keyword);
+                    }}}}">根零件编号</th>
+            <th field="PartCode" sortable="true" align="left" width="120" editor="text" hidden>零件编号</th>
+            <th field="FigureCode" sortable="true" align="left" width="180" editor="{type:'combogrid',options:{required:true,url:'/Commons/GetCommonSearchList',
+                            queryParams : {
+                            tableName:'[dbo].[Get_SYSBOM](\'0\')',
+                            searchField:'[PartCode],[PartName],[PartFigureCode]',
+                            //firstFightField:'[TaskDescription]',
+                            //whereSql:'0=1'
+                    },
+                    method: 'GET',
+                    panelWidth:400,
+                    delay: 1000,
+                    mode: 'remote',
+                    value: 'PartFigureCode',
+                    idField: 'PartFigureCode',
+                    textField: 'PartFigureCode',
+                    fitColumns: true,
+                    columns:[[
+                    { field: 'PartCode',title: '零件编号',width: 200,hidden:true },
+                    { field: 'PartFigureCode',title: '零件图号',width: 200 },
+                    { field: 'PartName',title: '零件名称',width: 200 }
+                    ]],
+                    onSelect: function (rowIndex, rowData) {
+                           var index =  myself.grid.datagrid('getRowIndex',myself.grid.datagrid('getSelected'));
+                           myself.grid.datagrid('getEditor',{index:index,field:'PartCode'}).target.val(rowData['PartCode']);
+                           myself.grid.datagrid('getEditor',{index:index,field:'PartName'}).target.val(rowData['PartName']);
+                    },
+                    keyHandler:{
+                    query:function(keyword) {
+                    var queryParams=$(this).combogrid('grid').datagrid('options').queryParams;
+                    queryParams.keyword=keyword;
+                    $(this).combogrid('grid').datagrid('options').queryParams=queryParams;
+                    $(this).combogrid('grid').datagrid('reload');
+                    $(this).combogrid('setValue', keyword);
+                    }}}}">零件图号</th>
+            <th field="PartName" sortable="true" align="left" width="120" editor="text">零件名称</th>
+            <th field="ApplicationReason" sortable="true" align="left" width="120" editor="textAreanew">申请原因</th>
+            <th field="RequestStatus" sortable="true" align="left" width="120" editor="{type: 'combobox', options:{
+                data : [{value:'0',text:'已保存'},{value:'1',text:'待确认'},{value:'2',text:'已完成'}],
+                valueField : 'value',
+                textField : 'text',
+                panelHeight:'auto'}}" formatter="utils.fnValueToText([{value:'0',text:'已保存'},{value:'1',text:'待确认'},{value:'2',text:'已完成'}])">申请状态</th>
+            <th field="action" sortable="true" align="left" width="60" data-options="formatter:function(value,row){return com.UploadFileJS.call({BindTableName:'SYS_DrawingApplication',BindCode:row.RequestCode});}">上传</th>
+            <th field="action1" sortable="true" align="left" width="300" data-options="formatter:function(value,row){return com.DownLoadFileClick.call({BindTableName:'SYS_DrawingApplication',BindCode:row.RequestCode,FileType:0});}">下载</th>
+            <th field="CreatePerson" sortable="true" align="left" width="120">创建人</th>
+            <th field="CreateTime" sortable="true" align="left" width="120" formatter="com.formatTime">创建时间</th>
+        </tr>
+    </thead>
+</table>

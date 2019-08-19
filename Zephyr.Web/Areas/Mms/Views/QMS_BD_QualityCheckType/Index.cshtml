@@ -1,0 +1,244 @@
+﻿@{
+    ViewBag.Title = "QMS_BD_QualityCheckType";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@section head{
+    <style type="text/css">
+        div#navigation {
+            background: white;
+        }
+
+        div#wrapper {
+            float: right;
+            width: 85%;
+        }
+
+        div#navigation {
+            float: left;
+            width: 15%;
+        }
+    </style>
+}
+
+@section scripts{
+    <script src="/Content/js/viewModel/com.viewModel.edit.js"></script>
+    <script type="text/javascript">
+        using(['validatebox','combotree','numberspinner','combobox','lookup','datebox','datetimebox','combogrid'],easyuifix.datagrid_editor_extend);
+        var myself;
+        var viewModel = function(data){
+            var self = this;
+            com.viewModel.edit.apply(self,arguments);
+            myself=self;
+
+            var tab_height=($(window).height()/2)+50;
+            this.grid0.size={w:5,h:tab_height};
+            this.gridEdit0 = new com.editGridViewModel(self.grid0);
+            this.grid0.addRowClick=function(){
+                var row = $.extend(true,{}, {});
+                var crow = myself.grid.datagrid('getSelected');
+                if (crow==null) {
+                    com.message('success', "请选择质检类型！");
+                    return;
+                }
+                row.IsEnable=1;
+                row.InspectionTypeCode=crow.InspectionTypeCode;
+                row.InspectionTypeName=crow.InspectionTypeName;
+                self.gridEdit0.addnew(row);
+            }
+
+            this.grid = {
+                //url: self.urls.query,
+                queryParams: ko.observable(),
+                pagination: true,
+                checkOnSelect: true,
+                selectOnCheck: false,
+                singleSelect: true
+            };
+
+          
+            this.gridEdit = new com.editGridViewModel(this.grid);
+            this.grid.onDblClickRow = this.gridEdit.begin;
+
+            this.grid.onClickRow = function(){
+                loadTabsData();
+            }
+            this.saveClick_one=function(){
+                self.gridEdit.ended(); //结束grid编辑状态
+                self.gridEdit0.endAllLine();
+
+                self.saveClick();
+                var post = {};
+                post.list = self.gridEdit.getChanges(data.setting.postListFields);
+                if (self.gridEdit.ended() && post.list._changed) {
+                    com.ajax({
+                        url: self.urls.edit_toplist,
+                        data: ko.toJSON(post),
+                        success: function (d) {
+                            com.message('success', self.resx.editSuccess);
+                            self.grid.queryParams({InspectionTypeCode:myself.form.InspectionTypeCode,InspectionTypeName:myself.form.InspectionTypeName});
+                            //loadTabsData();
+                        }
+                    });
+                }
+            }
+
+            this.addClick_one=function(){
+                var row = $.extend(true,{}, {});
+                //if (!self.form.ChoosePartCode) {
+                //    com.message('success', "请选择零件！");
+                //    return;
+                //}
+                row.IsEnable=1;
+                row.PInspectionType=self.form.PInspectionType;
+                row.PInspectionName=self.form.PInspectionName;
+                //row.InspectionTypeName=self.form.InspectionTypeName;
+                self.gridEdit.addnew(row);
+            }
+
+            this.tree = {
+                method: 'GET',
+                queryParams: ko.observable(),
+                //url: '/api/Mms/MES_BN_ProductProcessRoute/GetBoomTree?code=1001',
+                url: '/api/Mms/QMS_BD_QualityCheckType/GetInspectionTypeTree',
+                lines: true,
+                animate: true,
+                loadFilter: function (d) {
+                    if (d!=null&&d.length>0) {
+                        var jsonData = eval(d);
+                        return utils.toTreeData(jsonData, 'id', 'pid', "children");
+                    }
+                    else{
+                        return '';
+                    }
+                },
+                onSelect: function (node) {
+                    //self.form.InspectionTypeCode=node.id;
+                    var strArr=node.text.split(" ");
+                    self.form.PInspectionType=strArr[0];
+                    self.form.PInspectionName=strArr[1];
+                    //self.grid.queryParams({InspectionTypeName:self.form.InspectionTypeName,InspectionTypeCode:node.id});
+                    self.grid.url= '/api/Mms/QMS_BD_QualityCheckType/GetInspectionTypeByCode?code='+node.id;
+                    self.grid.queryParams({});
+                  
+                }
+            };
+
+            this.searchClick=function(){
+                self.grid.queryParams({InspectionTypeCode:myself.form.InspectionTypeCode,InspectionTypeName:myself.form.InspectionTypeName});
+                self.grid.url= self.urls.query;
+            }
+        }
+        
+        var data = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model));
+        ko.bindingViewModel(new viewModel(data));
+        $(document).ready(function () {
+            $("#tt").delegate(".tabs li", "click", function (e) {
+                loadTabsData();
+                loadTreeData();
+            });
+        });
+        function loadTabsData()
+        {
+            var row = myself.grid.datagrid('getSelected');
+            if (row==null) {
+                return;
+            }
+            myself.grid0.url="/api/Mms/QMS_BD_QualityCheckType/GetPageData";
+            myself.grid0.queryParams({id:row.InspectionTypeCode });
+           
+        }
+        function loadTreeData()
+        {
+            self.tree.url= '/api/Mms/QMS_BD_QualityCheckType/GetInspectionTypeTree';
+            self.tree.queryParams({});
+        }
+    </script>
+}
+<div id="container">
+   
+    <div id="wrapper">
+        <div class="z-toolbar">
+            <a href="#" plain="true" class="easyui-linkbutton" icon="icon-add" title="新增" data-bind="click:addClick_one">新增</a>
+            <a href="#" plain="true" class="easyui-linkbutton" icon="icon-save" title="保存" data-bind="click:saveClick_one">保存</a>
+        </div>
+
+        @*<div id="dropdown" style="width:100px; display:none;">
+            <div data-options="iconCls:'icon-ext-xls'" suffix="xls" data-bind="click:downloadClick">Excel2003   </div>
+            <div data-options="iconCls:'icon-page_excel'" suffix="xlsx" data-bind="click:downloadClick">Excel2007   </div>
+            <div data-options="iconCls:'icon-ext-doc'" suffix="doc" data-bind="click:downloadClick">Word2003    </div>
+        </div>*@
+
+        <div class="container_12" style="position:relative;">
+            <div class="grid_1 lbl">质检类型</div>
+            <div class="grid_2 val"><input type="text" data-bind="value:form.InspectionTypeCode" class="z-txt " /></div>
+            <div class="grid_2 lbl">质检类型名称</div>
+            <div class="grid_2 val"><input type="text" data-bind="value:form.InspectionTypeName" class="z-txt " /></div>
+
+            <div class="clear"></div>
+            <div class="grid_1 lbl">&nbsp;</div>
+            <div class="grid_2 val">&nbsp;</div>
+            <div class="clear"></div>
+
+            <div class="prefix_9" style="position:absolute;top:5px;height:0;">
+                <a id="a_search" href="#" class="buttonHuge button-blue" data-bind="click:searchClick" style="margin:0 15px;">查询</a>
+                @*<a id="a_reset" href="#" class="buttonHuge button-blue" data-bind="click:clearClick">清空</a>*@
+            </div>
+        </div>
+        <div  class="easyui-panel" title="质检类别表" style="background:#fafafa; "  data-options="collapsible:true,collapsed:false,height:($(window).height()/2)-20">
+            <table data-bind="datagrid:grid" style="height:180px">
+                <thead>
+                    <tr>
+                        <th field="ID" hidden="true" sortable="true" align="left" width="80" editor="text">主键ID</th>
+                        <th field="InspectionTypeCode" sortable="true" align="left" width="150" editor="text">质检类型编码</th>
+                        <th field="InspectionTypeName" sortable="true" align="left" width="150" editor="text">质检类型名称</th>
+                        <th field="PInspectionType" sortable="true" hidden="true" align="left" width="150" >父级质检类型</th>
+                        <th field="PInspectionName" sortable="true" align="left" width="150">父级质检类型</th>
+                        @*<th field="IsEnable" sortable="true" align="left" width="150" editor="text" formatter="com.formatCheckbox">是否可用</th>*@
+                        <th field="IsEnable" sortable="true" align="left" width="70" data-options="formatter:function(value,row){ return (value == 1) ? '是':'否';}" editor="{type:'combobox',
+            options:{data:[{value:1,text:'是'},{value:0,text:'否'}],panelWidth:100,panelHeight: 100,valueField: 'value',textField: 'text'}}">
+                            是否可用
+                        </th>
+                        <th field="CreatePerson" hidden="true" sortable="true" align="left" width="80" editor="text">创建人</th>
+                        <th field="CreateTime" hidden="true" sortable="true" align="left" width="80" editor="text">创建时间</th>
+                        <th field="ModifyPerson" hidden="true" sortable="true" align="left" width="80" editor="text">更新人</th>
+                        <th field="ModifyTime" hidden="true" sortable="true" align="left" width="80" editor="text">更新时间</th>
+                    </tr>
+                </thead>
+            </table>
+        </div>
+        <div id="tt" class="easyui-tabs">
+            <div title="质检项目">
+                <table data-bind="datagrid:grid0">
+                    <thead>
+                        <tr>
+                            <th field="ID" sortable="true" align="left" width="80" editor="text" hidden="hidden"></th>
+                            <th field="CheckItemCode" sortable="true" align="left" width="80" editor="text">质检项目编码</th>
+                            <th field="CheckItemName" sortable="true" align="left" width="80" editor="text">质检项目名称</th>
+                            <th field="InspectionTypeCode" sortable="true" align="left" hidden="true" width="80" >质检类型编号</th>
+                            <th field="InspectionTypeName" sortable="true" align="left" width="80">质检类型</th>
+                            <th field="Remark" sortable="true" align="left" width="80" editor="text">备注</th>
+                            @*<th field="IsEnable" sortable="true" align="left" width="80" editor="text">是否可用</th>*@
+                            <th field="IsEnable" sortable="true" align="left" width="70" data-options="formatter:function(value,row){ return (value == 1) ? '是':'否';}" editor="{type:'combobox',
+            options:{data:[{value:1,text:'是'},{value:0,text:'否'}],panelWidth:100,panelHeight: 100,valueField: 'value',textField: 'text'}}">
+                                是否可用
+                            </th>
+                        </tr>
+                    </thead>
+                    <div id="gridtb0">
+                        <a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-search',plain:true" data-bind="click:readonly()?null:grid0.addRowClick,linkbuttonDisable:readonly">新增</a>
+                        <a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-edit',plain:true" data-bind="click:readonly()?null:grid0.onClickRow,linkbuttonDisable:readonly">编辑</a>
+                        @*<a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-remove',plain:true" data-bind="click:readonly()?null:grid0.removeRowClick,linkbuttonDisable:readonly">删除</a>*@
+                    </div>
+                </table>
+
+               
+            </div>
+        </div>
+    </div>
+   
+    <div id="navigation">
+        <div title="检验类别项目模型" class="easyui-panel" data-options="title: '检验类别项目模型', iconCls: 'icon-node_tree', height: $(window).height() - 4 ">
+            <ul data-bind="easyuiTree:tree" id="mm-tree"></ul>
+        </div>
+    </div>
+</div>

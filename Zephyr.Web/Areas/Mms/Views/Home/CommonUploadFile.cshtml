@@ -1,0 +1,247 @@
+﻿@{
+    ViewBag.Title = "CommonUploadFile";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@section head{
+    <style type="text/css">
+        table.view {
+            border: 1px solid #A8CFEB;
+            border-collapse: collapse;
+            margin-bottom: 5px;
+            height: 98%;
+            width: 98%;
+        }
+
+        .view th {
+            padding-left: 10px;
+            padding-right: 5px;
+            padding-top: 5px;
+            padding-bottom: 5px;
+            width: 50px;
+            border: 1px solid silver;
+            background-color: #F1F6FF;
+        }
+
+        .view td {
+            padding-left: 10px;
+            padding-right: 5px;
+            padding-top: 5px;
+            padding-bottom: 5px;
+            border: 1px solid silver;
+            background-color: #FAFCFF;
+        }
+
+        .toolbar {
+            position: absolute;
+            top: 30px;
+            right: 10px;
+            width: 180px;
+            height: 45px;
+            border: 1px solid #A8CFEB;
+            background-color: #F0F6FF;
+            _margin: 0 16px 0 0;
+        }
+
+        .toolbar a {
+            display: block;
+            text-align: center;
+            width: 50px;
+            float: left;
+            height: 40px;
+            text-decoration: none;
+            margin: 0 5px;
+        }
+
+        .toolbar a img {
+            border: none;
+            width: 16px;
+            height: 16px;
+            margin: 5px 10px 4px 10px;
+        }
+    </style>
+}
+
+@section scripts{
+    <script src="~/Content/uploadify/jquery.uploadify.min.js"></script>
+    <link href="~/Content/uploadify/uploadify.css" rel="stylesheet" />
+    <script type="text/javascript">
+        $(function () {
+            var iframe = getThisIframe();
+            var thiswin = parent.$(iframe).parent();
+            var options = thiswin.window("options");
+            var param = options.paramater;
+            ShowUpFiles(param.Object_ID, param.TableName, "div_files");
+
+           
+
+            //$('#file_upload').uploadify({
+            //    'swf': '/Content/uploadify/uploadify.swf',  //FLash文件路径
+            //    'buttonText': '浏  览',                                 //按钮文本
+            //    'uploader': '/mms/Home/Upload',                       //处理ASHX页面
+            //    'queueID': 'fileQueue',                        //队列的ID
+            //    'queueSizeLimit': 10,                          //队列最多可上传文件数量，默认为999
+            //    'auto': false,                                 //选择文件后是否自动上传，默认为true
+            //    'multi': true,                                 //是否为多选，默认为true
+            //    'removeCompleted': true,                       //是否完成后移除序列，默认为true
+            //    'fileSizeLimit': '20MB',                       //单个文件大小，0为无限制，可接受KB,MB,GB等单位的字符串值
+            //    'fileTypeDesc': 'Image Files',                 //文件描述
+            //    'fileTypeExts': '*.gif; *.jpg; *.png; *.bmp;*.tif;*.doc;*.xls;*.zip;*.cad;*.pdf;*.txt;*.rar',  //上传的文件后缀过滤器
+            //    'onQueueComplete': function (queueData) {    //所有队列完成后事件
+            //        var iframe = getThisIframe();
+            //        var thiswin = parent.$(iframe).parent();
+            //        var options = thiswin.window("options");
+            //        var param = options.paramater;
+            //        ShowUpFiles(param.Object_ID, param.TableName, "div_files");
+            //        com.message('success', '上传成功个数：' + queueData.uploadsSuccessful + '\n' + '上传失败个数：' + queueData.uploadsErrored);
+            //    },
+            //    'onUploadStart': function (file) {
+            //        var iframe = getThisIframe();
+            //        var thiswin = parent.$(iframe).parent();
+            //        var options = thiswin.window("options");
+            //        var param = options.paramater;
+            //        $("#file_upload").uploadify("settings", 'formData', { 'TableName': param.TableName, 'Object_ID': param.Object_ID }); //动态传参数
+            //    },
+            //    'onUploadError': function (event, queueId, fileObj, errorObj) {
+            //        alert(errorObj.type + "：" + errorObj.info);
+            //    }
+            //});
+        });
+        
+        function getThisIframe() {
+            if (!parent) return null;
+            var iframes = parent.document.getElementsByTagName('iframe');
+            if (iframes.length == 0) return null;
+            for (var i = 0; i < iframes.length; ++i) {
+                var iframe = iframes[i];
+                if (iframe.contentWindow === self) {
+                    return iframe;
+                }
+            }
+            return null;
+        }
+
+        function destroyIframe(iframeEl) {
+            if (!iframeEl) return;
+            iframeEl.parentNode.removeChild(iframeEl);
+            iframeEl = null;
+        };
+        //绑定附件列表
+        function ShowUpFiles(guid, TableName, show_div) {
+            $.ajax({
+                type: 'GET',
+                url: '/mms/Home/GetAttachmentHtml?guid=' + guid + '&TableName=' + TableName,
+                cache: false,
+                //async: false, //同步
+                //dataType: 'json',
+                success: function (json) {
+                    $("#" + show_div + "").html(json);
+                },
+                error: function (xhr, status, error) {
+                    com.message("error", "操作失败"); //xhr.responseText
+                }
+            });
+        }
+        //删除附件id：当前附件ID
+        var attachguid = "";//用来记录附件组的ID，方便更新
+        function deleteAttach(id, fileName, obj) {
+            if (confirm("您确定要删除该附件吗？")) {
+                $.ajax({
+                    type: 'POST',
+                    url: '/mms/Home/Delete?id=' + id + '&fileName=' + fileName,
+                    async: false,
+                    success: function (msg) {
+                        $(obj).parent().parent().remove();
+                    },
+                    error: function (xhr, status, error) {
+                        com.message("提示", "操作失败"); //xhr.responseText
+                    }
+                });
+            }
+        }
+        function CloseDialog() {
+            var iframe = getThisIframe();
+            var thiswin = parent.$(iframe).parent();
+            destroyIframe(iframe);
+            thiswin.window('destroy');
+        }
+    </script>
+}
+
+<div id="layoutbox">
+    @*<form id="ffAdd" method="post" novalidate="novalidate">
+        <table id="tblAdd" class="view">
+            <tr>
+                <th>
+                    <label for="Attachment_GUID">附件上传：</label>
+                </th>
+                <td>
+                    <div>
+                        <input class="easyui-validatebox" type="hidden" id="Attachment_GUID" name="Attachment_GUID" />
+                        <a href="javascript:void(0)" class="easyui-linkbutton" id="btnUpload" data-options="plain:true,iconCls:'icon-save'"
+                           onclick="upload()">上传</a>
+                        <a href="javascript:void(0)" class="easyui-linkbutton" id="btnCancelUpload" data-options="plain:true,iconCls:'icon-cancel'"
+                           onclick="javascript: $('#file_upload').uploadify('cancel', '*')">取消</a>
+                        <div id="fileQueue" class="fileQueue"></div>
+                        <div id="div_files"></div>
+                        <br />
+                    </div>
+                </td>
+            </tr>
+        </table>
+    </form>*@
+
+    @*<form enctype="multipart/form-data" method="post"  id="upload_form" target="hidden_frame">*@
+        <table id="tblAdd" class="view">
+            <tr>
+                <th>
+                    <label for="Attachment_GUID">附件上传：</label>
+                </th>
+                <td>
+                    <div>
+                        @*<input id="selectFile" type="file" name="uploadFile" onchange="selectFlieOK()" /><br />
+                        <input id="uploadSubmit" type="submit" value="文件上传" />*@
+                        <span id="percentage"></span>
+                        <br />
+                        <input type="file" id="file" name="myfile" />
+
+                        <input type="button" onclick="UpladFile()" value="上传" />
+                    </div>
+                </td>
+            </tr>
+        </table>
+
+   @* </form>*@
+</div>
+<script>
+    function UpladFile() {
+        var iframe = getThisIframe();
+        var thiswin = parent.$(iframe).parent();
+        var options = thiswin.window("options");
+        var param = options.paramater;
+        var fileObj = document.getElementsByName("myfile")[0].files[0]; // js 获取文件对象
+        var formData = new FormData();
+        formData.append("filefloder", fileObj)
+        $.ajax({
+            url: "/api/Mms/PMS_BN_PartFile/postfile?ID=" + param.Object_ID,
+            data: formData,
+            type: "Post",
+            dataType: "json",
+            contentType: false,
+            processData: false,
+            cache: false,//上传文件无需缓存
+            processData: false,//用于对data参数进行序列化处理 这里必须false
+            contentType: false, //必须
+            success: function (result) {
+                if (result == "上传成功！") {
+                    com.message('success', result);
+                    CloseDialog();
+                }
+            },
+        })
+
+        }
+
+        
+
+</script>

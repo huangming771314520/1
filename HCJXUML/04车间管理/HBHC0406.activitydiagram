@@ -1,0 +1,50 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<activityRootModel xmlns:dm0="http://schemas.microsoft.com/VisualStudio/2008/DslTools/Core" xmlns:dm1="http://schemas.microsoft.com/dsltools/Kernel" xmlns:dm2="http://schemas.microsoft.com/dsltools/Component" xmlns:dm3="http://schemas.microsoft.com/dsltools/UseCase" xmlns:dm4="http://schemas.microsoft.com/dsltools/Activity" xmlns:dm5="http://schemas.microsoft.com/dsltools/Interaction" xmlns:dm6="http://schemas.microsoft.com/dsltools/UmlModelLibrary" xmlns:dm7="http://schemas.microsoft.com/dsltools/UmlDiagrams" xmlns:dm8="http://schemas.microsoft.com/dsltools/ModelStore" xmlns:dm9="http://schemas.microsoft.com/dsltools/SimpleShapesModel" dslVersion="1.0.0.0" Id="727b7682-e143-4327-9af0-85a340c9f102" name="0406领料确认" linkedPackageId="0b0c0745-28e9-4e2c-8d10-b3582c1fbe57" xmlns="http://schemas.microsoft.com/VisualStudio/TeamArchitect/ActivityDesigner">
+  <packagedElements>
+    <activityRootModelHasActivity>
+      <activity Id="1b7f07fa-4988-46da-aebe-239b863b2639" name="0406领料确认" isAbstract="false" isLeaf="false" isActiveClass="false" isReentrant="false" isReadOnly="false" isSingleExecution="false">
+        <elementDefinition Id="d1632ac7-f45a-4f61-9378-da53e2ac3935" />
+        <nodes>
+          <initialNode Id="e3af4fc4-9e63-466b-af65-f3fdd5401011" name="Initial1" isLeaf="false">
+            <elementDefinition Id="639a5157-992e-436e-808c-3233d57618d7" />
+            <flowNodeTargets>
+              <controlFlow Id="02267928-a0a9-4de6-ac21-369e6c14d5bf" isLeaf="false">
+                <opaqueActionMoniker Id="bf60eaf6-131d-4594-8a06-b464570b3954" LastKnownName="查询领料入库单" />
+                <elementDefinition Id="95c8c547-2398-4933-9371-ce8016a2f41d" />
+              </controlFlow>
+            </flowNodeTargets>
+          </initialNode>
+          <opaqueAction Id="bf60eaf6-131d-4594-8a06-b464570b3954" name="查询领料入库单" isLeaf="false">
+            <elementDefinition Id="ee14abe9-63dc-4312-8d89-70fb2039ff89" />
+            <flowNodeTargets>
+              <controlFlow Id="edfab10c-4fad-4467-abde-909d17de83f3" isLeaf="false">
+                <activityFinalNodeMoniker Id="168d109e-d393-4d11-a7ae-3ab1db83addb" LastKnownName="ActivityFinal1" />
+                <elementDefinition Id="ebc57775-f8ed-4003-81c2-36295de7a784" />
+              </controlFlow>
+            </flowNodeTargets>
+          </opaqueAction>
+          <activityFinalNode Id="168d109e-d393-4d11-a7ae-3ab1db83addb" name="ActivityFinal1" isLeaf="false">
+            <elementDefinition Id="b29956dd-9bbc-4f17-bd49-3dd58fb11345" />
+          </activityFinalNode>
+        </nodes>
+      </activity>
+    </activityRootModelHasActivity>
+  </packagedElements>
+  <package Id="0b0c0745-28e9-4e2c-8d10-b3582c1fbe57" name="HCJXUML">
+    <elementDefinition Id="6348ac1d-75ba-4a39-8ebf-237333c18d4f" />
+    <profileInstances>
+      <packageHasProfileInstances Id="59534fc2-c0af-4f64-ac63-a5cb1601f199">
+        <profileInstance Id="7cdebc88-fe42-4974-9af1-7632cecf5fbb" name="StandardProfileL2">
+          <elementDefinition Id="e34d544e-0fea-4ed6-ac5e-1b74119ac791" />
+        </profileInstance>
+        <elementDefinition Id="0caec977-1f8c-4ba3-a7db-8cc9ad9cc73b" />
+      </packageHasProfileInstances>
+      <packageHasProfileInstances Id="3244b4bd-dd52-462c-91e4-bbf4045bbca2">
+        <profileInstance Id="26108a63-d264-42d1-bffc-9be029ae6e9c" name="StandardProfileL3">
+          <elementDefinition Id="532ea607-fb19-44b8-8502-3351b05452be" />
+        </profileInstance>
+        <elementDefinition Id="29349502-908c-4fda-9054-c48619c59ed0" />
+      </packageHasProfileInstances>
+    </profileInstances>
+  </package>
+</activityRootModel>

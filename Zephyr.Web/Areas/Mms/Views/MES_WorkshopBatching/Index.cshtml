@@ -1,0 +1,128 @@
+﻿
+@{
+    ViewBag.Title = "MES_WorkshopBatching";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var Cols = new Zephyr.Models.sys_roleMenuColumnMapService().GetCurrentUserMenuColumns();
+}
+
+@section scripts{
+    <script src="/Content/js/viewModel/com.viewModel.search.js"></script>
+    <script type="text/javascript">
+        var data = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model));
+        var viewModel = function () {
+            var self = this;
+            com.viewModel.search.apply(self, arguments);
+            this.deleteClick1 = function () {
+                var row = $("#dg").datagrid("getSelected");
+                if (row == null) {
+                    com.message('success', "请选择一条数据！");
+                    return;
+                }
+                com.message('confirm', this.resx.deleteConfirm, function (b) {
+                    if (b) {
+                        //if (row.BillState == 2) {
+                        //    com.message('success', "不允许删除已发布！");
+                        //    return;
+                        //}
+                        com.ajax({
+                            type: 'GET',
+                            url: "/api/Mms/MES_WorkshopBatching/GetDelete?id=" + row.BatchingCode,
+                            cache: false,
+                            async: false,
+                            success: function (d) {
+                                if (d > 0) {
+                                    com.message('success', "删除成功！");
+                                    $("#a_search").click();
+                                }
+                            }
+                        });
+                    }
+
+                });
+            }
+        }
+        ko.bindingViewModel(new viewModel(data));
+    </script>
+}
+
+@*@Html.RenderToolbar()*@
+<div class="z-toolbar">
+    <a id="a_add" href="#" class="easyui-linkbutton" data-options="iconCls:'icon-add',plain:true" data-bind="click:addClick">新增</a>
+    <a href="#" plain="true" class="easyui-linkbutton" icon="icon-edit" title="编辑" data-bind="click:editClick">编辑</a>
+    <a href="#" plain="true" class="easyui-linkbutton" icon="icon-cross" title="删除" data-bind="click:deleteClick1">删除</a>
+    @*<a href="#" plain="true" class="easyui-linkbutton" icon="icon-arrow_refresh" title="刷新" data-bind="click:refreshClick">刷新</a>*@
+</div>
+
+<div class="container_12" style="position:relative;">
+    <div class="grid_1 lbl">配料单号</div>
+    <div class="grid_2 val"><input type="text" data-bind="value:form.BatchingCode" class="z-txt " /></div>
+    <div class="grid_1 lbl">合同编号</div>
+    <div class="grid_2 val"><input type="text" data-bind="value:form.ContractCode" class="z-txt " /></div>
+
+    @*<div class="grid_1 lbl">车间</div>
+    <div class="grid_2 val"><input type="text" data-bind="value:form.DepartmentName,readOnly:true" class="z-txt " /></div>*@
+    <div class="grid_1 lbl">车间</div>
+    <div class="grid_2 val">
+        <input type="text" data-bind="combogridValue:form.DepartmentName" class="z-txt easyui-combogrid" data-options="url:'/Commons/GetCommonSearchList',
+                queryParams : {
+                     tableName:'[SYS_BN_Department]',
+                         searchField:'[DepartmentCode],[DepartmentName]',
+                         whereSql:'IsEnable=1',
+                         firstFightField:'[DepartmentName]',
+                         CacheTime:'480',
+                         connName:'Mms'
+                },
+                method: 'GET',
+                panelWidth:250,
+                fit:true,
+                delay: 1000,
+                mode: 'remote',
+                value: 'DepartmentName',
+                idField: 'DepartmentName',
+                textField: 'DepartmentName',
+                columns:[[
+                { field: 'DepartmentCode',title: '部门编号',width: 100 },
+                { field: 'DepartmentName',title:'部门名称',width:150 }
+                    ]],
+            keyHandler:{
+            query:function(keyword) {
+           var queryParams=$(this).combogrid('grid').datagrid('options').queryParams;
+           queryParams.keyword=keyword;
+           $(this).combogrid('grid').datagrid('options').queryParams=queryParams;
+           $(this).combogrid('grid').datagrid('reload');
+           }}" />
+    </div>
+
+
+    <div class="clear"></div>
+    <div class="grid_1 lbl">&nbsp;</div>
+    <div class="grid_2 val">&nbsp;</div>
+    <div class="clear"></div>
+
+    <div class="prefix_9" style="position:absolute;top:5px;height:0;">
+        <a id="a_search" href="#" class="buttonHuge button-blue" data-bind="click:searchClick" style="margin:0 15px;">查询</a>
+        <a id="a_reset" href="#" class="buttonHuge button-blue" data-bind="click:clearClick">清空</a>
+    </div>
+</div>
+
+<table data-bind="datagrid:grid" id="dg">
+    <thead>
+        <tr>
+            <th field="BatchingCode" sortable="true" align="left" width="120" @Html.HideColumn(Cols, "BatchingCode")>配料流水号</th>
+            <th field="RootPartCode" sortable="true" align="left" hidden width="120" @Html.HideColumn(Cols, "RootPartCode")>根零件编号</th>
+            <th field="RootName" sortable="true" align="left"  width="120" @Html.HideColumn(Cols, "RootName")>根零件</th>
+            
+            <th field="ContractCode" sortable="true" align="left" width="120" @Html.HideColumn(Cols, "ContractCode")>合同编号</th>
+            <th field="ProjectName" sortable="true" align="left" width="120" @Html.HideColumn(Cols, "ProductID")>工程项目</th>
+            <th field="ProductID" sortable="true" hidden align="left" width="120" @Html.HideColumn(Cols, "ProductID")>产品ID</th>
+            <th field="ProductName" sortable="true" align="left" width="120" @Html.HideColumn(Cols, "ProductID")>产品名称</th>
+            <th field="DepartmentName" sortable="true" align="left" width="120" @Html.HideColumn(Cols, "ProductID")>车间名称</th>
+            <th field="PartCode" sortable="true" hidden align="left" width="120" @Html.HideColumn(Cols, "ProductID")>零件编码</th>
+            <th field="PartFigureCode" sortable="true" align="left" width="200" @Html.HideColumn(Cols, "ProductID")>零件图号</th>
+            <th field="WorkshopCode" sortable="true" hidden align="left" width="120" @Html.HideColumn(Cols, "WorkshopCode")>车间编号</th>
+            <th field="CreatePerson" sortable="true" hidden align="left" width="120" @Html.HideColumn(Cols, "CreatePerson")>创建人</th>
+            <th field="CreateTime" sortable="true" hidden align="left" width="120" @Html.HideColumn(Cols, "CreateTime") formatter="com.formatTime">创建时间</th>
+        </tr>
+    </thead>
+</table>
+

@@ -1,0 +1,277 @@
+﻿@{
+    ViewBag.Title = "MES_WorkingTicket";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    string WorkshopCode = ViewBag.WorkshopCode;
+}
+
+@section head{
+    <style>
+        .btnTarget {
+            display: block;
+            width: 80px;
+            line-height: 18px;
+            border: 1px #cccccc solid;
+            background-color: #fafafa;
+            text-align: center;
+            text-decoration: none;
+            border-radius: 2px;
+            color: #666666;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .btnTarget:hover {
+            background-color: #e6e6e6;
+            color: #333333;
+        }
+    </style>
+}
+
+@section scripts{
+    <script src="/Content/js/viewModel/com.viewModel.searchEdit.js"></script>
+    <script type="text/javascript">
+        using(['validatebox', 'combotree', 'numberspinner', 'combobox', 'lookup', 'datebox', 'datetimebox', 'combogrid'], easyuifix.datagrid_editor_extend);
+    var viewModel = function(data){
+        var self = this;
+        com.viewModel.searchEdit.apply(self, arguments);
+
+        this.grid.OnAfterCreateEditor = function (a, b, c, d) {
+            console.log(arguments);
+            var WorkshopCode = b.WorkshopCode;
+
+            var ed1 = self.grid.datagrid("getEditor", { index: c, field: 'TeamName' });
+            $(ed1.target).combogrid('grid').datagrid('options').queryParams.whereSql = 'DepartID=' + WorkshopCode;
+            $(ed1.target).combogrid('grid').datagrid('reload');
+        }
+
+        this.grid.onDblClickRow = function (index, row) {
+            //console.log(arguments);
+            var ApproveState = row.ApproveState;
+            if (ApproveState == "1") {
+                self.gridEdit.begin(index, row);
+            }
+        }
+
+        this.SearchDialog = function () {
+            var WorkshopCode = '@WorkshopCode';
+            var setting = {
+                type: this.type,
+                targetField: this.targetField,
+                sourceField: this.sourceField,
+                settingArray: this.settingArray
+            }
+            //settingArray 0:width 1:height 2:xmlName
+            var target = parent.$('#CommonSearchDialog').length ? parent.$('#CommonSearchDialog') : parent.$('<div id="CommonSearchDialog"></div>').appendTo('body');
+            utils.clearIframe(target);
+            var opt;
+            opt = { title: '列表', width: setting.settingArray[0], height: setting.settingArray[1], modal: true, collapsible: false, minimizable: false, maximizable: true, closable: true };
+            opt.content = "<iframe src='/mms/home/CommonDialog2?xmlName=" + setting.settingArray[2] + "&parm=WorkshopCode:" + WorkshopCode + "' style='height:100%;width:100%;border:0;' frameborder='0'></iframe>";  //frameborder="0" for ie7
+            params = { xmlName: setting.settingArray[2] };
+            opt.paramater = params;
+            opt.onSelect = function (data) {
+                for (var i in data) {
+                    self.grid.datagrid('appendRow', $.extend(data[i], { IsEnable: 1 }));
+                }
+            };
+            target.window(opt);
+        }
+
+        this.WorkingTicketLowerClick = function () {
+            var row = self.grid.datagrid('getChecked');
+            if (row.length == 0) {
+                com.message('warning', "请选择一条数据！");
+                return;
+            }
+            var WTList = new Array();
+            for (var i in row) {
+                WTList.push(row[i].ID);
+            }
+            var post = {
+                WTList: WTList.join(',')
+            };
+            com.ajax({
+                type: 'POST',
+                url: "/api/Mms/MES_WorkingTicket/PostWorkingTicketLower",
+                data: JSON.stringify(post),
+                success: function (d) {
+                    com.message('success', '下发成功！');
+                    $('#a_search').click();
+                }
+            });
+        }
+    }
+        var data = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model));
+        ko.bindingViewModel(new viewModel(data));
+
+        var ChooseTicketMate = function (value, row, index) {
+            return '<a class="btnTarget" href="javascript:com.openTab(\'工票物料明细\', \'/Mms/MES_WorkTicketMate/Index/' + row.WorkTicketCode + '\');">工票物料</a>';
+        }
+    </script>
+}
+<div class="z-toolbar">
+    <a href="#" plain="true" class="easyui-linkbutton" icon="icon-arrow_refresh" title="刷新" data-bind="click:refreshClick">刷新</a>
+    <a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-add',plain:true" data-bind="event: { click: function(data, event) {SearchDialog.call({type:'form',targetField:'Name',sourceField:'Name','settingArray':['850','400','ChooseWorkingTicket']})}}">新增工票</a>
+    <a href="#" plain="true" class="easyui-linkbutton" data-options="iconCls:'icon-bullet_tick',plain:true" data-bind="click:WorkingTicketLowerClick">工票下发</a>
+    <a href="#" plain="true" class="easyui-linkbutton" icon="icon-edit" title="编辑" data-bind="click:editClick">编辑</a>
+    <a href="#" plain="true" class="easyui-linkbutton" icon="icon-cross" title="删除" data-bind="click:deleteClick">删除</a>
+    <a href="#" plain="true" class="easyui-linkbutton" icon="icon-save" title="保存" data-bind="click:saveClick">保存</a>
+    <a href="#" plain="true" class="easyui-splitbutton" data-options="menu:'#dropdown',iconCls:'icon-download'">导出</a>
+</div>
+
+<div id="dropdown" style="width:100px; display:none;">
+    <div data-options="iconCls:'icon-ext-xls'" suffix="xls" data-bind="click:downloadClick">Excel2003   </div>
+    <div data-options="iconCls:'icon-page_excel'" suffix="xlsx" data-bind="click:downloadClick">Excel2007   </div>
+    <div data-options="iconCls:'icon-ext-doc'" suffix="doc" data-bind="click:downloadClick">Word2003    </div>
+</div>
+
+<div class="container_12" style="position:relative;">
+    <div class="grid_1 lbl">工票编码</div>
+    <div class="grid_2 val"><input type="text" data-bind="value:form.WorkTicketCode" class="z-txt " /></div>
+    <div class="grid_1 lbl">计划编码</div>
+    <div class="grid_2 val"><input type="text" data-bind="value:form.ApsCode" class="z-txt " /></div>
+    <div class="grid_1 lbl">班组名称</div>
+    <div class="grid_2 val"><input type="text" data-bind="value:form.TeamName" class="z-txt " /></div>
+
+    <div class="clear"></div>
+
+    <div class="grid_1 lbl">车间名称</div>
+    <div class="grid_2 val"><input type="text" data-bind="value:form.WorkshopName" disabled="disabled" style="background-color:#efefef" class="z-txt " /></div>
+    <div class="grid_1 lbl">工序名称</div>
+    <div class="grid_2 val"><input type="text" data-bind="value:form.ProcessName" class="z-txt " /></div>
+    <div class="grid_1 lbl">工步名称</div>
+    <div class="grid_2 val"><input type="text" data-bind="value:form.WorkStepsName" class="z-txt " /></div>
+
+    <div class="clear"></div>
+
+    <div class="grid_1 lbl">设备名称</div>
+    <div class="grid_2 val"><input type="text" data-bind="value:form.EquipmentName" class="z-txt " /></div>
+    <div class="grid_1 lbl">审核状态</div>
+    <div class="grid_2 val"><input type="text" data-bind="comboboxValue:form.ApproveState,datasource:[{value:'',text:'全部'},{value:'1',text:'未下发'},{value:'2',text:'已下发'}]" class="z-txt easyui-combobox" /></div>
+
+    <div class="clear"></div>
+
+    <div class="prefix_9" style="position:absolute;top:5px;height:0;">
+        <a id="a_search" href="#" class="buttonHuge button-blue" data-bind="click:searchClick" style="margin:0 15px;">查询</a>
+        <a id="a_reset" href="#" class="buttonHuge button-blue" data-bind="click:clearClick" style="">清空</a>
+    </div>
+</div>
+
+<table data-bind="datagrid:grid" id="dg" style="display:none">
+    <thead>
+        <tr>
+            <th field="ID" checkbox="true" sortable="true" align="left" width="120">主键ID</th>
+            <th formatter="ChooseTicketMate" field="cz">操作</th>
+            <th field="WorkTicketCode" sortable="true" align="left" width="120">工票编码</th>
+            <th field="TicketLevel" sortable="true" align="left" width="80" editor="{type: 'combobox', options:{
+        data : [{value:'1',text:'一般'},{value:'2',text:'重要'},{value:'3',text:'必须完成'}],
+        valueField : 'value',
+        textField : 'text',
+        panelHeight:'auto'}}" formatter="utils.fnValueToText([{value:'1',text:'一般'},{value:'2',text:'重要'},{value:'3',text:'必须完成'}])">工票优先级</th>
+            <th field="ApsCode" sortable="true" align="left" width="120">计划编码</th>
+            <th field="WorkStepsID" hidden="true" sortable="true" align="left" width="120">工步ID</th>
+            <th field="IsEnable" hidden="true" sortable="true" align="left" width="120">是否可用</th>
+            <th field="WorkshopCode" sortable="true" align="left" width="60" hidden>车间编码</th>
+            <th field="WorkshopName" sortable="true" align="left" width="130">车间名称</th>
+            <th field="TeamCode" sortable="true" align="left" width="120" editor="text" hidden="hidden">班组编码</th>
+            <th field="TeamName" sortable="true" align="left" width="120" editor="{type:'combogrid',options:{
+                    required:true,
+                    url:'/Commons/GetCommonSearchList',
+                    queryParams : {
+                         tableName:'dbo.SYS_WorkGroup',
+                         searchField : '[TeamCode],[TeamName]',
+                         firstFightField:'[TeamName]',
+                         CacheTime:'480',
+                         connName:'Mms'
+                    },
+                    method: 'GET',
+                    panelWidth:400,
+                    fit:true,
+                    delay: 1000,
+                    mode: 'remote',
+                    value: 'TeamCode',
+                    idField: 'TeamName',
+                    textField: 'TeamName',
+                    columns:[[
+                    { field: 'TeamCode',title: '班组编码',width: 150 },
+                    { field: 'TeamName' , title: '班组名称',width: 250,sortable:true }
+                     ]],
+                    onSelect: function (rowIndex, rowData) {
+                       var index =  $('#dg').datagrid('getRowIndex',$('#dg').datagrid('getSelected'));
+                       $('#dg').datagrid('getEditor',{index:index,field:'TeamCode'}).target.val(rowData['TeamCode']);
+                       $('#dg').datagrid('getEditor',{index:index,field:'TeamName'}).target.val(rowData['TeamName']);
+                    },
+                    keyHandler:{
+                    query:function(keyword) {
+                    var queryParams=$(this).combogrid('grid').datagrid('options').queryParams;
+                    queryParams.keyword=keyword;
+                    $(this).combogrid('grid').datagrid('options').queryParams=queryParams;
+                    $(this).combogrid('grid').datagrid('reload');
+                    $(this).combogrid('setValue', keyword);
+                    }}
+                }}">班组</th>
+            <th field="CreateTime" hidden="true" sortable="true" align="left" width="120">创建人</th>
+            <th field="CreatePerson" hidden="true" sortable="true" align="left" width="120">创建时间</th>
+            <th field="ModifyTime" hidden="true" sortable="true" align="left" width="120">更新人</th>
+            <th field="ModifyPerson" hidden="true" sortable="true" align="left" width="120">更新时间</th>
+            <th field="ActualStartTime" sortable="true" align="left" width="120" formatter="com.formatTime">实际开始时间</th>
+            <th field="ActualFinishTime" sortable="true" align="left" width="120" formatter="com.formatTime">实际结束时间</th>
+            <th field="ApproveState" sortable="true" align="left" width="100" formatter="utils.fnValueToText([{value:'1',text:'未下发'},{value:'2',text:'已下发'}])">审核状态</th>
+            <th field="ApproveRemark" sortable="true" align="left" width="120" editor="text">备注</th>
+            <th field="ApprovePerson" hidden="true" sortable="true" align="left" width="120">审核人</th>
+            <th field="ApproveTime" hidden="true" sortable="true" align="left" width="120">审核时间</th>
+
+            <th field="PartCode" sortable="true" align="left" width="130" hidden>零件编码</th>
+            <th field="PartFigureCode" sortable="true" align="left" width="180">零件图号</th>
+            <th field="WorkQuantity" sortable="true" align="left" width="80" editor="numberspinner">派工数量</th>
+
+            <th field="ProcessCode" sortable="true" align="left" width="120" hidden>工序编码</th>
+            <th field="ProcessName" sortable="true" align="left" width="120">工序名称</th>
+            <th field="WorkStepsName" sortable="true" align="left" width="120">工步名称</th>
+            <th field="WorkStepsLineCode" sortable="true" align="left" width="120" hidden="hidden">工步行号</th>
+            <th field="WorkStepsContent" sortable="true" align="left" width="120">工步描述</th>
+            <th field="EquipmentCode" sortable="true" align="left" width="120" editor="text" hidden="hidden">设备编码</th>
+            <th field="EquipmentName" sortable="true" align="left" width="120" editor="{type:'combogrid',options:{
+                        url:'/Commons/GetCommonSearchList',
+                    queryParams : {
+                             tableName:'[SYS_Equipment]',
+                             searchField:'[EquipmentCode],[EquipmentName],[AffiliatedWorkshopID],[AffiliatedWorkshopName],EquipmentParms,EquipmentState',
+                              whereSql:'EquipmentState=1',
+                             firstFightField:'[EquipmentCode]',
+                             connName:'Mms'
+                            },
+                            method: 'GET',
+                            panelWidth:400,
+                            fit:true,
+                            delay: 1000,
+                            mode: 'remote',
+                            value: 'ID',
+                            idField: 'EquipmentName',
+                            textField: 'EquipmentName',
+                            columns:[[
+
+                            { field: 'EquipmentCode',title: '设备编码',width: 100 },
+                            { field: 'EquipmentName',title: '设备名称',width: 100 },
+                    { field: 'AffiliatedWorkshopID',title: '车间ID',width: 100 },
+                      { field: 'AffiliatedWorkshopName',title: '所在车间',width: 100 },
+                                ]],
+                    onSelect: function (rowIndex, rowData) {
+                           var index =  $('#dg').datagrid('getRowIndex',$('#dg').datagrid('getSelected'));
+                           $('#dg').datagrid('getEditor',{index:index,field:'EquipmentCode'}).target.val(rowData['EquipmentCode']);
+                           $('#dg').datagrid('getEditor',{index:index,field:'EquipmentName'}).target.val(rowData['EquipmentName']);
+                },
+                 keyHandler:{
+                   query:function(keyword) {
+                   var queryParams=$(this).combogrid('grid').datagrid('options').queryParams;
+                   queryParams.keyword=keyword;
+                   $(this).combogrid('grid').datagrid('options').queryParams=queryParams;
+                   $(this).combogrid('grid').datagrid('reload');
+                  $(this).combogrid('setValue', keyword);
+                }}
+                }}">设备</th>
+            <th field="TurnTargetName" sortable="true" align="left" width="160">转序目标</th>
+            <th field="TurnTargetCode" hidden="true" sortable="true" align="left" width="120">转序目标编码</th>
+
+
+        </tr>
+    </thead>
+</table>

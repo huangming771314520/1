@@ -1,0 +1,424 @@
+﻿<link href="~/Content/js/jquery-easyui-1.7.0/themes/icon.css" rel="stylesheet" />
+<link href="~/Content/js/jquery-easyui-1.7.0/themes/default/easyui.css" rel="stylesheet" />
+
+<style type="text/css">
+
+    body {
+        margin: 2px;
+    }
+
+    .my_container {
+        width: 100%;
+        height: 100%;
+        display: flex;
+        flex-direction: column-reverse;
+    }
+
+    .btnTarget {
+        display: block;
+        width: 80px;
+        line-height: 22px;
+        border: 1px #cccccc solid;
+        background-color: #fafafa;
+        text-align: center;
+        text-decoration: none;
+        border-radius: 2px;
+        color: #666666;
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+        .btnTarget:hover {
+            background-color: #e6e6e6;
+            color: #333333;
+        }
+</style>
+
+<div id="z-toolbar_tbA">
+    <a plain="true" class="easyui-linkbutton" icon="icon-add" title="新增" onclick="SearchDialog()">新增</a>
+</div>
+<div id="z-toolbar_tbB">
+    <a plain="true" class="easyui-linkbutton" icon="icon-add" title="新增" onclick="onAdd()">新增</a>
+    <a plain="true" class="easyui-linkbutton" icon="icon-remove" title="删除" onclick="onRemove()">删除</a>
+</div>
+
+<div class="my_container">
+    <div style="height:50%;margin-top:10px;">
+        <table id="tbA" style="height:100%;"></table>
+    </div>
+    <div style="flex:auto;">
+        <table id="tbB" style="height:100%;"></table>
+    </div>
+</div>
+
+<script src="~/Content/js/jquery-easyui-1.7.0/jquery.min.js"></script>
+<script src="~/Content/js/jquery-easyui-1.7.0/jquery.easyui.min.js"></script>
+<script src="~/Content/js/core/utils.js"></script>
+<script src="~/Content/js/core/common.js"></script>
+
+<script type="text/javascript">
+
+    var currentSavantCode = "";
+    var currentInPlanceSize = "";
+
+    $().ready(function () {
+
+        var tbA_EditRow = undefined;
+        var TimeFn = null;
+        $('#tbA').datagrid({
+            url: '/api/Mms/PRS_BlankingRecord/GetSavantManageData',
+            method: 'get',
+            toolbar: '#z-toolbar_tbA',
+            animate: true,
+            rownumbers: true,
+            striped: true,
+            singleSelect: true,
+            columns: [[
+                {
+                    title: '操作', align: 'center', field: 'CZ', width: 120, formatter: function (value, row, index) {
+                        return '<a class="btnTarget" href="javascript:com.openTab(\'下料结果明细\', \'/Mms/PRS_BlankingRecord/edit?id=' + row.SavantCode + '&newPName=' + (row.New_PartName == null?"":row.New_PartName )+ '\');">维护方案</a>';
+                    }
+                },
+                { title: '备料卡编号', field: 'SavantCode', width: 120 },
+                {
+                    title: '材料类型', field: 'MateType', width: 120, formatter: function (value, row, index) {
+                        var typeName = "";
+                        switch (value) {
+                            case 1: typeName = "板材"; break;
+                            case 2: typeName = "棒材"; break;
+                            case 3: typeName = "型材"; break;
+                            default: ; break;
+                        }
+                        return typeName;
+                    }
+                },
+                //{ title: '定料材料', field: 'SetMateName', width: 120 },
+                { title: '定料材料', field: 'New_PartName', width: 120 },
+                { title: '直径/厚度', field: 'MateParamValue', width: 120 },
+                { title: '零件图号', field: 'PartFigureCode', width: 120 },
+                { title: '零件名称', field: 'PartName', width: 120 },
+                { title: '到位尺寸', field: 'InPlanceSize', width: 160 },
+
+                { title: '零件总数', field: 'PartTotalNum', width: 120 },
+                { title: '备料尺寸', field: 'SpareMateSize', width: 160 },
+                { title: '备料数量', field: 'SpareMateNum', width: 120, editor: 'text' },
+                { title: '切分数量', field: 'SplitNum', width: 120 },
+                { title: '备注', field: 'Remark', width: 120, editor: 'text' },
+                //{
+                //    title: '操作', field: 'CZ', width: 120, formatter: function (value, row, index) {
+                //        return '<a class="btnTarget" href="javascript:com.openTab(\'下料结果明细\', \'/Mms/PRS_BlankingRecord/edit/' + row.SavantCode + '\');">操作</a>';
+                //    }
+                //}
+            ]],
+            onAfterEdit: function (rowIndex, rowData, changes) {
+                tbA_EditRow = undefined;
+
+                if (changes != '' && changes != null && changes != undefined) {
+
+                    var dic = {
+                        ID: rowData.ID,
+                        SpareMateSize: rowData.SpareMateSize,
+                        SpareMateNum: rowData.SpareMateNum,
+                        SplitNum: rowData.SplitNum,
+                        Remark: rowData.Remark,
+                        PartTotalNum: rowData.PartTotalNum
+                    };
+
+                    $.ajax({
+                        url: '/api/Mms/PRS_BlankingRecord/PostUpdateSavantManageData',
+                        method: "post",
+                        data: JSON.stringify(dic),
+                        dataType: 'json',
+                        contentType: 'application/json',
+                        acyns: false,
+                        success: function (result) {
+                            com.message(result.Result ? "success" : "warning", result.Msg);
+                            //if (result.Result) {
+                            //    $('#tbA').datagrid('reload');
+                            //}
+
+                            if (result.Result) {
+                                $('#tbA').datagrid("reload");
+                            }
+                        }
+                    })
+                }
+
+            },
+            onClickRow: function (rowIndex, rowData) {
+                clearTimeout(TimeFn);
+                TimeFn = setTimeout(function () {
+                    var params = {
+                        savantCode: rowData.SavantCode
+                    };
+                    $('#tbB').datagrid("options").queryParams = params;
+                    $('#tbB').datagrid('reload');
+                }, 300);
+
+                $('#tbA').datagrid("endEdit", tbA_EditRow);
+                tbA_EditRow = undefined;
+
+                currentSavantCode = rowData.SavantCode;
+                currentInPlanceSize = rowData.InPlanceSize;
+            },
+            onDblClickRow: function (rowIndex, rowData) {
+                clearTimeout(TimeFn);
+
+                if (tbA_EditRow != undefined) {
+                    $('#tbA').datagrid("endEdit", tbA_EditRow);
+                }
+                if (tbA_EditRow == undefined) {
+                    $('#tbA').datagrid("beginEdit", rowIndex);
+                    tbA_EditRow = rowIndex;
+                }
+            }
+        });
+
+        var tbB_EditRow = undefined;
+        var oldNum = "";
+        $('#tbB').datagrid({
+            queryParams: { savantCode: '0' },
+            url: '/api/Mms/PRS_BlankingRecord/GetSavantAndPBomData',
+            method: 'get',
+            toolbar: '#z-toolbar_tbB',
+            animate: true,
+            rownumbers: true,
+            striped: true,
+            singleSelect: true,
+            columns: [[
+                //{ title: '选择', field: '',checkbox:true, width: 120 },
+                { title: '合同编号', field: 'ContractCode', width: 120 },
+                { title: '工程项目', field: 'ProjectName', width: 120 },
+                { title: '产品', field: 'ProductName', width: 120 },
+                { title: '零件图号', field: 'PartFigureCode', width: 120 },
+                { title: '零件名称', field: 'PartName', width: 120 },
+                { title: '设计材料', field: 'MaterialCode', width: 120 },
+
+                { title: '下料数量', field: 'pbom_BlankingNum', width: 120 },
+                { title: '已下料数量', field: 'AlreadyBlankingNum', width: 120 },
+                //{ title: '本次下料数量', field: 'BlankingNum', width: 120, editor: 'text' },
+                { title: '本次下料数量', field: 'BlankingNum', width: 120 },
+
+                {
+                    title: '材料类型', field: 'MateType', width: 120, formatter: function (value, row, index) {
+                        var typeName = "";
+                        switch (value) {
+                            case 1: typeName = "板材"; break;
+                            case 2: typeName = "棒材"; break;
+                            case 3: typeName = "型材"; break;
+                            default: ; break;
+                        }
+                        return typeName;
+                    }
+                },
+                //{ title: '定料材料', field: 'SetMateName', width: 120 },
+                { title: '定料材料', field: 'New_PartName', width: 120 },
+                { title: '直径/厚度', field: 'MateParamValue', width: 120 },
+                { title: '到位尺寸', field: 'InPlanceSize', width: 120 }
+            ]],
+            onAfterEdit: function (rowIndex, rowData, changes) {
+                tbB_EditRow = undefined;
+
+                if (rowData.pbom_BlankingNum == null || rowData.pbom_BlankingNum == '') {
+                    alert("没有维护数据");
+                    return;
+                }
+
+                if (rowData.BlankingNum == null || rowData.BlankingNum == '') {
+                    return;
+                }
+
+                var blankingNum = (rowData.BlankingNum == null || rowData.BlankingNum == '') ? 0 : parseInt(rowData.BlankingNum);
+
+                if (blankingNum >= 0 && blankingNum <= (rowData.pbom_BlankingNum - rowData.AlreadyBlankingNum)) {
+                    $.ajax({
+                        url: '/api/Mms/PRS_BlankingRecord/GetUpdateSavantAndPBomNum?id=' + rowData.ID + "&num=" + blankingNum,
+                        method: "get",
+                        acyns: false,
+                        success: function (result) {
+                            com.message(result.Result ? "success" : "warning", result.Msg);
+                            if (result.Result) {
+                                $('#tbA').datagrid('reload');
+
+                                var params = {
+                                    savantCode: rowData.SavantCode
+                                };
+                                $('#tbB').datagrid("options").queryParams = params;
+                                $('#tbB').datagrid('reload');//重新加载树
+                            }
+                        }
+                    })
+                }
+                else {
+                    alert("无效的数量，请重新填写！");
+
+                    //$('#datagrid-row-r2-2-' + (rowIndex)).find('td[field="BlankingNum"]').text(oldNum);
+                }
+
+            },
+            onDblClickRow: function (rowIndex, rowData) {
+                if (tbB_EditRow != undefined) {
+                    $('#tbB').datagrid("endEdit", tbB_EditRow);
+                }
+                if (tbB_EditRow == undefined) {
+                    $('#tbB').datagrid("beginEdit", rowIndex);
+                    tbB_EditRow = rowIndex;
+                    oldNum = rowData.BlankingNum;
+                }
+            },
+            onClickRow: function (rowIndex, rowData) {
+                $('#tbB').datagrid("endEdit", tbB_EditRow);
+                tbB_EditRow = undefined;
+            }
+        });
+
+    })
+
+    function onAdd() {
+
+        if (currentSavantCode == "") {
+            com.message("warning", "请选择中间件！");
+            return;
+        }
+
+        var target = parent.$('#CommonSearchDialog').length ? parent.$('#CommonSearchDialog') : parent.$('<div id="CommonSearchDialog"></div>').appendTo('body');
+        utils.clearIframe(target);
+        var opt;
+        opt = { title: '列表', width: 800, height: 520, modal: true, collapsible: false, minimizable: false, maximizable: true, closable: true };
+        opt.content = "<iframe src='/mms/home/CommonDialog?xmlName=BlankingRecord_NewIndex' style='height:100%;width:100%;border:0;' frameborder='0'></iframe>";  //frameborder="0" for ie7
+        params = { xmlName: 'BlankingRecord_NewIndex' };
+        opt.paramater = params;
+        opt.onSelect = function (data) {
+            if (data.length > 0) {
+                var dic = [];
+                var isOK = true;
+
+                for (var i = 0; i < data.length; i++) {
+                    if (data[i].InPlanceSize != currentInPlanceSize) {
+                        isOK = false;
+                        break;
+                    }
+                    dic.push(data[i].pbom_ID + "|" + data[i].BlankingNum);
+                }
+
+                if (isOK) {
+                    $.ajax({
+                        url: '/api/Mms/PRS_BlankingRecord/GetAddSavantAndPBomData?ids=' + dic.join(',') + "&savantCode=" + currentSavantCode,
+                        method: "get",
+                        acyns: false,
+                        success: function (result) {
+                            $('#tbA').datagrid('reload');
+                            $('#tbB').datagrid('reload');
+                        }
+                    })
+                }
+                else {
+                    alert("不一致哦！");
+                }
+            }
+
+        };
+        target.window(opt);
+    }
+
+    function onRemove() {
+        var rows = $('#tbB').datagrid("getSelected");
+
+        if (rows != null) {
+
+            if (confirm("是否删除？")) {
+                $.ajax({
+                    url: '/api/Mms/PRS_BlankingRecord/GetDelSavantAndPBomData?ids=' + rows.ID,
+                    method: "get",
+                    acyns: false,
+                    success: function (result) {
+                        com.message(result.Result ? "success" : "warning", result.Msg);
+                        $('#tbA').datagrid('reload');
+                        $('#tbB').datagrid('reload');
+                    }
+                })
+            }
+        }
+        else {
+            com.message("warning", "请选择要删除的数据！");
+        }
+    }
+
+    //弹窗
+    function SearchDialog() {
+        var target = parent.$('#CommonSearchDialog').length ? parent.$('#CommonSearchDialog') : parent.$('<div id="CommonSearchDialog"></div>').appendTo('body');
+        utils.clearIframe(target);
+        var opt;
+        opt = { title: '列表', width: 800, height: 520, modal: true, collapsible: false, minimizable: false, maximizable: true, closable: true };
+        opt.content = "<iframe src='/mms/home/CommonDialog?xmlName=BlankingRecord_NewIndex' style='height:100%;width:100%;border:0;' frameborder='0'></iframe>";  //frameborder="0" for ie7
+        params = { xmlName: 'BlankingRecord_NewIndex' };
+        opt.paramater = params;
+        opt.onSelect = function (data) {
+
+            if (data.length > 0) {
+                var dic = [];
+                var isOK = true;
+                var bSize = data[0].InPlanceSize;
+
+                for (var i = 0; i < data.length; i++) {
+                    if (data[i].InPlanceSize != bSize) {
+                        isOK = false;
+                        break;
+                    }
+
+                    dic.push({
+                        product_ID: data[i].ProductID,
+                        pbom_ID: data[i].pbom_ID,
+                        BlankingSize: data[i].BlankingSize,
+                        SetMateNum: data[i].SetMateNum,
+                        SetMateName: data[i].SetMateName,
+                        BlankingNum: data[i].BlankingNum
+                    });
+                }
+
+                if (isOK) {
+                    $.ajax({
+                        url: '/api/Mms/PRS_BlankingRecord/PostSaveBlankingPlanData',
+                        method: "post",
+                        data: JSON.stringify(dic),
+                        dataType: 'json',
+                        contentType: 'application/json',
+                        acyns: false,
+                        success: function (result) {
+                            com.message(result.Result ? "success" : "warning", result.Msg);
+                            $('#tbA').datagrid('reload');
+                        }
+                    })
+                }
+                else {
+                    alert("不一致哦！");
+                }
+            }
+
+        };
+        target.window(opt);
+    };
+
+
+
+
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

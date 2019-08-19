@@ -1,0 +1,303 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+    <title></title>
+    <style>
+        * {
+            padding: 0;
+            margin: 0;
+            /*background: #ff6a00;*/
+        }
+
+        #all {
+            /*width: 1350px;
+            height: 650px;*/
+        }
+
+        #all_top {
+            width: 100%;
+            height: 60px;
+            margin: 0 auto;
+        }
+
+        .top_left {
+            float: left;
+            width: 100%;
+            height: 30px;
+            background: #d8d5d5;
+        }
+
+        .top_center {
+            border-left: 150px solid transparent;
+            border-right: 150px solid transparent;
+            width: 300px;
+            margin: 0 auto;
+            border-top: 60px solid #d8d5d5;
+            text-align: center;
+            position: relative;
+        }
+
+            .top_center > p {
+                position: absolute;
+                left: 100px;
+                top: -50px;
+                font-size: 28px;
+                font-weight: bold;
+                color: #ffffff;
+            }
+
+        #tab_contents {
+            margin-top: 10px;
+        }
+
+        table.gridtable {
+            font-family: verdana,arial,sans-serif;
+            font-size: 13px;
+            /*color: #d1d1d1;*/
+            border-width: 1px;
+            border-color: gray;
+            border-collapse: collapse;
+            width: 100%;
+            text-align: center;
+            table-layout: fixed;
+        }
+
+            table.gridtable th {
+                border-width: 1px;
+                padding: 8px;
+                border-style: solid;
+                border-color: gray;
+                /*background-color: black;*/
+            }
+
+            table.gridtable td {
+                border-width: 1px;
+                padding: 8px;
+                border-style: solid;
+                border-color: gray;
+                font-size: 25px;
+                /*font-weight: bold;*/
+                /*background-color: black;*/
+            }
+
+        #tab_contents table {
+            /*background: #b8b9b8;*/
+            width: 100%;
+            height: 10px;
+            margin: 0px auto;
+            text-align: center;
+        }
+
+            #tab_contents table tr {
+                height: 80px;
+            }
+
+        #all_foot {
+            width: 100%;
+            height: 250px;
+            /*background:#7eb6d7;*/
+            border: 1px solid gray;
+        }
+    </style>
+    <script src="Highcharts/jquery-1.12.4.min.js"></script>
+    <script src="Highcharts/highcharts.js"></script>
+    <script src="Highcharts/highcharts-more.js"></script>
+    <script src="Highcharts/modules/exporting.js"></script>
+    <script src="Highcharts/modules/export-data.js"></script>
+
+</head>
+<body>
+    <div id="all">
+        <div id="all_top">
+            <div class="top_left">
+            </div>
+            <div class="top_center">
+                <p>看板管理</p>
+            </div>
+            <!--<div class="top_right" style="float: left; width: 400px; height: 30px; background: #d8d5d5;">
+
+            </div>-->
+        </div>
+        <div id="tab_contents">
+            <table border="1" class="gridtable">
+                <tr style="background: #f2f2f2;">
+                    <td>2018-10-15</td>
+                    <td colspan="2" style="position:relative;">
+                        <p style="text-align:center;">Line2&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;3</p>
+                        <img src="img/dp.png" style="position: absolute; width :15px; height:15px;right:200px;top:25px;" />
+                    </td>
+                    <td>shift：A</td>
+                </tr>
+                <tr>
+                    <td style="background: #7eb6d7;">
+                        <p>目标产量</p>
+                        <p>Output Target</p>
+                    </td>
+                    <td style="background: #dbecf4">18</td>
+                    <td colspan="2" style="background: #7eb6d7;">
+                        <p>生产完成率</p>
+                        <p>COT</p>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="background: #7eb6d7;">
+                        <p>生产完成率</p>
+                        <p>Actual Output</p>
+                    </td>
+                    <td style="background: #dbecf4">2</td>
+                    <td colspan="2">
+                        <div style="width: 11%; height: 55px; background: #ff0000; vertical-align: middle; line-height: 55px; position: relative;">
+                            <p style="position:absolute;left:150px;">11%</p>
+                        </div>
+                    </td>
+                </tr>
+
+            </table>
+            <table border="1" class="gridtable">
+                <tr>
+                    <td style="background: #7eb6d7; width:25%">
+                        <p>异常类型</p>
+                        <p>Issue Type</p>
+                    </td>
+                    <td style="background:#ff0000;">
+                        <p>生产(1)</p>
+                        <p>MFG</p>
+                    </td>
+                    <td>
+                        <p>设备(0)</p>
+                        <p>EE</p>
+                    </td>
+                    <td>
+                        <p>工艺(0)</p>
+                        <p>ME</p>
+                    </td>
+                    <td>
+                        <p>质量(0)</p>
+                        <p>QE</p>
+                    </td>
+                    <td style="background:#ff0000;">
+                        <p>物料(1)</p>
+                        <p>MM</p>
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <div id="all_foot">
+            <div class="foot_left" style="width: 59%; float: left; ">
+                <div id="container_one" style="width:50%;height:250px; float:left"></div>
+                <div id="container_two" style="width: 50%; height: 250px; float: right;"></div>
+            </div>
+            <div class="foot_right" style="width:35%;float:right;height:200px; margin-top:50px;padding-left:20px">
+                <p style="color: #25cf25">①  提示，当前工作时间里达成率符合设置标准。</p>
+                <p style="color: #ff0000; ">②  警告，当前合格率验证低于设置标准。</p>
+                <p style="color: #25cf25">③  今天出勤率100%，良好。</p>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>
+<script>
+    Highcharts.chart('container_one', {
+        chart: {
+            plotBackgroundColor: null,
+            plotBorderWidth: null,
+            plotShadow: false,
+            type: 'pie'
+        },
+        title: {
+            text: '达成率'
+        },
+        tooltip: {
+            pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
+        },
+        plotOptions: {
+            pie: {
+                allowPointSelect: true,
+                cursor: 'pointer',
+                dataLabels: {
+                    enabled: true,
+                    format: '<b>{point.name}</b>: {point.percentage:.1f} %',
+                    style: {
+                        color: (Highcharts.theme && Highcharts.theme.contrastTextColor) || 'black'
+                    }
+                }
+            }
+        },
+        series: [{
+            name: 'Brands',
+            colorByPoint: true,
+            data: [
+                {
+                    name: '达成率',
+                    y: 82,
+                    sliced: true,
+                    selected: true
+                },
+                {
+                    name: '未达成',
+                    y: 18
+                }, ]
+        }]
+    });
+
+    Highcharts.chart('container_two', {
+        chart: {
+            plotBackgroundColor: null,
+            plotBorderWidth: null,
+            plotShadow: false,
+            type: 'pie'
+        },
+        title: {
+            text: '合格率'
+        },
+        tooltip: {
+            pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
+        },
+        plotOptions: {
+            pie: {
+                allowPointSelect: true,
+                cursor: 'pointer',
+                dataLabels: {
+                    enabled: true,
+                    format: '<b>{point.name}</b>: {point.percentage:.1f} %',
+                    style: {
+                        color: (Highcharts.theme && Highcharts.theme.contrastTextColor) || 'black'
+                    }
+                }
+            }
+        },
+        series: [{
+            name: 'Brands',
+            colorByPoint: true,
+            colors: [
+                        '#00f346',//第一个颜色
+                        '#c1c7cb'//第二个颜色
+
+            ],
+            data: [
+                {
+                    name: '合格率',
+                    y: 60,
+                    sliced: true,
+                    selected: true
+                },
+                {
+                    name: '不合格',
+                    y: 40
+                }, ]
+        }]
+    });
+
+    var data = {
+        'value1': '我的世界',
+        'value2': '因为有你才会美',
+        'value3': '我的天空',
+        'value4': '因为有你不会黑',
+        'value5': '给我快乐',
+        'radio_value': '女',
+        'checkbox_value': '吃饭,抽烟',
+    }
+</script>

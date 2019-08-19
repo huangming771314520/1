@@ -1,0 +1,277 @@
+﻿@{
+    ViewBag.Title = "MES_MaterialPickDetail";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    int isWarehouse = ViewBag.IsWarehouse;
+}
+
+@section scripts{
+    <script src="/Content/js/viewModel/com.viewModel.edit.js"></script>
+    <script type="text/javascript">
+        using(['validatebox','combotree','numberspinner','combobox','lookup','datebox','datetimebox','combogrid'],easyuifix.datagrid_editor_extend);
+        var viewModel = function(data){
+            var myself;
+            var self = this;
+            com.viewModel.edit.apply(self,arguments);
+            myself=self;
+            myself.pageData.form.PickingDate(com.formatDate(myself.pageData.form.PickingDate()));
+            this.grid0.size={w:8,h:125};
+
+            this.SearchDialog = function () {
+                var gridRows = self.grid0.datagrid('getData').rows;
+                var setting = {
+                    type: this.type,
+                    targetField: this.targetField,
+                    sourceField: this.sourceField,
+                    settingArray: this.settingArray
+                }
+                //settingArray 0:width 1:height 2:xmlName
+                var target = parent.$('#CommonSearchDialog').length ? parent.$('#CommonSearchDialog') : parent.$('<div id="CommonSearchDialog"></div>').appendTo('body');
+                utils.clearIframe(target);
+                var opt;
+                opt = { title: '列表', width: setting.settingArray[0], height: setting.settingArray[1], modal: true, collapsible: false, minimizable: false, maximizable: true, closable: true };
+                opt.content = "<iframe src='/mms/home/CommonDialog2?xmlName=" + setting.settingArray[2] + "&parm=Type:"+myself.pageData.form.DepartmentID()+"' style='height:100%;width:100%;border:0;' frameborder='0'></iframe>";  //frameborder="0" for ie7
+                params = { xmlName: setting.settingArray[2] };
+                opt.paramater = params;
+                opt.onSelect = function (data) {
+                    for (var i in data) {
+                        var flag=true;
+                        com.ajax({
+                            type: 'GET',
+                            url: self.urls.newkey,
+                            data: { type: 'grid0', key: self.pageData.scrollKeys.current() },
+                            cache:false,
+                            async:false,
+                            success: function (d) {
+                                myself.pageData.form.ContractCode(data[0].ContractCode);
+                                myself.pageData.form.ProjectName(data[0].ProjectName);
+                                //myself.pageData.form.WarehouseCode(data[0].WarehouseID);
+                                //myself.pageData.form.WarehouseName(data[0].WarehouseName);
+                                var jsonstr=$.extend({},self.tabs[0].defaults,data[i],{ID:d},{RequiredQuantity:data[i].NeedQuantity},{Unit:data[i].QuantityUnit});
+                                self.grid0.datagrid('appendRow', jsonstr);
+                            }
+                        });
+                    }
+                };
+                target.window(opt);
+            }
+
+            this.SearchDialog1 = function () {
+                var gridRows = self.grid0.datagrid('getData').rows;
+                var setting = {
+                    type: this.type,
+                    targetField: this.targetField,
+                    sourceField: this.sourceField,
+                    settingArray: this.settingArray
+                }
+                //settingArray 0:width 1:height 2:xmlName
+                var target = parent.$('#CommonSearchDialog').length ? parent.$('#CommonSearchDialog') : parent.$('<div id="CommonSearchDialog"></div>').appendTo('body');
+                utils.clearIframe(target);
+                var opt;
+                opt = { title: '列表', width: setting.settingArray[0], height: setting.settingArray[1], modal: true, collapsible: false, minimizable: false, maximizable: true, closable: true };
+                opt.content = "<iframe src='/mms/home/CommonDialog?xmlName=" + setting.settingArray[2] + "' style='height:100%;width:100%;border:0;' frameborder='0'></iframe>";  //frameborder="0" for ie7
+                params = { xmlName: setting.settingArray[2] };
+                opt.paramater = params;
+                opt.onSelect = function (data) {
+                    for (var i in data) {
+                        var flag=true;
+                        com.ajax({
+                            type: 'GET',
+                            url: self.urls.newkey,
+                            data: { type: 'grid0', key: self.pageData.scrollKeys.current() },
+                            cache:false,
+                            async:false,
+                            success: function (d) {
+                                myself.pageData.form.WarehouseCode(data[0].WarehouseID);
+                                myself.pageData.form.WarehouseName(data[0].WarehouseName);
+                                //myself.pageData.form.ContractCode(data[0].WarehouseID);
+                                //myself.pageData.form.ProjectName(data[0].WarehouseName);
+                                var jsonstr=$.extend({},self.tabs[0].defaults,data[i],{ID:d},{RequiredQuantity:data[i].NeedQuantity});
+                                //,InventoryName:data[i].InventoryName,InventoryCode:data[i].InventoryCode
+                                self.grid0.datagrid('appendRow', jsonstr);
+                            }
+                        });
+                    }
+                };
+                target.window(opt);
+            }
+
+            this.StorageClick = function () {
+                if (@isWarehouse== 0) {
+                    com.message('warning', "此此用户部门没有仓库");
+                    return;
+                }
+                else {
+                    var post = {
+                        BillCode: self.dataSource.pageData.form.BillCode,
+                    };
+                    debugger;
+                    com.ajax({
+                        type: 'POST',
+                        url: self.urls.storageSave,
+                        data: JSON.stringify(post),
+                        success: function (d) {
+                            com.message('success', d);
+                            window.location.reload();
+                        }
+                    });
+                }
+                
+            }
+            //this.saveClickC = function () {
+            //    debugger;
+            //    //数据验证
+            //    var validMessage = self.fnIsPageValid();
+            //    if (validMessage) {
+            //        com.message('warning', validMessage);
+            //        return;
+            //    }
+
+            //    //取得数据
+            //    var post = self.fnIsPageChanged();
+            //    if (!post._changed) {
+            //        com.message('success', '页面没有数据被修改！');
+            //        return;
+            //    }
+            //    if(self.dataSource.pageData.form!=null && self.dataSource.pageData.form.ApproveState=="1"){
+            //        com.message('success', '已提交的单据不能修改！');
+            //        return;
+            //    }
+            //    var trs = $("#t").prev().find('div.datagrid-body').find('tr');
+            //    if (trs.length==0)
+            //    {
+            //        com.message('success', '没有明细数据！');
+            //        return;
+            //    }
+            //    if (trs.length>1) {
+            //        for (var i = 0; i <trs.length; i++) {
+            //            var InventoryCode=trs[i].cells[3].firstChild.innerHTML
+            //            var PBillCode=trs[i].cells[2].firstChild.innerHTML;
+            //            for (var t = 1; t <= trs.length-1; t++) {
+            //                if (trs[t].cells[3].firstChild.innerHTML == InventoryCode &&trs[t].cells[2].firstChild.innerHTML == PBillCode)
+            //                {
+            //                    com.message('success', '物料和领料单重复！');
+            //                    return;
+            //                }
+
+            //            }
+            //        }
+
+
+
+            //    }
+            //    //数据提交
+            //    com.ajax({
+            //        url: self.urls.edit,
+            //        data: ko.toJSON(post),
+            //        success: function (d) {
+            //            com.message('success', self.resx.editSuccess);
+            //            ko.mapping.fromJS(self.pageData.form, {}, data.dataSource.pageData.form);//更新旧值
+            //            for (var i in self.tabs)
+            //                if (self.tabs[i].type == self.tabConst.grid)
+            //                    self[self.tabConst.edit + i].accept();
+            //                else if (self.tabs[i].type == self.tabConst.form)
+            //                    ko.mapping.fromJS(self.pageData[[self.tabConst.tab + i]], {}, data.dataSource.pageData[self.tabConst.tab + i]);
+            //            window.location.reload();
+            //        }
+            //    });
+            //};
+            this.saveClick1 = function () {
+                //数据验证
+                if (@isWarehouse== 0) {
+                    com.message('warning', "此部门没有仓库");
+                    return;
+                }
+                else {
+                    var validMessage = self.fnIsPageValid();
+                    if (validMessage) {
+                        com.message('warning', validMessage);
+                        return;
+                    }
+
+                    //取得数据
+                    var post = self.fnIsPageChanged();
+                    if (!post._changed) {
+                        com.message('success', '页面没有数据被修改！');
+                        return;
+                    }
+
+                    //数据提交
+                    com.ajax({
+                        url: self.urls.edit,
+                        data: ko.toJSON(post),
+                        success: function (d) {
+                            com.message('success', self.resx.editSuccess);
+                            window.location.reload();
+                        }
+                    });
+                }
+               
+            };
+        }
+        var data = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model));
+        ko.bindingViewModel(new viewModel(data));
+    </script>
+}
+
+<div class="z-toolbar">
+    
+    <a id="a_save" href="#" plain="true" class="easyui-linkbutton" icon="icon-save" data-bind="click:readonly()?null:saveClick1,linkbuttonDisable:readonly" title="保存">保存</a>
+    <a id="a_inStorage" href="#" plain="true" class="easyui-linkbutton" icon="icon-user-accept" data-bind="click:readonly()?null:StorageClick,linkbuttonDisable:readonly" title="审核">审核</a>
+</div>
+
+<div id="divother" style="width:100px; display:none;">
+    <div data-options="iconCls:'icon-add'">新增</div>
+    <div data-options="iconCls:'icon-cross'">删除</div>
+    <div data-options="iconCls:'icon-arrow_refresh'">刷新</div>
+</div>
+
+<div id="master" class="container_12" data-bind="inputwidth:0.9">
+    <div class="grid_1 lbl">单号</div>
+    <div class="grid_3 val"><input type="text" data-bind="value:pageData.form.BillCode ,readOnly:true" class="z-txt " /></div>
+    <div style="display:none">
+        <div class="grid_1 lbl">部门编码</div>
+        <div class="grid_3 val"><input type="text" data-bind="value:pageData.form.DepartmentID ,readOnly:true" class="z-txt " /></div>
+    </div>
+
+    <div class="grid_1 lbl">部门名称</div>
+    <div class="grid_3 val"><input type="text" data-bind="value:pageData.form.DepartmentName ,readOnly:true" class="z-txt " /></div>
+
+    <div class="clear"></div>
+
+    <div class="grid_1 lbl">领料日期</div>
+    <div class="grid_3 val"><input type="text" data-bind="value:pageData.form.PickingDate ,readOnly:true" class="z-txt " formatter="com.formatDate" /></div>
+
+    <div class="grid_1 lbl">物料所在仓库</div>
+    <div class="grid_3 val"><input type="text" data-bind="value:pageData.form.WarehouseName ,readOnly:true" class="z-txt " /></div>
+
+    <div class="clear"></div>
+</div>
+
+<div class="easyui-tabs">
+    <div title="明细">
+        <table data-bind="datagrid:grid0" id="tt">
+            <thead>
+                <tr>
+                    <th field="ID" sortable="true" align="left" width="80" editor="text" hidden="hidden"></th>
+                    <th field="MainID" sortable="true" align="left" width="80" editor="text" hidden="hidden"></th>
+                    <th field="ContractCode" sortable="true" align="left" width="180" >合同编号</th>
+                    <th field="ProjectName" sortable="true" align="left" width="180" >项目名称</th>
+                    <th field="InventoryCode" sortable="true" align="left" width="150" >存货编码</th>
+                    <th field="InventoryName" sortable="true" align="left" width="150" >存货名称</th>
+                    <th field="RequiredQuantity" sortable="true" align="left" width="80" editor="text">需求数量</th>
+                    <th field="Model" sortable="true" align="left" width="150" >型号规格</th>
+                    <th field="Unit" sortable="true" align="left" width="150" >物料单位</th>
+                </tr>
+            </thead>
+            <div id="gridtb0">
+                @*<a id="a_add" href="#" class="easyui-linkbutton" hidden data-options="iconCls:'icon-search',plain:true" data-bind="event: { click: function(data, event) {SearchDialog.call({type:'form',targetField:'Name',sourceField:'Name','settingArray':['700','500','ChooseMatchingTableDetail']})}}">任务相关领料</a>
+                <a id="a_add" href="#" class="easyui-linkbutton" hidden data-options="iconCls:'icon-search',plain:true" data-bind="event: { click: function(data, event) {SearchDialog1.call({type:'form',targetField:'Name',sourceField:'Name','settingArray':['700','500','ChoosePart']})}}">其他领料</a>*@
+                <a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-search',plain:true" data-bind="click:readonly()?null:grid0.addRowClick,linkbuttonDisable:readonly">新增</a>
+                <a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-edit',plain:true" data-bind="click:readonly()?null:grid0.onClickRow,linkbuttonDisable:readonly">编辑</a>
+                <a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-remove',plain:true" data-bind="click:readonly()?null:grid0.removeRowClick,linkbuttonDisable:readonly">删除</a>
+            </div>
+        </table>
+
+
+    </div>
+</div>

@@ -1,0 +1,153 @@
+﻿@{
+    ViewBag.Title = "PRS_BD_StandardProcess";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@section scripts{
+    <script src="/Content/js/viewModel/com.viewModel.searchEdit.js"></script>
+    <script type="text/javascript">
+        using(['validatebox', 'combobox','lookup','datebox','numberbox','datetimebox','combogrid','combotree','extend','menu'],easyuifix.datagrid_editor_extend);
+
+        var viewModel = function(data){
+            var self = this;
+            com.viewModel.searchEdit.apply(self,arguments);
+            this.editClick = function () {
+                var row = self.grid.datagrid('getSelected');
+                if (row.IsEnable==0) {
+                    com.message('success', "不可用的不能编辑！");
+                    return;
+                }
+                if (!row) return com.message('warning', self.resx.noneSelect);
+                self.gridEdit.begin()
+            };
+            this.grid.onDblClickRow = this.editClick;
+            this.deleteClick1=function(){
+                var row = $("#tt").datagrid("getSelected");
+                if (row == null) {
+                    com.message('success', "请选择一条数据！");
+                    return;
+                }
+                com.message('confirm', "确定要删除选中的数据吗？", function (b) {
+                    if (b) {
+                        com.ajax({
+                            type:'POST',
+                            async:false,
+                            url:'/api/Mms/PRS_BD_StandardProcess/PostChangeStandardProcess?id='+row.ID,
+                            success:function(d){
+                                com.message('success',d);
+                                self.searchClick();
+                            }
+                        });
+
+
+
+                    }
+
+                });
+            }
+            this.saveClick = function () {
+                self.gridEdit.ended(); //结束grid编辑状态
+                var post = {};
+                post.list = self.gridEdit.getChanges(self.setting.postListFields);
+                for (var i = 0; i < post.list.updated.length; i++) {
+                    if(post.list.updated[i].ProcessName==""){
+                        com.message('success',"工序名称不能为空");
+                        return;
+                    }
+
+                }
+                for (var i = 0; i < post.list.inserted.length; i++) {
+                    if(post.list.inserted[i].ProcessName==""){
+                        com.message('success',"工序名称不能为空");
+                        return;
+                    }
+
+                }
+                var trs = $("#tt").prev().find('div.datagrid-body').find('tr');
+
+                if (trs.length>1) {
+                    for (var i = 0; i < trs.length-1; i++) {
+                        if (trs[i].cells[5].firstChild.innerHTML=="否") {
+                            continue;
+                        }
+                        var processName=trs[i].cells[2].firstChild.innerHTML
+                        for (var k = 0; k <= trs.length-1; k++) {
+                            if (trs[k].cells[2].firstChild.innerHTML == processName )
+                            {
+                                if (k==i) {
+                                    continue;
+                                }
+                                com.message('success', processName+'工序名称重复！');
+                                return;
+                            }
+
+                        }
+                    }
+
+                }
+
+                if (self.gridEdit.ended() && post.list._changed) {
+                    com.ajax({
+                        url: self.urls.edit,
+                        data: ko.toJSON(post),
+                        success: function (d) {
+                            com.message('success', self.resx.editSuccess);
+                            self.gridEdit.accept();
+                            self.searchClick();
+                        }
+                    });
+                }
+            };
+        }
+        var data = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model));
+        ko.bindingViewModel(new viewModel(data));
+    </script>
+}
+<div class="z-toolbar">
+    <a href="#" plain="true" class="easyui-linkbutton" icon="icon-arrow_refresh" title="刷新" data-bind="click:refreshClick">刷新</a>
+    <a href="#" plain="true" class="easyui-linkbutton" icon="icon-add" title="新增" data-bind="click:addClick">新增</a>
+    <a href="#" plain="true" class="easyui-linkbutton" icon="icon-edit" title="编辑" data-bind="click:editClick">编辑</a>
+    <a href="#" plain="true" class="easyui-linkbutton" icon="icon-cross" title="删除" data-bind="click:deleteClick1">删除</a>
+    <a href="#" plain="true" class="easyui-linkbutton" icon="icon-save" title="保存" data-bind="click:saveClick">保存</a>
+    @*<a href="#" plain="true" class="easyui-splitbutton" data-options="menu:'#dropdown',iconCls:'icon-download'">导出</a>*@
+</div>
+
+<div id="dropdown" style="width:100px; display:none;">
+    <div data-options="iconCls:'icon-ext-xls'" suffix="xls" data-bind="click:downloadClick">Excel 2003   </div>
+    <div data-options="iconCls:'icon-page_excel'" suffix="xlsx" data-bind="click:downloadClick">Excel 2007   </div>
+    <div data-options="iconCls:'icon-ext-doc'" suffix="doc" data-bind="click:downloadClick">Word 2003    </div>
+</div>
+
+<div class="container_12" style="position:relative;">
+    <div class="grid_1 lbl">工序编号</div>
+    <div class="grid_2 val"><input type="text" data-bind="value:form.ProcessCode" class="z-txt " /></div>
+    <div class="grid_1 lbl">工序名称</div>
+    <div class="grid_2 val"><input type="text" data-bind="value:form.ProcessName" class="z-txt " /></div>
+
+    <div class="grid_2 val">&nbsp;</div>
+    <div class="clear"></div>
+
+    <div class="prefix_9" style="position:absolute;top:5px;height:0;">
+        <a id="a_search" href="#" class="buttonHuge button-blue" data-bind="click:searchClick" style="margin:0 15px;">查询</a>
+        <a id="a_reset" href="#" class="buttonHuge button-blue" data-bind="click:clearClick">清空</a>
+    </div>
+</div>
+
+<table data-bind="datagrid:grid" style="display:none" id="tt">
+    <thead>
+        <tr>
+            <th field="ID" hidden="true" sortable="true" align="left" width="80" editor="text">主键ID</th>
+            <th field="ProcessCode" sortable="true" align="left" width="150">工序编号</th>
+            <th field="ProcessName" sortable="true" align="left" width=" 150" editor="text">工序名称</th>
+            <th field="Instracutions" sortable="true" align="left" width=" 150" editor="text">说明</th>
+            @*<th field="ProcessType" sortable="true" align="left" width=" 150" editor="text">工艺类型</th>*@
+            <th field="ProcessType" sortable="true" align="left" width="100" data-options="formatter:function(value,row){return com.formatCombobox('ProcessType',value);}"
+                editor="{type:'combobox',options:{required:true,url:'/Commons/GetComboboxList?CodeType=ProcessType',method:'GET',panelWidth:100,panelHeight:100,valueField:'value',textField:'text'}}">工艺类型</th>
+
+            <th field="CreatePerson" hidden="true" sortable="true" align="left" width="80" editor="text">创建人</th>
+            <th field="CreateTime" hidden="true" sortable="true" align="left" width="80" editor="text">创建时间</th>
+            <th field="ModifyPerson" hidden="true" sortable="true" align="left" width="80" editor="text">审批人</th>
+            <th field="ModifyTime" hidden="true" sortable="true" align="left" width="80" editor="text">审批时间</th>
+        </tr>
+    </thead>
+</table>

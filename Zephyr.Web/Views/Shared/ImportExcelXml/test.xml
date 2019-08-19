@@ -1,0 +1,40 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Root>
+  <Excel name="test">
+    <tableName>test</tableName>
+    <FieldList>
+      <ExcelFields>
+        [Name],[Sex],[IdCard],PhoneNumber,HomeAddress,Email,QQ
+      </ExcelFields>
+      <ConvertFields>
+        <setting type='dictionary' field='Sex'>SexType</setting>
+        <setting type='single' field='Sex' connName='Mms' tableName='testType' selectField='Code Value,Name Text'></setting>
+        <setting type='fix' field='Sex'>
+          <item value='1'>男</item>
+          <item value='2'>女</item>
+        </setting>
+        <setting type='fix' field='HomeAddress'>
+          <item value='sh'>上海</item>
+          <item value='hb'>湖北</item>
+        </setting>
+      </ConvertFields> 
+    </FieldList>
+  </Excel>
+
+  <Excel name="test2">
+    <tableName>test2</tableName>
+    <FieldList>
+      <ExcelFields>
+        [Name]
+        ,[Sex]
+        ,[IdCard]
+        ,[PhoneNumber]
+        ,[HomeAddress]
+        ,[Email]
+        ,[QQ]
+      </ExcelFields>
+
+    </FieldList>
+  </Excel>
+
+</Root>

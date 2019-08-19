@@ -1,0 +1,16 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<settings lookupType="erpEquipment" defaultOrderBy='Equipment_id'>
+  <module>Mms</module>
+  <select>
+
+    [Equipment_id],[Equipment_Name]
+  </select>
+  <from>
+   [QHD_Mes].[dbo].[ERP_Equipment]
+  </from>
+  <where defaultForAll='true' defaultCp='equal' defaultIgnoreEmpty='true' >
+    <field name='Equipment_Id'         cp='like'  ></field>
+    <field name='Equipment_Name'         cp='like'       ></field>
+   
+  </where>
+</settings>

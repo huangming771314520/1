@@ -1,0 +1,30 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<sequenceDesignerDiagram dslVersion="1.0.0.0" absoluteBounds="0, 0, 11, 8.5" name="12车间领料状态">
+  <SequenceDesignerModelMoniker Id="2eecdcdb-c04d-4838-91e0-dd670b3de3e3" />
+  <nestedChildShapes>
+    <lifelineShape Id="92858f72-f438-4bbe-be94-d302619aa693" absoluteBounds="1.2708333730697632, 1, 0.15, 7" visible="true" visualStyleMode="Modified">
+      <lifelineMoniker Id="8cf3ad16-7987-471d-9ace-83f9c130ef8c" LastKnownName="编辑" />
+      <relativeChildShapes>
+        <umlLifelineHeadShape Id="b667bdaf-6618-4910-bc71-5111a1e1b6b0" absoluteBounds="0.84583337306976314, 0.6, 1, 0.4" customColor="White" visualStyleMode="Modified">
+          <lifelineMoniker Id="8cf3ad16-7987-471d-9ace-83f9c130ef8c" LastKnownName="编辑" />
+          <relativeChildShapes />
+        </umlLifelineHeadShape>
+        <lifelineHoverShape Id="cb54a36f-4ecf-4405-829d-582926265185" absoluteBounds="1.2708333730697632, 1, 0, 7">
+          <lifelineMoniker Id="8cf3ad16-7987-471d-9ace-83f9c130ef8c" LastKnownName="编辑" />
+        </lifelineHoverShape>
+      </relativeChildShapes>
+    </lifelineShape>
+    <lifelineShape Id="e38f7b1a-787a-45ee-add8-dd05a68fd352" absoluteBounds="3.1041667461395264, 1, 0.15, 7" visible="true" visualStyleMode="Modified">
+      <lifelineMoniker Id="f4f156ca-e701-4725-abd4-d3d6ab3701bb" LastKnownName="Lifeline2" />
+      <relativeChildShapes>
+        <umlLifelineHeadShape Id="137a9f71-75e7-419d-88ad-0a0b879a7fed" absoluteBounds="2.6791667461395265, 0.6, 1, 0.4" customColor="White" visualStyleMode="Modified">
+          <lifelineMoniker Id="f4f156ca-e701-4725-abd4-d3d6ab3701bb" LastKnownName="Lifeline2" />
+          <relativeChildShapes />
+        </umlLifelineHeadShape>
+        <lifelineHoverShape Id="fabee014-1b09-4833-bc0d-d780eb476dab" absoluteBounds="3.1041667461395264, 1, 0, 7">
+          <lifelineMoniker Id="f4f156ca-e701-4725-abd4-d3d6ab3701bb" LastKnownName="Lifeline2" />
+        </lifelineHoverShape>
+      </relativeChildShapes>
+    </lifelineShape>
+  </nestedChildShapes>
+</sequenceDesignerDiagram>

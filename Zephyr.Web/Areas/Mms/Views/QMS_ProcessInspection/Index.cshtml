@@ -1,0 +1,108 @@
+﻿
+@{
+    ViewBag.Title = "QMS_ProcessInspection";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var Cols = new Zephyr.Models.sys_roleMenuColumnMapService().GetCurrentUserMenuColumns();
+}
+
+@section scripts{
+    <script src="/Content/js/viewModel/com.viewModel.search.js"></script>
+    <script type="text/javascript">
+        var myself;
+        using(['validatebox','combotree','numberspinner','combobox','lookup','datebox','datetimebox','combogrid'],easyuifix.datagrid_editor_extend);
+        var data = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model));
+        var viewModel = function(){ 
+            var self=this;
+            com.viewModel.search.apply(this,arguments);
+            myself=self;
+        }
+        ko.bindingViewModel(new viewModel(data));
+    </script>
+}
+
+    @Html.RenderToolbar()
+
+    <div class="container_12" style="position:relative;">
+        <div class="grid_1 lbl">检验单号</div>
+        <div class="grid_2 val"><input type="text" data-bind="value:form.BillCode" class="z-txt " /></div>
+        <div class="grid_1 lbl">产品名称</div>
+        @*<div class="grid_2 val"><input type="text" data-bind="comboboxValue:form.ProductName" class="z-txt easyui-combobox" /></div>*@
+        <div class="grid_2 val">
+            <input type="text" data-bind="combogridValue:form.ProductName" class=" z-txt easyui-combogrid" data-options="url:'/Commons/GetCommonSearchList',
+                queryParams : {
+                     tableName:'[PMS_BN_ProjectDetail]',
+                         searchField:'[ProductName],[Model],[Specifications],[FigureNumber]',
+                         firstFightField:'[ProductName]',
+                         connName:'Mms'
+                },
+                method: 'GET',
+                panelWidth:600,
+                fit:true,
+                delay: 1000,
+                mode: 'remote',
+                value: 'ProductName',
+                idField: 'ProductName',
+                textField: 'ProductName',
+                columns:[[
+                { field: 'ProductName',title: '产品名称',width: 100 },
+                   { field: 'Model',title: '型号',width: 100 },
+                   { field: 'Specifications',title: '规格',width: 100 },
+                { field: 'FigureNumber',title:'图号',width:150 }
+                    ]],
+            keyHandler:{
+            query:function(keyword) {
+           var queryParams=$(this).combogrid('grid').datagrid('options').queryParams;
+           queryParams.keyword=keyword;
+           $(this).combogrid('grid').datagrid('options').queryParams=queryParams;
+           $(this).combogrid('grid').datagrid('reload');
+           }}" />
+        </div>
+        <div class="grid_1 lbl">零件编号</div>
+        <div class="grid_2 val"><input type="text" data-bind="value:form.PartCode" class="z-txt " /></div>
+
+        <div class="clear"></div>
+        <div class="grid_1 lbl">&nbsp;</div>
+        <div class="grid_2 val">&nbsp;</div>
+        <div class="clear"></div>
+
+        <div class="prefix_9" style="position:absolute;top:5px;height:0;">  
+            <a id="a_search" href="#" class="buttonHuge button-blue" data-bind="click:searchClick" style="margin:0 15px;">查询</a> 
+            <a id="a_reset"  href="#" class="buttonHuge button-blue" data-bind="click:clearClick">清空</a>
+        </div>
+    </div>
+ 
+    <table data-bind="datagrid:grid">
+            <thead>  
+            <tr>  
+                <th field="ID"    sortable="true" align="left"    width="80"     hidden="true" >主键ID</th>
+                <th field="BillCode"    sortable="true" align="left"    width="80"     @Html.HideColumn(Cols,"BillCode") >检验单号</th>
+                <th field="ContractCode"    sortable="true" align="left"    width="80"     hidden="true" >合同编号</th>
+                <th field="ProjectName"    sortable="true" align="left"    width="80"     @Html.HideColumn(Cols,"ProjectName") >项目名称</th>
+                <th field="ProductName"    sortable="true" align="left"    width="80"     @Html.HideColumn(Cols,"ProductName") >产品名称</th>
+                <th field="ProductFigureNumber"    sortable="true" align="left"    width="80"     @Html.HideColumn(Cols,"ProductFigureNumber") >产品图号</th>
+                <th field="PartCode"    sortable="true" align="left"    width="80"     @Html.HideColumn(Cols,"PartCode") >零件编号</th>
+                <th field="PartName"    sortable="true" align="left"    width="80"     @Html.HideColumn(Cols,"PartName") >零件名称</th>
+                <th field="partFigure"    sortable="true" align="left"    width="80"     @Html.HideColumn(Cols,"partFigure") >零件图号</th>
+                <th field="MaterialCode"    sortable="true" align="left"    width="80"     @Html.HideColumn(Cols,"MaterialCode") >材料牌号</th>
+                <th field="CheckQuantity"    sortable="true" align="left"    width="80"     @Html.HideColumn(Cols,"CheckQuantity") >检验数量</th>
+                <th field="QualifiedQuntity"    sortable="true" align="left"    width="80"     @Html.HideColumn(Cols,"QualifiedQuntity") >合格数量</th>
+                @*<th field="CheckResult"    sortable="true" align="left"    width="80"     @Html.HideColumn(Cols,"CheckResult") >检验结果</th>*@
+                <th field="IsQualified" sortable="true" align="left" width="80" @Html.HideColumn(Cols, "IsQualified") data-options="formatter:function(value,row){ return (value == 1) ? '合格':'不合格';}">是否合格</th>
+                @*<th field="BillState"    sortable="true" align="left"    width="80"     @Html.HideColumn(Cols,"BillState") >单据状态</th>*@
+                <th field="BillState" sortable="true" align="left" width="70" data-options="formatter:function(value,row){ return (value == 1) ? '未审核':'已审核';}" editor="{type:'combobox',
+            options:{data:[{value:1,text:'未审核'},{value:2,text:'已审核'}],panelWidth:100,panelHeight: 100,valueField: 'value',textField: 'text'}}" @Html.HideColumn(Cols, "BillState")>
+                    单据状态
+                </th>
+                @*<th field="IsEnable"    sortable="true" align="left"    width="80" formatter="com.formatCheckbox"    @Html.HideColumn(Cols,"IsEnable") >是否可用</th>*@
+                <th field="IsEnable" sortable="true" align="left" width="70" data-options="formatter:function(value,row){ return (value == 1) ? '是':'否';}" editor="{type:'combobox',
+            options:{data:[{value:1,text:'是'},{value:0,text:'否'}],panelWidth:100,panelHeight: 100,valueField: 'value',textField: 'text'}}" @Html.HideColumn(Cols, "IsEnable")>
+                    是否可用
+                </th>
+                <th field="CreatePerson"    sortable="true" align="left"    width="80"     hidden="true" >创建人</th>
+                <th field="CreateTime"    sortable="true" align="left"    width="80"     hidden="true" >创建时间</th>
+                <th field="ModifyPerson"    sortable="true" align="left"    width="80"     hidden="true" >更新人</th>
+                <th field="ModifyTime"    sortable="true" align="left"    width="80"     hidden="true" >更新时间</th>
+            </tr>                            
+        </thead>      
+    </table>
+ 

@@ -1,0 +1,258 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<activityRootModel xmlns:dm0="http://schemas.microsoft.com/VisualStudio/2008/DslTools/Core" xmlns:dm1="http://schemas.microsoft.com/dsltools/Kernel" xmlns:dm2="http://schemas.microsoft.com/dsltools/Component" xmlns:dm3="http://schemas.microsoft.com/dsltools/UseCase" xmlns:dm4="http://schemas.microsoft.com/dsltools/Activity" xmlns:dm5="http://schemas.microsoft.com/dsltools/Interaction" xmlns:dm6="http://schemas.microsoft.com/dsltools/UmlModelLibrary" xmlns:dm7="http://schemas.microsoft.com/dsltools/UmlDiagrams" xmlns:dm8="http://schemas.microsoft.com/dsltools/ModelStore" xmlns:dm9="http://schemas.microsoft.com/dsltools/SimpleShapesModel" dslVersion="1.0.0.0" Id="c123195a-d619-4457-ad8f-4298a31e71d6" name="0404车间请购" linkedPackageId="30cea275-baf7-44c3-9526-5cd336e9429a" xmlns="http://schemas.microsoft.com/VisualStudio/TeamArchitect/ActivityDesigner">
+  <ownedCommentsInternal>
+    <comment Id="5e5a9c48-ce91-4b33-8c7a-e0212a1eba3a">
+      <elementDefinition Id="71b678d8-e9c8-4c45-a671-f5f5379faa3e" />
+      <body>1、此功能只能车间主任使用；
+2、车间主任只能新增自己负责的车间的单据；
+3、获取车间编码
+SELECT
+    --车间编码
+    B.DepartmentCode
+FROM [dbo].[SYS_BN_User] B
+WHERE B.IsEnable = '1'
+      AND B.UserCode = '050328';
+4、请购日期默认为当天，可修改；
+5、请购类型为紧急采购(默认)或正常采购</body>
+      <annotatedElements>
+        <opaqueActionMoniker Id="d3957713-5d09-433e-8abd-30814468730a" LastKnownName="新增车间请购单" />
+      </annotatedElements>
+    </comment>
+    <comment Id="18313d0b-9083-418d-9a33-a1b669284821">
+      <elementDefinition Id="1b3cb611-746e-452d-8134-cf33be9c0376" />
+      <body>1、通过图号查询工艺BOM中的外购零件；
+2、支持多选零件新增采购明细；
+3、请购数量默认为工艺BOM中的数量，可修改</body>
+      <annotatedElements>
+        <opaqueActionMoniker Id="6c65cd77-e894-4a09-b5ce-05f7e36e8c12" LastKnownName="新增项目相关采购" />
+      </annotatedElements>
+    </comment>
+    <comment Id="a31ef737-efb4-406d-883b-d21f1457afb6">
+      <elementDefinition Id="13333a85-5b36-4234-bb00-7a2adc7dde09" />
+      <body>1、通过存货编码、存货名称、规格、型号查询需要采购的存货信息；
+2、如果需要采购的存货信息不存在，选择一个近似的存货信息，然后在明细中填写实际需要采购的名称、规格、型号；</body>
+      <annotatedElements>
+        <opaqueActionMoniker Id="d369e10e-4301-47cf-b984-71d880f9553e" LastKnownName="新增其他采购" />
+      </annotatedElements>
+    </comment>
+    <comment Id="feb54156-f28e-4471-adb1-41b218fa2add">
+      <elementDefinition Id="2003bcfb-859b-4c04-8e67-a89df4b3378a" />
+      <body>1、只能修改未审核的请购单明细；
+2、可以修改数量、名称、型号、规格、备注信息；</body>
+      <annotatedElements>
+        <opaqueActionMoniker Id="7890d091-b708-4fda-99b8-f8c26b407014" LastKnownName="修改请购单明细" />
+      </annotatedElements>
+    </comment>
+    <comment Id="8978c6c4-1fb9-4e12-81ad-44b255afdb0b">
+      <elementDefinition Id="11f9492c-7edc-417e-af0e-385f3c1bfd2b" />
+      <body>1、只能修改未审核的请购单；
+2、可以修改请购日期、请购类型；</body>
+      <annotatedElements>
+        <opaqueActionMoniker Id="cbd95467-37f1-407f-8910-c33af986eaed" LastKnownName="修改请购单" />
+      </annotatedElements>
+    </comment>
+    <comment Id="fc534a1d-a31a-4b57-8cd5-7e53d299b9d3">
+      <elementDefinition Id="d3658cf6-34b0-4e6e-9615-d4603e29b787" />
+      <body>只能删除未审核的请购单；</body>
+      <annotatedElements>
+        <opaqueActionMoniker Id="b1806ae4-228b-4a19-a2ca-8b432ac3ba66" LastKnownName="删除请购单" />
+      </annotatedElements>
+    </comment>
+    <comment Id="d288820b-6f1d-4a80-acd7-b0190f39470d">
+      <elementDefinition Id="137ae3ec-c0d0-477d-800a-4851e4c89289" />
+      <body>只能审核有效的未审核的请购单；</body>
+      <annotatedElements>
+        <opaqueActionMoniker Id="6470662d-8581-4a9c-b621-53c0d8e49f8e" LastKnownName="审核请购单" />
+      </annotatedElements>
+    </comment>
+    <comment Id="48df3b69-3b7b-4655-be3a-dd3862ed30d9">
+      <elementDefinition Id="989025d6-6e89-476f-964e-1310836aaf17" />
+      <body>只能删除未审核的请购单明细；</body>
+      <annotatedElements>
+        <opaqueActionMoniker Id="d5650720-5385-417c-8822-810ab36adcf0" LastKnownName="删除请购单明细" />
+      </annotatedElements>
+    </comment>
+    <comment Id="e8035a94-cf33-4d62-ab99-e1d9fd9d27b5">
+      <elementDefinition Id="447fb88e-8345-4ffb-b2ef-aac87725a4cf" />
+      <body>查询语句</body>
+      <annotatedElements>
+        <opaqueActionMoniker Id="e3c9342f-ad06-4a24-8bf4-92850c6f2698" LastKnownName="查询请购单" />
+      </annotatedElements>
+    </comment>
+  </ownedCommentsInternal>
+  <packagedElements>
+    <activityRootModelHasActivity>
+      <activity Id="3d17a982-60b8-4508-b636-ebdcca1bec9a" name="0404车间请购" isAbstract="false" isLeaf="false" isActiveClass="false" isReentrant="false" isReadOnly="false" isSingleExecution="false">
+        <elementDefinition Id="54de6581-22ed-4951-92d8-795d5eb29df5" />
+        <nodes>
+          <initialNode Id="81136609-8200-439e-a6de-5fe0fbdd80aa" name="Initial1" isLeaf="false">
+            <elementDefinition Id="92503e8e-212a-4ea8-af04-2da09f4c37b0" />
+            <flowNodeTargets>
+              <controlFlow Id="c83b758d-b238-40b3-bc8c-b5ec487de7c4" isLeaf="false">
+                <opaqueActionMoniker Id="d3957713-5d09-433e-8abd-30814468730a" LastKnownName="新增车间请购单" />
+                <elementDefinition Id="d08b633e-82c7-4591-89ea-b0b878d2da20" />
+              </controlFlow>
+            </flowNodeTargets>
+          </initialNode>
+          <opaqueAction Id="d3957713-5d09-433e-8abd-30814468730a" name="新增车间请购单" isLeaf="false">
+            <elementDefinition Id="dafa7bf3-336e-4c46-a553-51c9eb186b26" />
+            <flowNodeTargets>
+              <controlFlow Id="58a22fec-50bd-4d40-9b43-0d11ec719691" isLeaf="false">
+                <forkNodeMoniker Id="410cdbe6-96fb-4677-8047-feace787c1ca" LastKnownName="Fork1" />
+                <elementDefinition Id="1c993ac9-3957-44ff-8fa1-90dde120e815" />
+              </controlFlow>
+            </flowNodeTargets>
+          </opaqueAction>
+          <activityFinalNode Id="f35b1b80-84bb-4fd8-97fd-8b2378880212" name="ActivityFinal1" isLeaf="false">
+            <elementDefinition Id="8d9b6cb2-9df7-4bbc-9aaf-85ae9dbd70c1" />
+          </activityFinalNode>
+          <opaqueAction Id="6c65cd77-e894-4a09-b5ce-05f7e36e8c12" name="新增项目相关采购" isLeaf="false">
+            <elementDefinition Id="71abd9e9-83f0-402d-99ba-6823952cde2d" />
+            <flowNodeTargets>
+              <controlFlow Id="92beedaf-685b-4381-90d2-88b1df59843d" isLeaf="false">
+                <joinNodeMoniker Id="043f08c5-4eb5-404d-8ae8-3c9d037527eb" LastKnownName="Join1" />
+                <elementDefinition Id="9b76a431-9fd1-4835-b565-5621f0dbbd59" />
+              </controlFlow>
+            </flowNodeTargets>
+          </opaqueAction>
+          <opaqueAction Id="d369e10e-4301-47cf-b984-71d880f9553e" name="新增其他采购" isLeaf="false">
+            <elementDefinition Id="4884d023-a9e1-4257-8a1f-1ac0555c529d" />
+            <flowNodeTargets>
+              <controlFlow Id="03fd0818-471f-4ddf-90d7-cc42b8a4ff79" isLeaf="false">
+                <joinNodeMoniker Id="043f08c5-4eb5-404d-8ae8-3c9d037527eb" LastKnownName="Join1" />
+                <elementDefinition Id="d76f2a94-0ec8-4390-b5fb-afc9749cbd93" />
+              </controlFlow>
+            </flowNodeTargets>
+          </opaqueAction>
+          <opaqueAction Id="7890d091-b708-4fda-99b8-f8c26b407014" name="修改请购单明细" isLeaf="false">
+            <elementDefinition Id="c2ad304b-b3f2-4671-a16b-ccb43c5e32ec" />
+            <flowNodeTargets>
+              <controlFlow Id="0b4cc339-c998-4705-9771-cfde51a8721f" isLeaf="false">
+                <joinNodeMoniker Id="043f08c5-4eb5-404d-8ae8-3c9d037527eb" LastKnownName="Join1" />
+                <elementDefinition Id="6c7c74fc-713e-4c7c-bcea-a88327875504" />
+              </controlFlow>
+            </flowNodeTargets>
+          </opaqueAction>
+          <opaqueAction Id="d5650720-5385-417c-8822-810ab36adcf0" name="删除请购单明细" isLeaf="false">
+            <elementDefinition Id="7e6a741c-44f2-4fe2-8a15-d5f1a6f4a371" />
+            <flowNodeTargets>
+              <controlFlow Id="b03186a2-0738-4b2c-9818-6fefeb867d07" isLeaf="false">
+                <joinNodeMoniker Id="043f08c5-4eb5-404d-8ae8-3c9d037527eb" LastKnownName="Join1" />
+                <elementDefinition Id="579e71c6-9eb5-4134-9e6f-55f4c738f658" />
+              </controlFlow>
+            </flowNodeTargets>
+          </opaqueAction>
+          <opaqueAction Id="cbd95467-37f1-407f-8910-c33af986eaed" name="修改请购单" isLeaf="false">
+            <elementDefinition Id="976f911b-a123-4634-9d71-d55ea0501b77" />
+            <flowNodeTargets>
+              <controlFlow Id="1be599db-e290-4c0b-8f7f-850a05df6398" isLeaf="false">
+                <joinNodeMoniker Id="00a4bd3b-51d7-4e01-9849-fcb2945f546a" LastKnownName="Join2" />
+                <elementDefinition Id="582c5017-182c-43cc-b469-0c593e564d4d" />
+              </controlFlow>
+            </flowNodeTargets>
+          </opaqueAction>
+          <opaqueAction Id="b1806ae4-228b-4a19-a2ca-8b432ac3ba66" name="删除请购单" isLeaf="false">
+            <elementDefinition Id="2ed08f81-9255-4529-93ae-add41ceb78aa" />
+            <flowNodeTargets>
+              <controlFlow Id="a2e50d6e-83a9-4a02-90f8-03fd95d2d536" isLeaf="false">
+                <joinNodeMoniker Id="00a4bd3b-51d7-4e01-9849-fcb2945f546a" LastKnownName="Join2" />
+                <elementDefinition Id="a5648348-7e1e-40fb-abfb-dad3019017ca" />
+              </controlFlow>
+            </flowNodeTargets>
+          </opaqueAction>
+          <opaqueAction Id="6470662d-8581-4a9c-b621-53c0d8e49f8e" name="审核请购单" isLeaf="false">
+            <elementDefinition Id="8eaccbbf-21c8-45a1-81f8-90897ffeeb03" />
+            <flowNodeTargets>
+              <controlFlow Id="c4e2bba3-6b26-4633-b444-92b0b9371989" isLeaf="false">
+                <joinNodeMoniker Id="00a4bd3b-51d7-4e01-9849-fcb2945f546a" LastKnownName="Join2" />
+                <elementDefinition Id="def14e69-34a9-4105-8c39-e8b3802db9d0" />
+              </controlFlow>
+            </flowNodeTargets>
+          </opaqueAction>
+          <opaqueAction Id="e3c9342f-ad06-4a24-8bf4-92850c6f2698" name="查询请购单" isLeaf="false">
+            <elementDefinition Id="2ddb4848-a4a1-4e85-9250-0c65e6df3215" />
+            <flowNodeTargets>
+              <controlFlow Id="cbc0942d-935d-462a-ad66-2a3d0b5819c6" isLeaf="false">
+                <activityFinalNodeMoniker Id="f35b1b80-84bb-4fd8-97fd-8b2378880212" LastKnownName="ActivityFinal1" />
+                <elementDefinition Id="d48a7742-eb43-4254-9b53-fa5ff03b08b5" />
+              </controlFlow>
+            </flowNodeTargets>
+          </opaqueAction>
+          <forkNode Id="410cdbe6-96fb-4677-8047-feace787c1ca" name="Fork1" isLeaf="false">
+            <elementDefinition Id="ea9c97b0-abaa-4428-ad83-37d6adc5f1ea" />
+            <flowNodeTargets>
+              <controlFlow Id="44e9f2ac-0da7-44ff-a5ec-91d08a57759e" isLeaf="false">
+                <opaqueActionMoniker Id="d369e10e-4301-47cf-b984-71d880f9553e" LastKnownName="新增其他采购" />
+                <elementDefinition Id="c30319e7-8e80-4ae9-a462-b547be4011bd" />
+              </controlFlow>
+              <controlFlow Id="d54eedf4-185d-4d9e-b5b6-80defb11c237" isLeaf="false">
+                <opaqueActionMoniker Id="7890d091-b708-4fda-99b8-f8c26b407014" LastKnownName="修改请购单明细" />
+                <elementDefinition Id="d75fe838-63e8-4767-af63-18da23e0071f" />
+              </controlFlow>
+              <controlFlow Id="eb59697a-0633-49fe-ae4f-884a6480f203" isLeaf="false">
+                <opaqueActionMoniker Id="d5650720-5385-417c-8822-810ab36adcf0" LastKnownName="删除请购单明细" />
+                <elementDefinition Id="098cfb52-8165-4048-82ee-b7c7c6513072" />
+              </controlFlow>
+              <controlFlow Id="97a93ae8-2303-40aa-bcac-354190a83088" isLeaf="false">
+                <opaqueActionMoniker Id="6c65cd77-e894-4a09-b5ce-05f7e36e8c12" LastKnownName="新增项目相关采购" />
+                <elementDefinition Id="3166a931-a313-40b2-8063-9244922e8128" />
+              </controlFlow>
+            </flowNodeTargets>
+          </forkNode>
+          <joinNode Id="043f08c5-4eb5-404d-8ae8-3c9d037527eb" name="Join1" isLeaf="false">
+            <elementDefinition Id="39f22a56-18c9-4eee-b94b-0e5cf242772e" />
+            <flowNodeTargets>
+              <controlFlow Id="b19d8da6-25b0-463a-b275-2cf3bd3e0ea6" isLeaf="false">
+                <forkNodeMoniker Id="e9bed287-16ea-44bd-bfb0-46f3f20881a7" LastKnownName="Fork2" />
+                <elementDefinition Id="70336ebf-c27c-489e-b796-a7f45d92fce4" />
+              </controlFlow>
+            </flowNodeTargets>
+          </joinNode>
+          <forkNode Id="e9bed287-16ea-44bd-bfb0-46f3f20881a7" name="Fork2" isLeaf="false">
+            <elementDefinition Id="29d0ef1e-18c5-4a11-9f02-9c7cdb51b313" />
+            <flowNodeTargets>
+              <controlFlow Id="adefba27-b0ee-42e0-94ac-f21112add1b7" isLeaf="false">
+                <opaqueActionMoniker Id="cbd95467-37f1-407f-8910-c33af986eaed" LastKnownName="修改请购单" />
+                <elementDefinition Id="dd0d5754-c72e-4fcb-8f61-8565e578a646" />
+              </controlFlow>
+              <controlFlow Id="9394ede8-0b53-441c-a543-9b2b97bc4d46" isLeaf="false">
+                <opaqueActionMoniker Id="6470662d-8581-4a9c-b621-53c0d8e49f8e" LastKnownName="审核请购单" />
+                <elementDefinition Id="db46a274-d5a6-4b33-b218-efd34c052366" />
+              </controlFlow>
+              <controlFlow Id="13fd31b6-5471-41da-9eb9-64c5da6f42c5" isLeaf="false">
+                <opaqueActionMoniker Id="b1806ae4-228b-4a19-a2ca-8b432ac3ba66" LastKnownName="删除请购单" />
+                <elementDefinition Id="1ddba85a-a3ca-41e4-8375-d56b7e448c8b" />
+              </controlFlow>
+            </flowNodeTargets>
+          </forkNode>
+          <joinNode Id="00a4bd3b-51d7-4e01-9849-fcb2945f546a" name="Join2" isLeaf="false">
+            <elementDefinition Id="c024885c-e300-4666-9d79-1da63f28153d" />
+            <flowNodeTargets>
+              <controlFlow Id="f45f408c-18ef-4af6-acbc-3681e136d9f4" isLeaf="false">
+                <opaqueActionMoniker Id="e3c9342f-ad06-4a24-8bf4-92850c6f2698" LastKnownName="查询请购单" />
+                <elementDefinition Id="54d19d8c-335b-4ce7-bf59-b5c6910fc208" />
+              </controlFlow>
+            </flowNodeTargets>
+          </joinNode>
+        </nodes>
+      </activity>
+    </activityRootModelHasActivity>
+  </packagedElements>
+  <package Id="30cea275-baf7-44c3-9526-5cd336e9429a" name="HCJXUML">
+    <elementDefinition Id="6348ac1d-75ba-4a39-8ebf-237333c18d4f" />
+    <profileInstances>
+      <packageHasProfileInstances Id="65ed9601-940b-4cce-8be9-df926282fbd8">
+        <profileInstance Id="f7684a8c-5a67-4d1a-a824-8a9ad2cf5fe4" name="StandardProfileL2">
+          <elementDefinition Id="e34d544e-0fea-4ed6-ac5e-1b74119ac791" />
+        </profileInstance>
+        <elementDefinition Id="0caec977-1f8c-4ba3-a7db-8cc9ad9cc73b" />
+      </packageHasProfileInstances>
+      <packageHasProfileInstances Id="4a707af3-05c3-421b-816e-69c634d1b9af">
+        <profileInstance Id="d796025d-a871-40a2-b68b-ada60941e291" name="StandardProfileL3">
+          <elementDefinition Id="532ea607-fb19-44b8-8502-3351b05452be" />
+        </profileInstance>
+        <elementDefinition Id="29349502-908c-4fda-9054-c48619c59ed0" />
+      </packageHasProfileInstances>
+    </profileInstances>
+  </package>
+</activityRootModel>

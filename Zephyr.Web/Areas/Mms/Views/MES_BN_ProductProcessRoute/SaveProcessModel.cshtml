@@ -1,0 +1,1310 @@
+﻿
+
+<!DOCTYPE html>
+
+<html style="height:100%;">
+<head>
+    <meta charset="utf-8" />
+    <title></title>
+
+    <link href="~/Content/js/jquery-easyui-1.7.0/themes/icon.css" rel="stylesheet" />
+    <link href="~/Content/js/jquery-easyui-1.7.0/themes/default/easyui.css" rel="stylesheet" />
+    <link href="~/Content/js/uploader/Content/themes/base/jquery-ui.css" rel="stylesheet" />
+    <link href="~/Content/js/uploader/Content/themes/base/jquery.ui.accordion.css" rel="stylesheet" />
+    <link href="~/Content/js/uploader/Content/themes/base/jquery.ui.all.css" rel="stylesheet" />
+    <link href="~/Content/js/uploader/Content/themes/base/jquery.ui.autocomplete.css" rel="stylesheet" />
+    <link href="~/Content/js/uploader/Content/themes/base/jquery.ui.base.css" rel="stylesheet" />
+    <link href="~/Content/js/uploader/Content/themes/base/jquery.ui.button.css" rel="stylesheet" />
+    <link href="~/Content/js/uploader/Content/themes/base/jquery.ui.core.css" rel="stylesheet" />
+    <link href="~/Content/js/uploader/Content/themes/base/jquery.ui.datepicker.css" rel="stylesheet" />
+    <link href="~/Content/js/uploader/Content/themes/base/jquery.ui.dialog.css" rel="stylesheet" />
+    <link href="~/Content/js/uploader/Content/themes/base/jquery.ui.menu.css" rel="stylesheet" />
+    <link href="~/Content/js/uploader/Content/themes/base/jquery.ui.progressbar.css" rel="stylesheet" />
+    <link href="~/Content/js/uploader/Content/themes/base/jquery.ui.resizable.css" rel="stylesheet" />
+    <link href="~/Content/js/uploader/Content/themes/base/jquery.ui.selectable.css" rel="stylesheet" />
+    <link href="~/Content/js/uploader/Content/themes/base/jquery.ui.slider.css" rel="stylesheet" />
+    <link href="~/Content/js/uploader/Content/themes/base/jquery.ui.spinner.css" rel="stylesheet" />
+    <link href="~/Content/js/uploader/Content/themes/base/jquery.ui.tabs.css" rel="stylesheet" />
+    <link href="~/Content/js/uploader/Content/themes/base/jquery.ui.theme.css" rel="stylesheet" />
+    <link href="~/Content/js/uploader/Content/themes/base/jquery.ui.tooltip.css" rel="stylesheet" />
+    <style>
+        .span7 {
+            width: 452px;
+        }
+
+        #aa {
+            display: block;
+            height: 30px;
+            width: 70px;
+            text-align: center;
+            background: #51a351;
+            color: #ffffff;
+            font-size: 14px;
+            text-decoration: none;
+            line-height: 30px;
+            border-radius: 4px;
+        }
+
+        .textbox-label {
+            text-align: right !important;
+        }
+
+        #eqpDiv .combo {
+            width: 320px !important;
+        }
+    </style>
+</head>
+<body style="height:100%;margin:0px;padding:8px;min-width:1280px">
+    <div id="cc" class="easyui-layout" style="width:100%;height:100%;">
+        @*<div data-options="region:'west',title:'工艺BOM',split:true" style="width:320px;padding: 20px 10px;">
+            <div style="margin-bottom:10px">
+                <input id="topContCode" style="display: none;" />
+                <input id="topProjectName" style="display: none;" />
+                <input id="topPartCode" style="display: none;" />
+
+                <a class="easyui-linkbutton" icon="icon-add" onclick="SearchDialog()">选择项目零件</a>
+            </div>
+            <ul data-bind="easyuiTree:tree" id="Ctree"></ul>
+        </div>*@
+        @*<div title="BOM编辑" style="display:none;">
+            <div style="margin-bottom:10px">
+                <a href="#" onclick="OnAdd()" class="easyui-linkbutton" style="width:120px;height:30px"><span style="font-size:16px">新增子件</span></a>
+                <a href="#" onclick="OnSave()" class="easyui-linkbutton" style="width:120px;height:30px"><span style="font-size:16px">保存</span></a>
+                <a href="#" onclick="OnEditGy()" class="easyui-linkbutton" style="width:120px;height:30px"><span style="font-size:16px">编制工艺路线</span></a>
+            </div>
+
+            <input id="pID" style="display: none;" />
+            <input id="pInventoryCode" style="display: none;" />
+            <input id="pInventoryName" style="display: none;" />
+            <div style="margin-bottom:10px">
+                <label class="m-title" style="font-size: 18px;font-weight: bold;">父件</label>
+            </div>
+            <div style="margin-bottom:10px;">
+                <input id="pPartFigureCode" class="easyui-textbox" readonly="readonly" label="图号:" prompt="" style="width:49%">
+                <input id="pPartCode" class="easyui-textbox" readonly="readonly" label="编码:" prompt="" style="width:49%;">
+            </div>
+            <div style="margin-bottom:10px">
+
+            </div>
+            <div style="margin-bottom:10px">
+                <input id="pPartName" class="easyui-textbox" readonly="readonly" label="名称:" prompt="" style="width:49%">
+            </div>
+
+            <input id="cID" style="display: none;" />
+            <div style="margin-bottom:10px">
+                <label class="m-title" style="font-size: 18px;font-weight: bold;">子件</label>
+            </div>
+            <div style="margin-bottom:10px">
+                <input id="PartFigureCode" class="easyui-textbox" label="图号:" prompt="" style="width:49%">
+                <input id="PartCode" class="easyui-textbox" label="编码:" prompt="" style="width:49%">
+            </div>
+            <div style="margin-bottom:10px">
+
+            </div>
+            <div style="margin-bottom:10px">
+                <input id="PartName" class="easyui-textbox" label="名称:" prompt="" style="width:49%">
+            </div>
+
+            <div style="margin-bottom:10px">
+                <input id="PartQuantity" class="easyui-textbox" label="数量:" prompt="" style="width:49%">
+                <input id="Weight" class="easyui-textbox" label="重量:" prompt="" style="width:49%">
+
+            </div>
+            <div style="margin-bottom:10px">
+            </div>
+            <div style="margin-bottom:10px">
+                <label class="textbox-label">类型:</label>
+                <select id="IsSelfMade" class="easyui-combobox" name="dept" style="width:30%;">
+                    <option value="1">加工件</option>
+                    <option value="0">成品件</option>
+                </select>
+
+            </div>
+            <div style="margin-bottom:10px">
+                <label class="textbox-label" text-align:left">是否有效:</label>
+                <input id="IsEnable" class="easyui-switchbutton">
+            </div>
+        </div>*@
+        <div data-options="region:'center'" style="border: none;height:100%;">
+            <div id="tt" class="easyui-tabs" style="width:100%;height:100%;">
+                <div id="gy" title="工艺路线" style="padding:10px;display:none;height:100%;min-width:980px;">
+                    <div style="width:20%;float:left;height:100%;">
+                        <div style="margin-bottom:10px">
+                            <a href="#" class="easyui-linkbutton" onclick="SearchDialog()">选择项目零件</a>
+                            <a onclick="OnSaveProcessRouteModel()" class="easyui-linkbutton">保存模型</a>
+                            @*<a onclick="OnAddGy()" class="easyui-linkbutton">新增工序</a>*@
+                        </div>
+                        <div style="margin-bottom:10px">
+                            工艺类型：<input id="ProcessModelType" class="easyui-combobox" data-options="
+					url:'/Commons/GetComboboxList?CodeType=ProcessModelType',
+					method:'get',
+					valueField:'value',
+					textField:'text',
+					panelHeight:'auto',disabled: true" style="width:60%">
+                        </div>
+                        <input id="gyID" style="display: none;" />
+                        <table id="dg" style="height:80%;width:auto;"></table>
+                    </div>
+                    <div style="width:78%;float:right;height:100%;min-width:500px">
+                        <div class="easyui-panel" title="工序编辑" style="padding: 20px;height: 100%;min-width:680px">
+                            <div style="margin-bottom:10px">
+                                <input id="ProcessLineCode" class="easyui-textbox" label="工序行号:" prompt="" style="width:80%">
+                            </div>
+                            <div style="margin-bottom:10px;height:30px">
+                                <input id="ProcessCode" class="easyui-combogrid" label="工序名称:" prompt="" style="width:80%;" data-options="url:'/Commons/GetCommonSearchList_Cache',
+                     queryParams : {
+                            tableName:'[PRS_BD_StandardProcess]',
+                            searchField:'[ProcessCode],[ProcessName]',
+                            firstFightField:'[ProcessName]',
+                            whereSql:'IsEnable=1',
+                                     CacheKey:'PRS_BD_StandardProcess',
+                                     CacheTime:'480',
+                                     connName:'Mms'
+                            },
+                            method: 'GET',
+                            panelWidth:400,
+                            fit:true,
+                            delay: 1000,
+                            mode: 'remote',
+                            value: '',
+                            idField: 'ProcessCode',
+                            textField: 'ProcessName',
+                            columns:[[
+                            { field: 'ProcessCode',title: '工序编码',width: 200 },
+                            { field: 'ProcessName',title: '工序名称',width: 200 }
+                                ]],
+                    onSelect: function (rowIndex, rowData) {
+                                           ProcessCodeChange();
+                },
+                 keyHandler:{
+                   query:function(keyword) {
+                   var queryParams=$(this).combogrid('grid').datagrid('options').queryParams;
+                   queryParams.keyword=keyword;
+                   $(this).combogrid('grid').datagrid('options').queryParams=queryParams;
+                   $(this).combogrid('grid').datagrid('reload');
+                  $(this).combogrid('setValue', keyword);
+                }}">
+                            </div>
+                            <div style="margin-bottom:10px;display:none">
+                                <input id="ProcessDesc" class="easyui-textbox" label="工序描述:" prompt="" data-options="multiline:true" style="width:80%;height: 100px;display:none" />
+
+                            </div>
+                            <div style="margin-bottom:10px;height: 200px;">
+                                <div style="float:left;height: 200px">
+                                    <label class="textbox-label textbox-label-before" for="_easyui_textbox_input10" style="text-align:left; ">工步:</label>
+                                    <br />
+                                    @*<img style="float: right;margin-right: 10px;" src="/Content/js/jquery-easyui-1.7.0/themes/icons/edit_add.png" onclick="addGrid(1)" />
+                                    <br />
+                                    <img style="float: right;margin-right: 10px;" src="/Content/js/jquery-easyui-1.7.0/themes/icons/edit_add.png" onclick="addGrid(2)" />
+                                    <br />
+                                    <img style="float: right;margin-right: 10px;margin-top:5px" src="/Content/js/jquery-easyui-1.7.0/themes/icons/cancel.png" onclick="delGrid()" />*@
+                                </div>
+                                <div style="float:left;width:80%;margin-bottom:10px">
+                                    <table id="dg2" style="height:200px;width:100%;" data-options="singleSelect:true"></table>
+                                </div>
+                                <div style="clear:both;"></div>
+                            </div>
+                            <div style="margin-bottom:10px;display:none;" id="tuzhi">
+                                <form id="importFileForm" method="post" enctype="multipart/form-data"></form>
+                            </div>
+                            @*<div style="margin-bottom:10px">
+                                <label class="textbox-label">图纸上传:</label>
+                                <form id="formUpload" action="/api/upload" enctype="multipart/form-data">
+                                    <div>
+                                        <a style="float:left;" id="aa" href="#" onclick="$('#fileupload').click(); return">选择文件</a>
+                                        <div style="float:left;margin-left:10px" id="fileName"></div>
+                                        <input style="float:left;display:none" type="file" id="fileupload" name="fileupload" onchange="OnFileChange();" accept=".pdf,image/*,.docx" multiple="multiple">
+                                        <button id="btnUploadAll" class="btn btn-success" type="button" style="float:left;margin-left:80px">
+                                            上传
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>*@
+                            <div style="margin-bottom:10px;height:30px">
+                                <input id="WorkshopID" class="easyui-combogrid" label="车间:" prompt="" style="width:80%;" data-options="url:'/Commons/GetCommonSearchList',
+                     queryParams : {
+                            tableName:'[SYS_BN_Department]',
+                            searchField:'[DepartmentCode],[DepartmentName]',
+                            firstFightField:'[DepartmentName]',
+                            whereSql:'IsWorkshop=1 and IsEnable=1',
+                                     CacheKey:'SYS_BN_Department',
+                                     CacheTime:'480',
+                                     connName:'Mms'
+                            },
+                            method: 'GET',
+                            panelWidth:400,
+                            fit:true,
+                            delay: 1000,
+                            mode: 'remote',
+                            value: '',
+                            idField: 'DepartmentCode',
+                            textField: 'DepartmentName',
+                            columns:[[
+                            { field: 'DepartmentCode',title: '车间编码',width: 200 },
+                            { field: 'DepartmentName',title: '车间名称',width: 200 }
+                                ]],
+                    onSelect: function (rowIndex, rowData) {
+                                           $('#WorkGroupID').combogrid('grid').datagrid('options').queryParams.whereSql=' departid='+rowData['DepartmentCode'];
+                                           $('#WorkGroupID').combogrid('grid').datagrid('reload');
+                },
+                 keyHandler:{
+                   query:function(keyword) {
+                   var queryParams=$(this).combogrid('grid').datagrid('options').queryParams;
+                   queryParams.keyword=keyword;
+                   $(this).combogrid('grid').datagrid('options').queryParams=queryParams;
+                   $(this).combogrid('grid').datagrid('reload');
+                  $(this).combogrid('setValue', keyword);
+                }}" />
+                            </div>
+                            <div style="margin-bottom:10px;height:30px;display:none;">
+                                <input id="WorkGroupID" class="easyui-combogrid" label="班组:" prompt="" style="width:80%;" data-options="url:'/Commons/GetCommonSearchList',
+                        queryParams : {
+                             tableName:'dbo.SYS_WorkGroup',
+                             searchField : '[TeamCode],[TeamName]',
+                             firstFightField:'[TeamName]',
+                                            whereSql:'IsEnable=1',
+                             CacheTime:'480',
+                             connName:'Mms'
+                        },
+                        method: 'GET',
+                        panelWidth:400,
+                        fit:true,
+                        delay: 1000,
+                        mode: 'remote',
+                        value: '',
+                        idField: 'TeamCode',
+                        textField: 'TeamName',
+                        columns:[[
+                        { field: 'TeamCode',title: '班组编码',width: 150 },
+                        { field: 'TeamName' , title: '班组名称',width: 250,sortable:true }
+                         ]],
+                        onSelect: function (rowIndex, rowData) {
+
+                        },
+                        keyHandler:{
+                        query:function(keyword) {
+                        var queryParams=$(this).combogrid('grid').datagrid('options').queryParams;
+                        queryParams.keyword=keyword;
+                        $(this).combogrid('grid').datagrid('options').queryParams=queryParams;
+                        $(this).combogrid('grid').datagrid('reload');
+                        $(this).combogrid('setValue', keyword);}}">
+                            </div>
+                            <div style="margin-bottom:10px" id="eqpDiv">
+
+                            </div>
+
+                            <div style="margin-bottom:10px;display:none;">
+                                <input id="ManHour" class="easyui-textbox" label="工时定额:" prompt="" style="width:40%;">
+                                <label class="textbox-label">单位:</label>
+                                <select id="Unit" class="easyui-combobox" name="dept" style="width:80px;" panelheight="80px">
+                                    <option value="1">分</option>
+                                    <option value="0">秒</option>
+                                </select>
+                            </div>
+                            <div style="margin-bottom:10px;height: 30px;display:none;">
+                                <input id="IsInspectionReport" style="display: none;" />
+                                <form id="rbrb">
+                                    @*<label style="float:left" class="textbox-label">是否报检:</label>
+                                    <div style="float:left" id="rb1">
+                                        <input class="easyui-radiobutton" name="rbb" value="1" onchange="rbonChange();" label="不报检:">
+                                    </div>
+                                    <div style="float:left" id="rb2">
+                                        <input class="easyui-radiobutton" name="rbb" value="2" onchange="rbonChange();" label="检验记录:">
+                                    </div>
+                                    <div style="float:left" id="rb3">
+                                        <input class="easyui-radiobutton" name="rbb" value="3" onchange="rbonChange();" label="检验控制:">
+                                    </div>*@
+                                </form>
+                            </div>
+                            <div style="margin-bottom:10px;height:30px">
+                                <input id="WarehouseID" class="easyui-combogrid" label="转序目标:" prompt="" style="width:80%;" data-options="url:'/Commons/GetCommonSearchList',
+                        queryParams : {
+                             tableName:'[SYS_BN_Warehouse]',
+                                 searchField:'[WarehouseCode],[WarehouseName]',
+                                 firstFightField:'[WarehouseCode]',
+                                            whereSql:'IsEnable=1',
+                                 connName:'Mms'
+                        },
+                        method: 'GET',
+                        panelWidth:250,
+                        fit:true,
+                        delay: 1000,
+                        mode: 'remote',
+                        value: '',
+                        idField: 'WarehouseCode',
+                        textField: 'WarehouseName',
+                        columns:[[
+                        { field: 'WarehouseCode',title: '仓库编码',width: 100 },
+                        { field: 'WarehouseName',title:'仓库名称',width:150 }
+                            ]],
+                        onSelect: function (rowIndex, rowData) {
+
+                        },
+                        keyHandler:{
+                        query:function(keyword) {
+                        var queryParams=$(this).combogrid('grid').datagrid('options').queryParams;
+                        queryParams.keyword=keyword;
+                        $(this).combogrid('grid').datagrid('options').queryParams=queryParams;
+                        $(this).combogrid('grid').datagrid('reload');
+                        $(this).combogrid('setValue', keyword);
+                        }}" />
+                            </div>
+
+                            <div style="margin-bottom:10px;display:none;" id="toolDiv">
+
+                            </div>
+                        </div>
+
+                    </div>
+
+
+                </div>
+            </div>
+        </div>
+    </div>
+    @*<script src="~/Content/js/jquery-easyui-1.7.0/jquery.min.js"></script>
+        <script src="~/Content/js/jquery-easyui-1.7.0/jquery.easyui.min.js"></script>
+        <script src="~/Content/js/jquery-easyui-1.7.0/locale/easyui-lang-zh_CN.js"></script>*@
+    <script src="~/Content/js/uploader/jquery-1.8.3.js"></script>
+    <script src="~/Content/js/uploader/jquery-ui-1.9.2.js"></script>
+    <script src="~/Content/js/jquery-easyui-1.7.0/jquery.easyui.min.js"></script>
+    <script src="~/Content/js/core/utils.js"></script>
+    <script src="~/Content/js/core/common.js"></script>
+    <script src="~/Content/js/core/jquery.easyui.fix.js"></script>
+    <script type="text/javascript">
+        var main_model = {
+            ContractCode: '',
+            PartCode: '',
+            PartName: '',
+            PartFigureCode: '',
+            ProcessModelType: ''
+        };
+
+        //选择零件
+        function SearchDialog() {
+            var target = parent.$('#CommonSearchDialog').length ? parent.$('#CommonSearchDialog') : parent.$('<div id="CommonSearchDialog"></div>').appendTo('body');
+            utils.clearIframe(target);
+            var opt;
+            opt = { title: '列表', width: 800, height: 600, modal: true, collapsible: false, minimizable: false, maximizable: true, closable: true };
+            opt.content = "<iframe src='/mms/home/CommonDialog?xmlName=ChooseModelProjectPart' style='height:100%;width:100%;border:0;' frameborder='0'></iframe>";  //frameborder="0" for ie7
+            opt.onSelect = function (data) {
+                var typeName = "";
+                switch (data[0].ProcessModelType) {
+                    case "1": typeName = "下料"; break;
+                    case "2": typeName = "焊接"; break;
+                    case "3": typeName = "机加工"; break;
+                    case "4": typeName = "装配"; break;
+                    default: break;
+                }
+                var title = '工序编辑  ' + data[0].ContractCode + ' ⇒ ' + data[0].ProjectName + ' ⇒ ' + data[0].PartFigureCode + ' ⇒ ' + typeName;
+                $("div[class='panel-title']").text(title);
+
+                var ContractCode = data[0].ContractCode;
+                var PartCode = data[0].PartCode;
+                var PartName = data[0].PartName;
+                var ProcessModelType = data[0].ProcessModelType;
+                var PartFigureCode = data[0].PartFigureCode;
+                main_model.ContractCode = ContractCode;
+                main_model.PartCode = PartCode;
+                main_model.PartName = PartName;
+                main_model.ProcessModelType = ProcessModelType;
+                main_model.PartFigureCode = PartFigureCode;
+                $('#ProcessModelType').combobox('setValue', main_model.ProcessModelType);
+                $.ajax({
+                    type: "GET",
+                    url: '/api/Mms/MES_BN_ProductProcessRoute/GetProcessRoute?ProcessModelType=' + ProcessModelType + '&ContractCode=' + ContractCode + '&PartCode=' + PartCode,
+                    contentType: 'application/json;charset=utf-8',
+                    async: false,
+                    success: function (model) {
+                        $('#dg').datagrid('loadData', { 'total': model.length, rows: model });
+                    }
+                })
+            };
+            target.window(opt);
+        };
+
+        //function ReloadGrid() {
+        //    $.ajax({
+        //        type: "GET",
+        //        url: '/api/Mms/MES_BN_ProductProcessRoute/GetProcessRoute?ProcessModelType=' + $('#ProcessModelType').combobox('getValue') + '&ContractCode=' + $("#topContCode").val() + '&PartCode=' + $("#PartCode").val(),
+        //        contentType: 'application/json;charset=utf-8',
+        //        async: false,
+        //        success: function (model) {
+        //            $('#dg').datagrid('loadData', { 'total': model.length, rows: model });
+        //        }
+        //    })
+        //}
+
+        function ProcessCodeChange() {
+            setEQP(new Object());
+        };
+        function auditClick() {
+            if ($("#topPartCode").val() == "") {
+                com.message('success', "请先选择零件！");
+                return;
+            }
+            com.ajax({
+                type: 'GET',
+                url: '/api/Mms/MES_BN_ProductProcessRoute/GetAudit1?ContractCode=' + $("#topContCode").val() + '&partCode=' + $("#topPartCode").val(),
+                success: function (d) {
+                    com.message('success', "审核成功！");
+                }
+            });
+        };
+        function OnEditGy() {
+            $('#tt').tabs('select', '工艺路线');
+        };
+        //工艺BOM新增
+        function OnAdd() {
+            $("#pPartFigureCode").textbox("setValue", $("#PartFigureCode").val());
+            $("#pPartCode").textbox("setValue", $("#PartCode").val());
+            $("#pPartName").textbox("setValue", $("#PartName").val());
+            $("#cID").val(-1);
+            $("#PartFigureCode").textbox("setValue", "");
+            $("#PartCode").textbox("setValue", "");
+            $("#PartName").textbox("setValue", "");
+            $("#Weight").textbox("setValue", "");
+            $("#IsEnable").val(1);
+            $("#PartQuantity").textbox("setValue", "");
+            $("#IsEnable").switchbutton("uncheck");
+            $('#IsSelfMade').combobox('select', '1');
+        }
+
+        //工艺BOM保存
+        function OnSave() {
+            if ($("#PartCode").val() == "") {
+                com.message('success', "零件编码不能为空！");
+                return;
+            }
+            if ($("#PartFigureCode").val() == "") {
+                com.message('success', "图号不能为空！");
+                return;
+            }
+            if ($("#PartName").val() == "") {
+                com.message('success', "名称不能为空！");
+                return;
+            } if ($("#Weight").val() == "") {
+                com.message('success', "重量不能为空！");
+                return;
+            }
+            if ($("#PartQuantity").val() == "") {
+                com.message('success', "数量不能为空！");
+                return;
+            }
+            var model = [];
+            model.push({
+                ID: $("#cID").val(),
+                InventoryCode: $("#pInventoryCode").val(),
+                pInventoryName: $("#pInventoryName").val(),
+                PartFigureCode: $("#PartFigureCode").val(),
+                PartCode: $("#PartCode").val(),
+                PartName: $("#PartName").val(),
+                Weight: $("#Weight").val(),
+                ParentCode: $("#pPartCode").val(),
+                IsEnable: $("#IsEnable").switchbutton("options").checked == true ? 1 : 0,
+                PartQuantity: $("#PartQuantity").val(),
+                IsSelfMade: $('#IsSelfMade').combobox('getValue'),
+            });
+            $.ajax({
+                type: "POST",
+                url: '/api/Mms/MES_BN_ProductProcessRoute/PostOnSave',
+                data: JSON.stringify(model),
+                contentType: 'application/json;charset=utf-8',
+                async: false,
+                success: function (msg) {
+                    if (msg > 0) {
+                        com.message('success', "保存成功！");
+                        $('#Ctree').tree('reload');
+                    }
+                }
+            })
+        }
+        function OnClearGY() {
+            $("#gyID").val("-1");
+            $("#ProcessCode").combogrid('clear');
+            $("#ProcessLineCode").textbox("setValue", "");
+            $("#ProcessName").combogrid('clear');
+            $("#ProcessDesc").textbox("setValue", "");
+            $("#WorkshopID").combogrid('clear');
+            $("#WorkGroupID").combogrid('clear');
+            $("#ManHour").textbox("setValue", "");
+            $("#Unit").combobox('select', '1');
+            $('#WarehouseID').combogrid('clear');
+            setRadio(2);
+            setUploadFile(new Object());
+            setEQP(new Object());
+            setTools(new Object());
+            $('#dg2').datagrid('loadData', { total: 0, rows: [] });
+        }
+
+        //工艺路线新增
+        function OnAddGy() {
+            //if ($("#PartCode").val() == '') {
+            //    com.message('success', "请选择零件！");
+            //    return;
+            //}
+            //if ($("#ProcessModelType").combobox('getValue') == '') {
+            //    com.message('success', "请选择工艺类型！");
+            //    return;
+            //}
+            //OnClearGY();
+            var row = $('#dg').datagrid("getRows");
+            if (row.length <= 0) {
+                $("#ProcessLineCode").textbox("setValue", "1");
+            } else {
+                var p = row[row.length - 1].ProcessLineCode + 1;
+                $("#ProcessLineCode").textbox("setValue", p);
+                $("#WorkshopID").combogrid("setValue", row[row.length - 1].WarehouseID)
+            }
+            //在某一行新增
+            var rowIndex = $('#dg').datagrid('getRowIndex', $('#dg').datagrid('getSelected'));
+            if (rowIndex != -1) {
+                $('#dg').datagrid('insertRow', {
+                    index: rowIndex + 1,
+                    row: {
+                        ProcessLineCode: 0,
+                        ProcessName: ''
+                    }
+                });
+                //修改所有行号
+                rows = $('#dg').datagrid("getRows");
+                for (var i = 0; i < rows.length; i++) {
+                    $('#dg').datagrid('updateRow', {
+                        index: i,
+                        row: {
+                            ProcessLineCode: i + 1,
+                        }
+                    });
+                }
+                $('#dg').datagrid('selectRow', rowIndex + 1);
+                Click_dg(rowIndex + 1, $('#dg').datagrid('getRows')[rowIndex + 1]);
+            }
+        }
+
+        function Click_dg(index, row) {
+            deltuzhiId = "";
+            $("#dg").datagrid('unselectAll');
+            $("#dg").datagrid('selectRow', index);
+            $("#ProcessLineCode").textbox("setValue", row.ProcessLineCode);
+            $("#ProcessCode").combogrid('setValue', row.ProcessCode);
+            $("#gyID").val(row.ID);
+            $("#ProcessDesc").textbox("setValue", row.ProcessDesc);
+            $("#WorkshopID").combogrid('setValue', row.WorkshopID);
+            $("#WorkGroupID").combogrid('setValue', row.WorkGroupID);
+            $("#ManHour").textbox('setValue', row.ManHour);
+            $("#Unit").combobox('select', row.Unit == 1 ? "1" : "0");;
+            $("#WarehouseID").combogrid('setValue', row.WarehouseID);
+            setRadio(row.IsInspectionReport);
+            $.ajax({
+                type: "GET",
+                url: '/api/Mms/MES_BN_ProductProcessRoute/GetProcessRouteEQP?id=' + $("#gyID").val(),
+                contentType: 'application/json;charset=utf-8',
+                async: false,
+                success: function (model) {
+                    setEQP(model);
+                }
+            })
+            $.ajax({
+                type: "GET",
+                url: '/api/Mms/MES_BN_ProductProcessRoute/GetProcessRouteFile?id=' + $("#gyID").val(),
+                contentType: 'application/json;charset=utf-8',
+                async: false,
+                success: function (model) {
+                    setUploadFile(model);
+                }
+            });
+            $.ajax({
+                type: "GET",
+                url: '/api/Mms/MES_BN_ProductProcessRoute/GetProcessWorkSteps?id=' + $("#gyID").val(),
+                contentType: 'application/json;charset=utf-8',
+                async: false,
+                success: function (model) {
+                    $('#dg2').datagrid('loadData', { 'total': model.length, rows: model });
+                }
+            })
+        }
+
+        //工艺路线保存
+        function OnSaveGy() {
+            if ($("#ProcessLineCode").val() == '') {
+                com.message('success', "工序行号不能为空！");
+                return;
+            }
+            if ($('#ProcessCode').combogrid('getValue') == '') {
+                com.message('success', "工序名称不能为空！");
+                return;
+            }
+            if ($('#WorkshopID').combogrid('getValue') == '') {
+                com.message('success', "车间不能为空！");
+                return;
+            }
+            if ($('#WarehouseID').combogrid('getValue') == '') {
+                com.message('success', "转序目标不能为空！");
+                return;
+            }
+            var row = $('#dg2').datagrid('getRows');
+            for (var i = 0; i < row.length; i++) {
+                $('#dg2').datagrid('endEdit', i);
+            }
+            var row = $('#dg2').datagrid('getRows');
+            var hours = 0;
+            for (var i = 0; i < row.length; i++) {
+                hours += Number(row[i].ManHours);
+            }
+            $("#ManHour").val(hours);
+            var model = [];
+            model.push({
+                ID: $("#gyID").val(),
+                ProcessLineCode: $("#ProcessLineCode").val(),
+                ProcessCode: $('#ProcessCode').combogrid('getValue'),
+                ProcessName: $("#ProcessCode").combogrid('getText'),
+                ProcessDesc: $("#ProcessDesc").val(),
+                WorkshopID: $('#WorkshopID').combogrid('getValue'),
+                WorkshopName: $('#WorkshopID').combogrid('getText'),
+                WorkGroupID: $('#WorkGroupID').combogrid('getValue'),
+                WorkGroupName: $('#WorkGroupID').combogrid('getText'),
+                ManHour: $("#ManHour").val(),
+                Unit: $('#Unit').combobox('getValue'),
+                WarehouseID: $('#WarehouseID').combogrid('getValue'),
+                WarehouseName: $('#WarehouseID').combogrid('getText'),
+                IsInspectionReport: $("#IsInspectionReport").val(),
+                ProjectName: $("#topProjectName").val(),
+                ContractCode: $("#topContCode").val(),
+                PartCode: $("#PartCode").val(),
+                FigureCode: $("#PartFigureCode").val(),
+                IsEnable: 1,
+            });
+            $.ajax({
+                type: "POST",
+                url: '/api/Mms/MES_BN_ProductProcessRoute/PostOnGYSave',
+                data: JSON.stringify(model),
+                contentType: 'application/json;charset=utf-8',
+                async: false,
+                success: function (msg) {
+                    if (msg > 0) {
+                        debugger;
+                        OnFileUpload(msg);
+                        com.message('success', "保存成功！");
+                        reloadGrid();
+                        var eqp = "";
+                        for (var i = 0; i < count1; i++) {
+                            try {
+                                var e = $('#eqpID_' + i).combogrid('getValue');
+                                if (e != "") {
+                                    eqp += e + ',';
+                                }
+                            }
+                            catch (err) {
+
+                            }
+                        }
+                        if (eqp != "") {
+                            var post1 = {
+                                eqp: eqp,
+                                gyid: msg
+                            };
+                            com.ajax({
+                                type: "POST",
+                                url: '/api/Mms/MES_BN_ProductProcessRoute/PostOnSaveEQP',
+                                data: JSON.stringify(post1),
+                                async: true,
+
+                            })
+                        }
+
+                        if (row.length == 0) {
+                            com.ajax({
+                                type: "GET",
+                                url: '/api/Mms/MES_BN_ProductProcessRoute/GetDeleteWorkStep?gyid=' + msg,
+                                async: true,
+                            })
+                        } else {
+                            var post = {
+                                gyid: msg,
+                                model: row
+                            };
+                            com.ajax({
+                                type: "POST",
+                                url: '/api/Mms/MES_BN_ProductProcessRoute/PostOnSaveWorkStep',
+                                data: JSON.stringify(post),
+                                async: true,
+
+                            })
+                        }
+
+                    }
+                }
+            });
+        }
+        function setRadio(v) {
+            $('#rbrb').html("");
+            if (v == '1') {
+                $("#rbrb").append('<label style="float:left" class="textbox-label">是否报检:</label>\
+                                        <div style="float:left" id="rb1">\
+                                            <input class="easyui-radiobutton" name="rbb" value="1" checked onchange="rbonChange();" label="不报检:">\
+                                        </div>\
+                                        <div style="float:left" id="rb2">\
+                                            <input class="easyui-radiobutton" name="rbb" value="2" onchange="rbonChange();" label="检验记录:">\
+                                        </div>\
+                                        <div style="float:left" id="rb3">\
+                                            <input class="easyui-radiobutton" name="rbb" value="3" onchange="rbonChange();" label="检验控制:">\
+                                        </div>')
+                $("#IsInspectionReport").val(1);
+
+            } else if (v == '2') {
+                $("#rbrb").append('<label style="float:left" class="textbox-label">是否报检:</label>\
+                                        <div style="float:left" id="rb1">\
+                                            <input class="easyui-radiobutton" name="rbb" value="1" onchange="rbonChange();" label="不报检:">\
+                                        </div>\
+                                        <div style="float:left" id="rb2">\
+                                            <input class="easyui-radiobutton" name="rbb" value="2" checked onchange="rbonChange();" label="检验记录:">\
+                                        </div>\
+                                        <div style="float:left" id="rb3">\
+                                            <input class="easyui-radiobutton" name="rbb" value="3" onchange="rbonChange();" label="检验控制:">\
+                                        </div>')
+                $("#IsInspectionReport").val(2);
+
+            } else {
+                $("#rbrb").append('<label style="float:left" class="textbox-label">是否报检:</label>\
+                                        <div style="float:left" id="rb1">\
+                                            <input class="easyui-radiobutton" name="rbb" value="1" onchange="rbonChange();" label="不报检:">\
+                                        </div>\
+                                        <div style="float:left" id="rb2">\
+                                            <input class="easyui-radiobutton" name="rbb" value="2" onchange="rbonChange();" label="检验记录:">\
+                                        </div>\
+                                        <div style="float:left" id="rb3">\
+                                            <input class="easyui-radiobutton" name="rbb" value="3" checked onchange="rbonChange();" label="检验控制:">\
+                                        </div>')
+                $("#IsInspectionReport").val(3);
+
+            }
+
+            $.parser.parse($('#rbrb').parent());
+        }
+        $().ready(function () {
+            setRadio(1);
+            $("#rbrb").delegate("#rb1", "click", function (e) {
+                $("#IsInspectionReport").val(1);
+            });
+            $("#rbrb").delegate("#rb2", "click", function (e) {
+                $("#IsInspectionReport").val(2);
+            });
+            $("#rbrb").delegate("#rb3", "click", function (e) {
+                $("#IsInspectionReport").val(3);
+            });
+            var units = [];
+            var editRow = undefined;
+            units.push({ id: '1', name: '分' }, { id: '0', name: '秒' });
+            $('#dg2').datagrid({
+                columns: [[
+                    { field: 'WorkStepsLineCode', title: '工步行号', width: 80, editor: 'text' },
+                    { field: 'WorkStepsName', title: '工步名称', width: 180, editor: 'text' },
+                    { field: 'WorkStepsContent', title: '工步描述', width: 250, editor: 'textAreanew' },
+                    { field: 'ManHours', title: '工时定额', hidden: true, width: 65, editor: 'numberbox' },
+                    {
+                        field: 'Unit', title: '单位', hidden: true, width: 50,
+                        formatter: function (value) {
+                            if (value == '1') {
+                                return '分';
+                            } else return '秒';
+                            return value;
+                        },
+                        editor: {
+                            type: 'combobox',
+                            panelheight: 80,
+                            options: {
+                                valueField: 'id',
+                                textField: 'name',
+                                data: units
+                            }
+                        }
+                    },
+                ]],
+                checkOnSelect: true,
+                selectOnCheck: false,
+                singleSelect: true,
+                onAfterEdit: function (rowIndex, rowData, changes) {
+                    editRow = undefined;
+                },
+                onDblClickCell: function (rowIndex, rowData) {
+                    if (editRow != undefined) {
+                        $('#dg2').datagrid("endEdit", editRow);
+                    }
+                    if (editRow == undefined) {
+                        $('#dg2').datagrid("beginEdit", rowIndex);
+                        editRow = rowIndex;
+                    }
+                },
+                onClickCell: function (rowIndex, rowData) {
+                    $('#dg2').datagrid("endEdit", editRow);
+                    editRow = undefined;
+                }
+            });
+
+            setUploadFile(new Object());
+            setEQP(new Object());
+            setTools(new Object());
+            $('#dg').datagrid({
+                columns: [[
+                    { field: 'ProcessLineCode', title: '工序行号', width: 122 },
+                    { field: 'ProcessName', title: '工序名称', width: 122 }
+                ]],
+                checkOnSelect: true,
+                selectOnCheck: false,
+                singleSelect: true,
+                onClickRow: Click_dg,
+            });
+
+            $('#Ctree').tree({
+                method: 'GET',
+                queryParams: { PartCode: 0, VersionCode: '' },
+                lines: true,
+                animate: true,
+                url: '/api/Mms/MES_BN_ProductProcessRoute/GetGYBOMTree',
+                loadFilter: function (d) {
+                    if (d != null && d.length > 0) {
+                        var jsonData = eval(d);
+                        return utils.toTreeData(jsonData, 'id', 'pid', "children");
+                    }
+                    else {
+                        return '';
+                    }
+                },
+                onSelect: function (node) {
+                    OnClearGY();
+                    $.ajax({
+                        type: "GET",
+                        url: '/api/Mms/MES_BN_ProductProcessRoute/GetProcessRoute?ContractCode=' + $("#topContCode").val() + '&PartCode=' + node.id,
+                        contentType: 'application/json;charset=utf-8',
+                        async: false,
+                        success: function (model) {
+                            $('#dg').datagrid('loadData', { 'total': model.length, rows: model });
+                        }
+                    })
+                    $.ajax({
+                        type: "GET",
+                        url: '/api/Mms/MES_BN_ProductProcessRoute/GetPBOMModel?id=' + node.text.substring(node.text.indexOf('&') + 1, node.text.lastIndexOf('&')) + '&ParentCode=' + node.pid,
+                        contentType: 'application/json;charset=utf-8',
+                        async: false,
+                        success: function (model) {
+                            $("#cID").val(model.child.ID);
+                            $("#PartFigureCode").textbox("setValue", model.child.PartFigureCode);
+                            $("#PartCode").textbox("setValue", model.child.PartCode);
+                            $("#PartName").textbox("setValue", model.child.PartName);
+                            $("#Weight").textbox("setValue", model.child.Weight);
+                            $("#PartQuantity").textbox("setValue", model.child.PartQuantity);
+                            $('#IsSelfMade').combobox('select', model.child.IsSelfMade);
+                            $("#IsEnable").switchbutton(model.child.IsEnable == 1 ? "check" : "uncheck");
+                            if (model.parent) {
+                                $("#pID").val(model.parent.ID);
+                                $("#pInventoryCode").val(model.parent.InventoryCode);
+                                $("#pInventoryName").val(model.parent.InventoryName);
+                                $("#pPartFigureCode").textbox("setValue", model.parent.PartFigureCode);
+                                $("#pPartCode").textbox("setValue", model.parent.PartCode);
+                                $("#pPartName").textbox("setValue", model.parent.PartName);
+                            } else {
+                                $("#pPartFigureCode").textbox("setValue", "");
+                                $("#pPartCode").textbox("setValue", "");
+                                $("#pPartName").textbox("setValue", "");
+                            }
+                        }
+                    })
+
+                }
+            });
+        })
+        function reloadGrid() {
+            $.ajax({
+                type: "GET",
+                url: '/api/Mms/MES_BN_ProductProcessRoute/GetProcessRoute?ContractCode=' + $("#topContCode").val() + '&PartCode=' + $("#PartCode").val(),
+                contentType: 'application/json;charset=utf-8',
+                async: false,
+                success: function (model) {
+                    $('#dg').datagrid('loadData', { 'total': model.length, rows: model });
+                }
+            })
+        }
+        //工艺模型保存
+        function OnSaveProcessRouteModel() {
+            var row = $('#dg').datagrid('getRows');
+            if (row.length == 0) {
+                com.message('success', "工艺路线为空！");
+                return;
+            }
+            if ($("#PartCode").val() == "") {
+                com.message('success', "请选择零件！");
+                return;
+            }
+            //var post = {
+            //    ContractCode: $("#topContCode").val(),
+            //    PartCode: $("#PartCode").val(),
+            //    PartName: $("#PartName").val(),
+            //    PartFigure: $("#PartFigureCode").val(),
+            //    model: row,
+            //}
+            var post = $.extend(main_model, { model: row });
+            com.ajax({
+                type: "POST",
+                url: '/api/Mms/MES_BN_ProductProcessRoute/PostOnSaveProcessRouteModel',
+                data: JSON.stringify(post),
+                async: true,
+                success: function (msg) {
+                    if (msg > 0) {
+                        com.message('success', "保存成功！");
+                        return;
+                    }
+                }
+            })
+        }
+        function OnDeleteProcessRoute() {
+            if (confirm("确定要删除数据吗?")) {
+                var row = $('#dg').datagrid('getSelected');
+                if (row) {
+                    $.ajax({
+                        type: "GET",
+                        url: '/api/Mms/MES_BN_ProductProcessRoute/GetDeleteProcessRoute?id=' + row.ID + '&ContractCode=' + $("#topContCode").val() + '&PartCode=' + $("#PartCode").val(),
+                        contentType: 'application/json;charset=utf-8',
+                        async: false,
+                        success: function (msg) {
+                            if (msg > 0) {
+                                com.message('success', "删除成功！");
+                                reloadGrid();
+                                return;
+                            }
+                        }
+                    })
+                }
+            } else {
+            }
+
+
+        }
+
+
+        //查询工艺路线模型
+        function SearchDialog2() {
+
+            var row = $.extend(true, {}, {});
+            if ($("#PartCode").val() == '') {
+                com.message('success', "请选择零件！");
+                return;
+            }
+            //settingArray 0:width 1:height 2:xmlName
+            var target = parent.$('#CommonSearchDialog').length ? parent.$('#CommonSearchDialog') : parent.$('<div id="CommonSearchDialog"></div>').appendTo('body');
+            utils.clearIframe(target);
+            var opt;
+            opt = { title: '列表', width: 800, height: 650, modal: true, collapsible: false, minimizable: false, maximizable: true, closable: true };
+            opt.content = "<iframe src='/mms/home/CommonDialog3?xmlName=ChooseRouteModel' style='height:100%;width:100%;border:0;' frameborder='0'></iframe>";  //frameborder="0" for ie7
+            params = { xmlName: 'ChooseRouteModel' };
+            opt.paramater = params;
+            opt.onSelect = function (data) {
+                var row = $('#dg').datagrid("getRows");
+                if (row.length > 0) {
+                    if (confirm("工艺路线已编制是否重新编制?")) {
+                        com.ajax({
+                            type: 'GET',
+                            url: '/api/Mms/MES_BN_ProductProcessRoute/GetProcessRouteModel?code=' + data[0].ProcessRouteCode + '&ContractCode=' + $("#topContCode").val() + '&PartCode=' + $("#PartCode").val() + '&ProjectName=' + $("#topProjectName").val() + '&fcode=' + $("#PartFigureCode").val(),
+                            cache: false,
+                            async: false,
+                            success: function (list) {
+                                reloadGrid();//  $('#dg').datagrid('loadData', { 'total': list.length, rows: list });
+                            }
+                        });
+                    }
+                } else {
+                    com.ajax({
+                        type: 'GET',
+                        url: '/api/Mms/MES_BN_ProductProcessRoute/GetProcessRouteModel?code=' + data[0].ProcessRouteCode + '&ContractCode=' + $("#topContCode").val() + '&PartCode=' + $("#PartCode").val() + '&ProjectName=' + $("#topProjectName").val() + '&fcode=' + $("#PartFigureCode").val(),
+                        cache: false,
+                        async: false,
+                        success: function (list) {
+                            reloadGrid();//  $('#dg').datagrid('loadData', { 'total': list.length, rows: list });
+                        }
+                    });
+                }
+
+
+            };
+            target.window(opt);
+        }
+
+        //设备
+        var count1 = 0;
+        function setEQP(data) {
+            var vv = $('#ProcessCode').combogrid('getValue') == "" ? 0 : $('#ProcessCode').combogrid('getValue');
+            count1 = 0;
+            $('#eqpDiv').html("");
+            if (data.length > 0) {
+                for (var i = 0; i < data.length; i++) {
+                    $("#eqpDiv").append('<div class="filee" id="deel' + count1 + '" style="margin-bottom:10px;height:30px"><input id="eqpID_' + count1 + '" class="easyui-combogrid" label="设备:" prompt="" style="width:40%" data-options="url:\'/Commons/GetCommonSearchList\',queryParams : {\
+               tableName:\'(select * from SYS_Equipment where Id in(select MainID from SYS_EquipmentDetail where ProcessType=(select ProcessType from PRS_BD_StandardProcess where ProcessCode=' + vv + '))) t\',\
+                searchField:\'[ID],[EquipmentCode],[EquipmentName]\',\
+                firstFightField:\'[ID]\',\
+ whereSql:\'IsEnable=1\',\
+                connName:\'Mms\'},\
+            method: \'GET\',\
+            panelWidth:250,\
+            fit:true,\
+            delay: 1000,\
+            mode: \'remote\',\
+            value: \'\',\
+            idField: \'ID\',\
+            textField: \'EquipmentName\',\
+            columns:[[\
+            { field: \'EquipmentCode\',title: \'设备编码\',width: 100 },\
+            { field: \'EquipmentName\',title:\'设备名称\',width:150 }\
+            ]],\
+            onSelect: function (rowIndex, rowData) {},\
+            keyHandler:{\
+                query:function(keyword) {\
+                    var queryParams=$(this).combogrid(\'grid\').datagrid(\'options\').queryParams;\
+                    queryParams.keyword=keyword;\
+                    $(this).combogrid(\'grid\').datagrid(\'options\').queryParams=queryParams;\
+                    $(this).combogrid(\'grid\').datagrid(\'reload\');\
+                    $(this).combogrid(\'setValue\', keyword);\
+                }} " /></div>')
+                    $.parser.parse($('#eqpID_' + count1).parent());
+                    $('#eqpID_' + count1).combogrid('setValue', data[i].epqID);
+                    count1++;
+
+                }
+            } else {
+                $("#eqpDiv").append('<div class="filee" id="deel' + count1 + '" style="margin-bottom:10px;height:30px"><input id="eqpID_' + count1 + '" class="easyui-combogrid" label="设备:" prompt="" style="width:40%" data-options="url:\'/Commons/GetCommonSearchList\',queryParams : {\
+               tableName:\'(select * from SYS_Equipment where Id in(select MainID from SYS_EquipmentDetail where ProcessType=(select ProcessType from PRS_BD_StandardProcess where ProcessCode=' + vv + '))) t\',\
+                searchField:\'[ID],[EquipmentCode],[EquipmentName]\',\
+                firstFightField:\'[ID]\',\
+ whereSql:\'IsEnable=1\',\
+                connName:\'Mms\'},\
+            method: \'GET\',\
+            panelWidth:250,\
+            fit:true,\
+            delay: 1000,\
+            mode: \'remote\',\
+            value: \'\',\
+            idField: \'ID\',\
+            textField: \'EquipmentName\',\
+            columns:[[\
+            { field: \'EquipmentCode\',title: \'设备编码\',width: 100 },\
+            { field: \'EquipmentName\',title:\'设备名称\',width:150 }\
+            ]],\
+            onSelect: function (rowIndex, rowData) {},\
+            keyHandler:{\
+                query:function(keyword) {\
+                    var queryParams=$(this).combogrid(\'grid\').datagrid(\'options\').queryParams;\
+                    queryParams.keyword=keyword;\
+                    $(this).combogrid(\'grid\').datagrid(\'options\').queryParams=queryParams;\
+                    $(this).combogrid(\'grid\').datagrid(\'reload\');\
+                    $(this).combogrid(\'setValue\', keyword);\
+                }} " /></div>')
+                $.parser.parse($('#eqpID_' + count1).parent());
+                count1++;
+            }
+        }
+        function delContral1(obj) {
+            if ($(".filee").length == 1) {
+                return;
+            }
+            var idObject = document.getElementById($(obj).attr('param'));
+            if (idObject != null)
+                idObject.parentNode.removeChild(idObject);
+        }
+        function addContral1() {
+            var vv = $('#ProcessCode').combogrid('getValue') == "" ? 0 : $('#ProcessCode').combogrid('getValue');
+            $("#eqpDiv").append('<div class="filee" id="deel' + count1 + '" style="margin-bottom:10px;height:30px"><input id="eqpID_' + count1 + '" class="easyui-combogrid" label="设备:" prompt="" style="width:40%" data-options="url:\'/Commons/GetCommonSearchList\',queryParams : {\
+                tableName:\'(select * from SYS_Equipment where Id in(select MainID from SYS_EquipmentDetail where ProcessType=(select ProcessType from PRS_BD_StandardProcess where ProcessCode=' + vv + '))) t\',\
+                searchField:\'[ID],[EquipmentCode],[EquipmentName]\',\
+                firstFightField:\'[ID]\',\
+ whereSql:\'IsEnable=1\',\
+                connName:\'Mms\'},\
+            method: \'GET\',\
+            panelWidth:250,\
+            fit:true,\
+            delay: 1000,\
+            mode: \'remote\',\
+            value: \'\',\
+            idField: \'ID\',\
+            textField: \'EquipmentName\',\
+            columns:[[\
+            { field: \'EquipmentCode\',title: \'设备编码\',width: 100 },\
+            { field: \'EquipmentName\',title:\'设备名称\',width:150 }\
+            ]],\
+            onSelect: function (rowIndex, rowData) {},\
+            keyHandler:{\
+                query:function(keyword) {\
+                    var queryParams=$(this).combogrid(\'grid\').datagrid(\'options\').queryParams;\
+                    queryParams.keyword=keyword;\
+                    $(this).combogrid(\'grid\').datagrid(\'options\').queryParams=queryParams;\
+                    $(this).combogrid(\'grid\').datagrid(\'reload\');\
+                    $(this).combogrid(\'setValue\', keyword);\
+                }} " /></div>')
+            $.parser.parse($('#eqpID_' + count1).parent());
+            count1++;
+        }
+        ///工具
+        var count2 = 0;
+        function setTools(data) {
+            count2 = 0;
+            $('#toolDiv').html("");
+            if (data.length > 0) {
+                for (var i = 0; i < data.length; i++) {
+                    $("#toolDiv").append('<div class="filet" id="deeel' + count2 + '" style="margin-bottom:10px;height:30px"><input id="toolID_' + count2 + '" class="easyui-combogrid" label="工具:" prompt="" style="width:90%" /><img style="margin-left: 7px;" src="/Content/js/jquery-easyui-1.7.0/themes/icons/edit_add.png" onclick="addContral2()"/><img style="margin-left: 7px;" src="/Content/js/jquery-easyui-1.7.0/themes/icons/cancel.png" param="deeel' + count2 + '" onclick="delContral2(this)"/></div>')
+                    $.parser.parse($('#toolID_' + count2).parent());
+                    count2++;
+
+                }
+            } else {
+                $("#toolDiv").append('<div class="filet" id="deeel' + count2 + '" style="margin-bottom:10px;height:30px"><input id="toolID_' + count2 + '" class="easyui-combogrid" label="工具:" prompt="" style="width:90%" /><img style="margin-left: 7px;" src="/Content/js/jquery-easyui-1.7.0/themes/icons/edit_add.png" onclick="addContral2()"/><img style="margin-left: 7px;" src="/Content/js/jquery-easyui-1.7.0/themes/icons/cancel.png" param="deeel' + count2 + '" onclick="delContral2(this)"/></div>')
+                $.parser.parse($('#toolID_' + count2).parent());
+                count2++;
+            }
+        }
+        function delContral2(obj) {
+            if ($(".filet").length == 1) {
+                return;
+            }
+            var idObject = document.getElementById($(obj).attr('param'));
+            if (idObject != null)
+                idObject.parentNode.removeChild(idObject);
+        }
+        function addContral2() {
+            $("#toolDiv").append('<div class="filet" id="deeel' + count2 + '" style="margin-bottom:10px;height:30px"><input id="toolID_' + count2 + '" class="easyui-combogrid" label="工具:" prompt="" style="width:90%" /><img style="margin-left: 7px;" src="/Content/js/jquery-easyui-1.7.0/themes/icons/edit_add.png" onclick="addContral2()"/><img style="margin-left: 7px;" src="/Content/js/jquery-easyui-1.7.0/themes/icons/cancel.png" param="deeel' + count2 + '" onclick="delContral2(this)"/></div>')
+            $.parser.parse($('#toolID_' + count2).parent());
+            count2++;
+        }
+
+        //图纸
+        function OnFileUpload(gid) {
+            var id = $("#gyID").val() == -1 ? gid : $("#gyID").val();
+            var formData = new FormData($("#importFileForm")[0]);
+            $.ajax({
+                url: "/api/Mms/MES_BN_ProductProcessRoute/PostFileData?id=" + id + "&tName=MES_BN_ProductProcessRoute&tId=" + deltuzhiId + "&type=5",
+                type: 'POST',
+                data: formData,
+                async: false,
+                cache: false,
+                contentType: false,
+                processData: false,
+                success: function (returnInfo) {
+
+                },
+                error: function (returnInfo) {
+
+                }
+            });
+        }
+        var count = 0;
+        function setUploadFile(data) {
+            count = 0;
+            $('#importFileForm').html("");
+            if (data.length > 0) {
+                for (var i = 0; i < data.length; i++) {
+                    $("#importFileForm").append('<div class="filei" id="del' + count + '" style="margin-bottom:10px"><input id="tb_' + count + '" name="fileup" class="easyui-filebox" label="图纸上传:" buttonText="选择文件" prompt="' + data[i].DocName + '"   style="width:82%" /><img style="margin-left: 7px;" src="/Content/js/jquery-easyui-1.7.0/themes/icons/edit_add.png" onclick="addContral()"/><img style="margin-left: 7px;" src="/Content/js/jquery-easyui-1.7.0/themes/icons/cancel.png" param="del' + count + '" docId="' + data[i].ID + '" onclick="delContral(this)"/><a href="/mms/MES_BN_ProductProcessRoute/FileDownload?id=' + data[i].ID + '"><img style="margin-left: 7px;" src="/Content/js/jquery-easyui-1.7.0/themes/icons/download.png" /></a></div>')
+                    $.parser.parse($('#tb_' + count).parent());
+                    count++;
+                }
+            } else {
+                $("#importFileForm").append('<div class="filei" id="del' + count + '" style="margin-bottom:10px"><input id="tb_' + count + '" name="fileup" class="easyui-filebox" label="图纸上传:" buttonText="选择文件"  style="width:90%" /><img style="margin-left: 7px;" src="/Content/js/jquery-easyui-1.7.0/themes/icons/edit_add.png" onclick="addContral()"/><img style="margin-left: 7px;" src="/Content/js/jquery-easyui-1.7.0/themes/icons/cancel.png" param="del' + count + '" onclick="delContral(this)"/></div>')
+                $.parser.parse($('#tb_' + count).parent());
+                count++;
+            }
+
+        }
+        var deltuzhiId = "";
+        function delContral(obj) {
+            if ($(".filei").length == 1) {
+                return;
+            }
+            if ($(obj).attr('docId')) {
+                deltuzhiId += $(obj).attr('docId') + ',';
+            }
+            var idObject = document.getElementById($(obj).attr('param'));
+            if (idObject != null)
+                idObject.parentNode.removeChild(idObject);
+            //alert($(obj).attr('param'));
+        }
+        function addContral() {
+            count++;
+            $("#importFileForm").append('<div class="filei" id="del' + count + '" style="margin-bottom:10px"><input id="tb_' + count + '" name="fileup" class="easyui-filebox" label="图纸上传:" buttonText="选择文件"  style="width:90%" /><img style="margin-left: 7px;" src="/Content/js/jquery-easyui-1.7.0/themes/icons/edit_add.png" onclick="addContral()"/><img style="margin-left: 7px;" src="/Content/js/jquery-easyui-1.7.0/themes/icons/cancel.png" param="del' + count + '" onclick="delContral(this)" /></div>')
+            $.parser.parse($('#tb_' + count).parent());
+        }
+
+        //function addGrid() {
+        //    var rows = $('#dg2').datagrid("getRows");
+        //    var LineCode;
+        //    if (rows.length <= 0 || rows == 0) {
+        //        LineCode = 1;
+        //    } else {
+        //        LineCode = rows[rows.length - 1].WorkStepsLineCode + 1;
+        //    }
+        //    $('#dg2').datagrid('insertRow', {
+        //        row: {
+        //            WorkStepsLineCode: LineCode,
+        //            WorkStepsName: '',
+        //            ManHours: '',
+        //            Unit: 1,
+        //            ProcessRouteID: ''
+        //        }
+        //    });
+        //}
+
+        function addGrid(type) {
+            var rowIndex = $('#dg2').datagrid('getRowIndex', $('#dg2').datagrid('getSelected'));
+            var rows = $('#dg2').datagrid("getRows");
+            //var LineCode;
+            //if (rows.length <= 0 || rows == 0) {
+            //    LineCode = 1;
+            //} else {
+            //    LineCode = rows[rows.length - 1].WorkStepsLineCode + 1;
+            //}
+            if (rowIndex == -1) {
+                $('#dg2').datagrid('insertRow', {
+                    row: {
+                        WorkStepsLineCode: 0,
+                        WorkStepsName: '',
+                        ProcessRouteID: ''
+                    }
+                });
+            } else {
+                if (type == 1) {
+                    if (rowIndex == 0) {
+
+                    } else {
+
+                    }
+                } else {
+                    if (rowIndex == 0) {
+                        rowIndex = 1;
+                    } else {
+                        rowIndex = rowIndex + 1;
+                    }
+                }
+                $('#dg2').datagrid('insertRow', {
+                    index: rowIndex,
+                    row: {
+                        WorkStepsLineCode: 0,
+                        WorkStepsName: '',
+                        ProcessRouteID: ''
+                    }
+                });
+            }
+
+            rows = $('#dg2').datagrid("getRows");
+            for (var i = 0; i < rows.length; i++) {
+                $('#dg2').datagrid('updateRow', {
+                    index: i,
+                    row: {
+                        WorkStepsLineCode: i + 1,
+                    }
+                });
+            }
+        }
+
+
+        function delGrid() {
+            var selectRow = $('#dg2').datagrid('getSelected');
+            var selectIndex = $('#dg2').datagrid('getRowIndex', selectRow);
+            $('#dg2').datagrid('deleteRow', selectIndex);
+        }
+    </script>
+</body>
+</html>

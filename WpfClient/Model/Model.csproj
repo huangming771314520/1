@@ -1,0 +1,183 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{0A8A7842-793B-4E83-B799-542D068D8326}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Model</RootNamespace>
+    <AssemblyName>Model</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <Deterministic>true</Deterministic>
+    <SccProjectName>SAK</SccProjectName>
+    <SccLocalPath>SAK</SccLocalPath>
+    <SccAuxPath>SAK</SccAuxPath>
+    <SccProvider>SAK</SccProvider>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="PresentationCore" />
+    <Reference Include="System" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="BlankingRecordModel.cs" />
+    <Compile Include="ConfigInfoModel.cs" />
+    <Compile Include="EquipmentInfoModel.cs" />
+    <Compile Include="MaterialInfoModel.cs" />
+    <Compile Include="Models\MES_WorkingTicket_Extend.cs" />
+    <Compile Include="Models\APS_BN_DispatchModelDetail.cs" />
+    <Compile Include="Models\APS_BN_DispatchModelMain.cs" />
+    <Compile Include="Models\APS_DispatchPlanDetail.cs" />
+    <Compile Include="Models\APS_DispatchPlanMain.cs" />
+    <Compile Include="Models\APS_MonthPlan.cs" />
+    <Compile Include="Models\APS_ProduceAndMonthPlan.cs" />
+    <Compile Include="Models\APS_ProductPurchaseDetail.cs" />
+    <Compile Include="Models\APS_ProductPurchaseMain.cs" />
+    <Compile Include="Models\APS_ProjectProduceDetial.cs" />
+    <Compile Include="Models\APS_ProjectProduceMain.cs" />
+    <Compile Include="Models\APS_ProjectProduceTemporaryTask.cs" />
+    <Compile Include="Models\BD_FileAddress.cs" />
+    <Compile Include="Models\ClientOperateLog.cs" />
+    <Compile Include="Models\EQP_EquipmentMaintenance.cs" />
+    <Compile Include="Models\EQP_EquipmentMaintenancePlan.cs" />
+    <Compile Include="Models\EQP_FailureRelease.cs" />
+    <Compile Include="Models\EQP_FailureReport.cs" />
+    <Compile Include="Models\LoginLog.cs" />
+    <Compile Include="Models\Mes_BillBarCode.cs" />
+    <Compile Include="Models\Mes_BlankingBoard.cs" />
+    <Compile Include="Models\Mes_BlankingResult.cs" />
+    <Compile Include="Models\MES_BN_MatchingTableDetail.cs" />
+    <Compile Include="Models\MES_BN_ProductProcessRoute.cs" />
+    <Compile Include="Models\MES_BN_ProductProcessRouteDetail.cs" />
+    <Compile Include="Models\MES_BN_ProductProcessRouteEquipment.cs" />
+    <Compile Include="Models\MES_BN_WorkShopMatching.cs" />
+    <Compile Include="Models\MES_GoodsInspection.cs" />
+    <Compile Include="Models\MES_GoodsInspectionDetail.cs" />
+    <Compile Include="Models\MES_MaterialPickDetail.cs" />
+    <Compile Include="Models\MES_MaterialPickMain.cs" />
+    <Compile Include="Models\MES_MaterialReturnDetail.cs" />
+    <Compile Include="Models\MES_MaterialReturnMain.cs" />
+    <Compile Include="Models\MES_MateSweepCodeLog.cs" />
+    <Compile Include="Models\MES_OperatorStatistical.cs" />
+    <Compile Include="Models\MES_OpreatorWorkingLog.cs" />
+    <Compile Include="Models\MES_OrderContract.cs" />
+    <Compile Include="Models\MES_ProcessInspectionRequest.cs" />
+    <Compile Include="Models\MES_PurchaseOrderDetail.cs" />
+    <Compile Include="Models\MES_PurchaseOrderMain.cs" />
+    <Compile Include="Models\Mes_PurchaseProcess.cs" />
+    <Compile Include="Models\Mes_PurchaseProcessDetail.cs" />
+    <Compile Include="Models\MES_SavantAndPBom.cs" />
+    <Compile Include="Models\MES_SavantManage.cs" />
+    <Compile Include="Models\MES_SpareMateTotal.cs" />
+    <Compile Include="Models\MES_WorkingTicket.cs" />
+    <Compile Include="Models\MES_WorkshopBatching.cs" />
+    <Compile Include="Models\MES_WorkshopBatchingDetail.cs" />
+    <Compile Include="Models\MES_WorkshopPurchaseDetail.cs" />
+    <Compile Include="Models\MES_WorkshopPurchaseMain.cs" />
+    <Compile Include="Models\MES_WorkTicketMate.cs" />
+    <Compile Include="Models\PMS_BN_PartFile.cs" />
+    <Compile Include="Models\PMS_BN_Project.cs" />
+    <Compile Include="Models\PMS_BN_ProjectDetail.cs" />
+    <Compile Include="Models\PMS_BN_ProjectPart.cs" />
+    <Compile Include="Models\PMS_BN_ProjectPlanDetail.cs" />
+    <Compile Include="Models\PMS_BN_ProjectPlanDetailUpdate.cs" />
+    <Compile Include="Models\PMS_DesignTaskDetail.cs" />
+    <Compile Include="Models\PMS_DesignTaskResult.cs" />
+    <Compile Include="Models\PMS_ProductPlanDetail.cs" />
+    <Compile Include="Models\PMS_ProductTask.cs" />
+    <Compile Include="Models\PRS_BarCreateMate.cs" />
+    <Compile Include="Models\PRS_BD_StandardProcess.cs" />
+    <Compile Include="Models\PRS_BlankingPlateDetail.cs" />
+    <Compile Include="Models\PRS_BlankingRecord.cs" />
+    <Compile Include="Models\PRS_BlankingResult.cs" />
+    <Compile Include="Models\PRS_BoardCreateMate.cs" />
+    <Compile Include="Models\PRS_DesignChangeRequest.cs" />
+    <Compile Include="Models\PRS_FigureRequest.cs" />
+    <Compile Include="Models\PRS_ProcessFigure.cs" />
+    <Compile Include="Models\PRS_ProcessModelWorkSteps.cs" />
+    <Compile Include="Models\PRS_ProcessRouteModelDetail.cs" />
+    <Compile Include="Models\PRS_ProcessRouteModelEquipment.cs" />
+    <Compile Include="Models\PRS_ProcessRouteModelMain.cs" />
+    <Compile Include="Models\PRS_ProcessRouteModelTool.cs" />
+    <Compile Include="Models\PRS_ProcessWorkSteps.cs" />
+    <Compile Include="Models\PRS_Process_BOM.cs" />
+    <Compile Include="Models\PRS_Process_BOM_Blanking.cs" />
+    <Compile Include="Models\PRS_RectificationDetail.cs" />
+    <Compile Include="Models\PRS_RectificationMain.cs" />
+    <Compile Include="Models\QMS_BD_CheckItems.cs" />
+    <Compile Include="Models\QMS_BD_QualityCheckType.cs" />
+    <Compile Include="Models\QMS_BN_InspectionEquipment.cs" />
+    <Compile Include="Models\QMS_BN_InspectionEquipmentQualification.cs" />
+    <Compile Include="Models\QMS_BN_InspectorQualification.cs" />
+    <Compile Include="Models\QMS_BN_Qualification.cs" />
+    <Compile Include="Models\QMS_GoodsCheck.cs" />
+    <Compile Include="Models\QMS_GoodsInspectionItem.cs" />
+    <Compile Include="Models\QMS_ProcessInspection.cs" />
+    <Compile Include="Models\QMS_ProcessInspectionItem.cs" />
+    <Compile Include="Models\QMS_QualityReportDoc.cs" />
+    <Compile Include="Models\QMS_RejectPartReport.cs" />
+    <Compile Include="Models\QMS_ShipmentInspection.cs" />
+    <Compile Include="Models\QMS_ShipmentInspectionItem.cs" />
+    <Compile Include="Models\QMS_UnQualifiedPartHandling.cs" />
+    <Compile Include="Models\SYS_BN_Department.cs" />
+    <Compile Include="Models\SYS_BN_Supplier.cs" />
+    <Compile Include="Models\SYS_BN_User.cs" />
+    <Compile Include="Models\SYS_BN_Warehouse.cs" />
+    <Compile Include="Models\SYS_BOM.cs" />
+    <Compile Include="Models\Sys_Code.cs" />
+    <Compile Include="Models\SYS_DrawingApplication.cs" />
+    <Compile Include="Models\SYS_Email.cs" />
+    <Compile Include="Models\SYS_Equipment.cs" />
+    <Compile Include="Models\SYS_EquipmentDetail.cs" />
+    <Compile Include="Models\SYS_FileManage.cs" />
+    <Compile Include="Models\SYS_MaterialBatch.cs" />
+    <Compile Include="Models\SYS_Part.cs" />
+    <Compile Include="Models\SYS_PartType.cs" />
+    <Compile Include="Models\SYS_WorkGroup.cs" />
+    <Compile Include="Models\SYS_WorkGroupDetail.cs" />
+    <Compile Include="Models\WMS_BN_BillDetail.cs" />
+    <Compile Include="Models\WMS_BN_BillMain.cs" />
+    <Compile Include="Models\WMS_BN_LockMaterial.cs" />
+    <Compile Include="Models\WMS_BN_RealStock.cs" />
+    <Compile Include="Models\WMS_BN_TakeStockDetail.cs" />
+    <Compile Include="Models\WMS_BN_TakeStockMain.cs" />
+    <Compile Include="Models\WMS_BN_TransfersDetail.cs" />
+    <Compile Include="Models\WMS_BN_TransfersMain.cs" />
+    <Compile Include="ProducePlanInfoModel.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ResultModel.cs" />
+    <Compile Include="StoreInfoModel.cs" />
+    <Compile Include="WorkGroupInfoModel.cs" />
+  </ItemGroup>
+  <ItemGroup />
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>

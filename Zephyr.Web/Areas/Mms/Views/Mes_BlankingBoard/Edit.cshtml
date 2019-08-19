@@ -1,0 +1,252 @@
+﻿
+@{
+    ViewBag.Title = "Mes_BlankingResult";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@section scripts{
+    <script src="/Content/js/viewModel/com.viewModel.edit.js"></script>
+    <script type="text/javascript">
+    using(['validatebox', 'combobox', 'lookup', 'numberbox', 'datebox', 'datetimebox', 'combogrid', 'combotree', 'extend', 'menu'], easyuifix.datagrid_editor_extend);
+    var myself;
+    var selectRow="";
+    var viewModel = function(data){
+        var self = this;
+
+        com.viewModel.edit.apply(self, arguments);
+        myself = self;;
+        this.grid0.size = { w: 8, h: 125 };
+        this.saveClick_one = function () {
+            //self.saveClick();
+            //数据验证
+            var validMessage = self.fnIsPageValid();
+            if (validMessage) {
+                com.message('warning', validMessage);
+                return;
+            }
+
+            //取得数据
+            var post = self.fnIsPageChanged();
+            if (!post._changed) {
+                com.message('success', '页面没有数据被修改！');
+                return;
+            }
+
+            //数据提交
+            com.ajax({
+                url: self.urls.edit,
+                data: ko.toJSON(post),
+                async: false,
+                success: function (d) {
+                    com.message('success', self.resx.editSuccess);
+                    window.location.reload();
+
+                }
+            });
+
+        }
+        var rowdata = [];
+        //console.log(rowdata);
+        this.SearchDialog = function () {
+            rowdata = self.grid0.datagrid('getRows')
+            for (var i = 0; i < rowdata.length; i++) {
+                selectRow = selectRow + rowdata[i].ID + ",";
+            }
+            selectRow = selectRow.slice(0, selectRow.length - 1, )
+            var setting = {
+                type: this.type,
+                targetField: this.targetField,
+                sourceField: this.sourceField,
+                settingArray: this.settingArray
+            }
+            //settingArray 0:width 1:height 2:xmlName
+            var target = parent.$('#CommonSearchDialog').length ? parent.$('#CommonSearchDialog') : parent.$('<div id="CommonSearchDialog"></div>').appendTo('body');
+            utils.clearIframe(target);
+            var opt;
+            opt = { title: '列表', width: setting.settingArray[0], height: setting.settingArray[1], modal: true, collapsible: false, minimizable: false, maximizable: true, closable: true };
+            opt.content = "<iframe src='/mms/home/CommonDialog2?xmlName=" + setting.settingArray[2] + "' style='height:100%;width:100%;border:0;' frameborder='0'></iframe>";  //frameborder="0" for ie7
+            params = {
+                xmlName: setting.settingArray[2]
+                , NotInSet: { ID: selectRow, PrimaryID: 'ID' }
+            };
+            opt.paramater = params;
+            opt.onSelect = function (data) {
+                //selectRow = "";
+                //self.grid0.datagrid('loadData', { total: 0, rows: [] });
+                for (var i = 0; i < data.length; i++) {
+                    com.ajax({
+                        type: 'GET',
+                        url: self.urls.newkey,
+                        data: { type: 'grid0', key: self.pageData.scrollKeys.current() },
+                        cache: false,
+                        async: false,
+                        success: function (d) {
+                            var jsonstr = new Object();
+                            jsonstr.ID = data[i].ID;
+                            jsonstr.MainID = self.pageData.scrollKeys.current();
+                            jsonstr.BiankingSize = data[i].BiankingSize;
+                            jsonstr.BlankingResultID = data[i].BlankingResultID;
+                            jsonstr.ResultSize = data[i].ResultSize;
+                            jsonstr.PartCode = data[i].PartCode;
+                            jsonstr.PartName = data[i].PartName;
+                            jsonstr.FigureCode = data[i].FigureCode;
+                            jsonstr.LineLength = data[i].LineLength;
+                            jsonstr.Weight = data[i].Weight;
+                            myself.pageData.form.ContractCode(data[0].ContractCode);
+                            myself.pageData.form.PartCode(data[0].PartCode)
+                            jsonstr.IsEnable = 1;
+
+                            //selectRow = selectRow + data[i].ID + ",";
+                            self.grid0.datagrid('appendRow', jsonstr);
+                        }
+                    });
+                }
+                //selectRow = selectRow.slice(0,selectRow.length-1,)
+            };
+            target.window(opt);
+
+            console.log(selectRow);
+            selectRow = "";
+        }
+    }
+    var data = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model));
+    ko.bindingViewModel(new viewModel(data));
+    </script>
+}
+
+<div class="z-toolbar">
+    <a id="a_save" href="#" plain="true" class="easyui-linkbutton" icon="icon-save" data-bind="click:readonly()?null:saveClick_one,linkbuttonDisable:readonly" title="保存">保存</a>
+    @*<a id="a_undo" href="#" plain="true" class="easyui-linkbutton" icon="icon-undo" data-bind="click:readonly()?null:rejectClick,linkbuttonDisable:readonly" title="撤消">撤消</a>
+        <a id="a_audit" href="#" plain="true" class="easyui-linkbutton" icon="icon-user-accept" data-bind="click:auditClick,easyuiLinkbutton:approveButton" title="审核">审核</a>*@
+    <a id="a_add" href="#" class="easyui-linkbutton" data-options="iconCls:'icon-search',plain:true" data-bind="event: { click: function(data, event) {SearchDialog.call({type:'form',targetField:'Name',sourceField:'Name','settingArray':['1000','400','ChooseBlankingPlate']})}}">选择拼板板材</a>
+    @*<a id="a_printer" href="#" plain="true" class="easyui-linkbutton" icon="icon-printer" title="打印" data-bind="click:printClick">打印</a>
+        <div class="datagrid-btn-separator"></div>
+        <a id="a_other" href="#" class="easyui-splitbutton" data-options="menu:'#divother',iconCls:'icon-application_go'" title="其他">其他</a>
+        <div class="datagrid-btn-separator"></div>
+        <a id="a_first" href="#" plain="true" class="easyui-linkbutton" icon="icon-resultset_first" data-bind="click:firstClick,linkbuttonEnable:pageData.scrollKeys.firstEnable" title="第一条"></a>
+        <a id="a_previous" href="#" plain="true" class="easyui-linkbutton" icon="icon-resultset_previous" data-bind="click:previousClick,linkbuttonEnable:pageData.scrollKeys.previousEnable" title="上一条"></a>
+        <a id="a_next" href="#" plain="true" class="easyui-linkbutton" icon="icon-resultset_next" data-bind="click:nextClick,linkbuttonEnable:pageData.scrollKeys.nextEnable" title="下一条"></a>
+        <a id="a_last" href="#" plain="true" class="easyui-linkbutton" icon="icon-resultset_last" data-bind="click:lastClick,linkbuttonEnable:pageData.scrollKeys.lastEnable" title="最后一条"></a>*@
+</div>
+
+@*<div id="divother" style="width:100px; display:none;">
+        <div data-options="iconCls:'icon-add'">新增</div>
+        <div data-options="iconCls:'icon-cross'">删除</div>
+        <div data-options="iconCls:'icon-arrow_refresh'">刷新</div>
+    </div>*@
+
+<div id="master" class="container_12" data-bind="inputwidth:0.9">
+    <div class="grid_1 lbl">合同编号</div>
+    <div class="grid_3 val"><input type="text" data-bind="value:pageData.form.ContractCode ,readOnly : true" class="z-txt " /></div>
+    <div class="grid_1 lbl">零件编码</div>
+    <div class="grid_3 val"><input type="text" data-bind="value:pageData.form.PartCode ,readOnly : true" class="z-txt " /></div>
+    @*<div class="grid_1 lbl">板材</div>
+        <div class="grid_3 val"><input type="text" data-bind="value:pageData.form.BoardInventoryName ,readOnly : true" class="z-txt " /></div>*@
+
+    <div class="grid_1 lbl">使用板材</div>
+    <div class="grid_3 val">
+        <input type="text" data-bind="combogridValue:pageData.form.BoardInventoryName" class="z-txt easyui-combogrid" data-options="url:'/Commons/GetCommonSearchList',
+                        queryParams : {
+                             tableName:'[WMS_BN_RealStock]',
+                                 searchField:'[InventoryCode],[InventoryName],[Unit],[Model],[BatchCode],[RealStock]',
+                                 firstFightField:'[InventoryName]',
+                                whereSql:'IsEnable=1',
+                                 connName:'Mms'
+                        },
+                        method: 'GET',
+                        panelWidth:750,
+                        fit:true,
+                        delay: 1000,
+                        mode: 'remote',
+                        value: 'InventoryName',
+                        idField: 'InventoryName',
+                        textField: 'InventoryName',
+                          columns:[[
+                                    { field: 'InventoryCode',title: '物料编码',width: 150 },
+                                    { field: 'InventoryName',title: '物料名称',width: 150 },
+                                    { field: 'Model',title: '型号规格',width: 150 },
+                                    { field: 'RealStock',title: '可用库存',width: 100 },
+                                    { field: 'BatchCode',title: '批次号',width: 100 },
+                                    { field: 'Unit',title: '单位',width: 100 }
+                                        ]],
+                        onSelect: function (rowIndex, rowData) {
+                          myself.pageData.form.BoardInventoryCode(rowData['InventoryCode']);
+
+                        },
+                    keyHandler:{
+                    query:function(keyword) {
+                   var queryParams=$(this).combogrid('grid').datagrid('options').queryParams;
+                   queryParams.keyword=keyword;
+                   $(this).combogrid('grid').datagrid('options').queryParams=queryParams;
+                   $(this).combogrid('grid').datagrid('reload');
+                   }}" />
+    </div>
+
+    <div class="grid_1 lbl">程序号</div>
+    <div class="grid_3 val"><input type="text" data-bind="value:pageData.form.ProgramCode ,readOnly : false" class="z-txt " /></div>
+
+    @*<div class="grid_1 lbl" hidden>板材物料编码</div>
+        <div class="grid_3 val"><input type="text" data-bind="value:pageData.form.BoardInventoryCode ,readOnly : true" hidden class="z-txt " /></div>*@
+
+    <div class="clear"></div>
+
+    @*<div class="grid_1 lbl">板材</div>
+        <div class="grid_3 val"><input type="text" data-bind="value:pageData.form.BoardInventoryName ,readOnly : true" class="z-txt " /></div>*@
+
+    <div class="clear"></div>
+</div>
+
+<div id="tt" class="easyui-tabs">
+    <div title="下料筋板明细">
+        <table data-bind="datagrid:grid0">
+            <thead>
+                <tr>
+                    <th field="ID" sortable="true" align="left" width="80" hidden editor="text">主键ID</th>
+                    <th field="MainID" sortable="true" align="left" width="80" hidden editor="text">主表ID</th>
+                    <th field="BlankingResultID" sortable="true" align="left" hidden width="80" editor="text">下料方案ID</th>
+                    @*<th field="ResultSize" sortable="true" align="left" width="250" >下料方案</th>*@
+                    <th field="BiankingSize" sortable="true" align="left" width="80">下料结果尺寸</th>
+                    <th field="ResultSize" sortable="true" align="left" width="300">下料方案</th>
+                    <th field="BlankingCode" sortable="true" align="left" width="80" editor="{type: 'numberbox',options:{min: 0}}">下料序号</th>
+
+                    <th field="PartCode" sortable="true" align="left" hidden width="150">零件编码</th>
+                    <th field="PartName" sortable="true" align="left" width="120">零件名称</th>
+                    <th field="FigureCode" sortable="true" align="left" width="200">零件图号</th>
+
+                    <th field="LineLength" sortable="true" align="left" width="80">线长</th>
+                    <th field="Weight" sortable="true" align="left" width="80">重量</th>
+                    @*<th field="BlankingType" sortable="true" align="left" width="80">下料方式</th>*@
+                    <th field="BlankingType" sortable="true" align="left" width="70" data-options="formatter:function(value,row){
+                        var text = '';
+                        switch(value)
+                            {
+                                case 1:text ='大数控火焰切割';break;
+                                case 2:text ='大数控等离子切割';break;
+                                case 3:text ='小数控切割';break;
+                                case 4:text ='剪板';break;
+                                case 5:text ='半自动火焰切割';break;
+                                case 6:text ='半自动等离子切割';break;
+                                case 7:text ='手工切割';break;
+                                default:text = '未知';break;
+                            }
+                        return text;
+                        }">
+                        下料方式
+                    </th>
+                    <th field="IsEnable" sortable="true" align="left" width="80" hidden editor="text">是否有效</th>
+                    <th field="CreateTime" sortable="true" align="left" width="80" hidden editor="text">创建时间</th>
+                    <th field="CreatePerson" sortable="true" align="left" width="80" hidden editor="text">创建人</th>
+                    <th field="ModifyTime" sortable="true" align="left" width="80" hidden editor="text">更新时间</th>
+                    <th field="ModifyPerson" sortable="true" align="left" width="80" hidden editor="text">更新人</th>
+
+                </tr>
+            </thead>
+        </table>
+
+        <div id="gridtb0">
+            @*<a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-search',plain:true" data-bind="click:readonly()?null:grid0.addRowClick,linkbuttonDisable:readonly">新增</a>
+                <a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-edit',plain:true" data-bind="click:readonly()?null:grid0.onClickRow,linkbuttonDisable:readonly">编辑</a>
+                <a href="#" class="easyui-linkbutton" data-options="iconCls:'icon-remove',plain:true" data-bind="click:readonly()?null:grid0.removeRowClick,linkbuttonDisable:readonly">删除</a>*@
+        </div>
+    </div>
+</div>

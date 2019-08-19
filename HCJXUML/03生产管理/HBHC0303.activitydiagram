@@ -1,0 +1,225 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<activityRootModel xmlns:dm0="http://schemas.microsoft.com/VisualStudio/2008/DslTools/Core" xmlns:dm1="http://schemas.microsoft.com/dsltools/Kernel" xmlns:dm2="http://schemas.microsoft.com/dsltools/Component" xmlns:dm3="http://schemas.microsoft.com/dsltools/UseCase" xmlns:dm4="http://schemas.microsoft.com/dsltools/Activity" xmlns:dm5="http://schemas.microsoft.com/dsltools/Interaction" xmlns:dm6="http://schemas.microsoft.com/dsltools/UmlModelLibrary" xmlns:dm7="http://schemas.microsoft.com/dsltools/UmlDiagrams" xmlns:dm8="http://schemas.microsoft.com/dsltools/ModelStore" xmlns:dm9="http://schemas.microsoft.com/dsltools/SimpleShapesModel" dslVersion="1.0.0.0" Id="2bdb5e31-bfc2-41a7-a906-da1163935ea5" name="0303生产请购" linkedPackageId="c936cd3f-00d1-437e-81ba-373612ef0189" xmlns="http://schemas.microsoft.com/VisualStudio/TeamArchitect/ActivityDesigner">
+  <ownedCommentsInternal>
+    <comment Id="daf4ac7c-bae5-4cf6-a51a-7f9c46d170f5">
+      <elementDefinition Id="78dc96c6-5c99-4669-abbb-9a261a87830b" />
+      <body>SELECT --合同编号
+        a.ContractCode,
+        --工程项目
+        a.ProjectName,
+        --产品名称
+        B.ProductName,
+        --产品类型
+        C.Text ProductType,
+        --型号
+        B.Model,
+        --规格
+        B.Specifications,
+        E.PartCode,
+        --零件图号
+        F.PartFigureCode,
+        --零件名称
+        F.PartName,
+        --批产数量
+        J.ProductQuantity,
+        --交货日期
+        J.PlanFinishDate,
+        J.ProductPlanCode,
+        B.ID as ProjectDetailID
+        FROM dbo.PMS_BN_Project a
+        INNER JOIN [dbo].[PMS_BN_ProjectDetail] B
+        ON a.ProjectID = B.MainID
+        AND B.IsEnable = '1'
+        INNER JOIN [HBHC_Sys].[dbo].[sys_code] C
+        ON C.CodeType = 'ProductType'
+        AND B.ProductType = C.Value
+        AND C.IsEnable = '1'
+        INNER JOIN [dbo].[PMS_ProductTask] H
+        ON B.ID = H.ProductID
+        AND H.TaskType = '3'
+        AND H.IsEnable = '1'
+        INNER JOIN [dbo].[PMS_ProductPlanDetail] J
+        ON H.ID = J.MainID
+        AND J.IsEnable = '1'
+        INNER JOIN [dbo].[PMS_ProductTask] D
+        ON D.ProductID = B.ID
+        AND D.TaskType = '1'
+        AND D.IsEnable = '1'
+        INNER JOIN [dbo].[PMS_DesignTaskDetail] E
+        ON D.ID = E.MainID
+        AND E.IsEnable = '1'
+        INNER JOIN [dbo].[SYS_BOM] F
+        ON E.PartCode = F.PartCode
+        AND F.IsEnable = '1'
+        WHERE a.IsEnable = '1' and B.ProjectState =2 </body>
+      <annotatedElements>
+        <opaqueActionMoniker Id="34987557-847b-4cd7-8ef7-2e1c4c3983a4" LastKnownName="选择生产计划" />
+      </annotatedElements>
+    </comment>
+    <comment Id="297a7010-6b8f-4374-9e5c-3845abc3c192">
+      <elementDefinition Id="e23ed992-38eb-4d1b-87ba-dbcdc31e279b" />
+      <body>只能修改/删除未审核的生产请购单</body>
+      <annotatedElements>
+        <opaqueActionMoniker Id="6d282662-e44a-440c-9dcb-32845dd2b2c0" LastKnownName="修改/删除生产请购单" />
+      </annotatedElements>
+    </comment>
+    <comment Id="169827ba-d0e8-4150-8792-9153cd4238e3">
+      <elementDefinition Id="75587c4b-a288-44fc-9c38-f939582ffbb8" />
+      <body>1、物料明细显示：零件图号、零件名称、单台数量、实需数量、库存数量、请购数量、备注；
+
+2、请购数量=实需数量-库存数量-已请购数量，可修改；
+SELECT DISTINCT
+    --合同编号
+       A.ContractCode,
+       --工程项目
+       A.ProjectName,
+       --仓库编码
+       B.WarehouseCode,
+       --仓库名称
+       B.WarehouseName,
+	   --零件图号
+	   c.PartFigureCode,
+	   a.PartCode,
+	   a.PartName,
+	   c.PartQuantity,
+	   a.[NeedQuantity],
+	   --库存数量
+	   --已请购数量
+FROM [dbo].[MES_BN_MatchingTableDetail] A
+    INNER JOIN [dbo].[SYS_Part] B
+        ON A.PartCode = B.PartCode
+           AND B.IsEnable = '1'
+    INNER JOIN [dbo].[PRS_Process_BOM] C
+        ON B.PartCode = C.PartCode
+           AND C.IsEnable = '1'
+WHERE A.ProductPlanCode = ''
+      AND B.WarehouseCode = ''
+      AND A.IsEnable = '1';</body>
+      <annotatedElements>
+        <opaqueActionMoniker Id="356c7e2a-2b23-4ef6-ab67-e7f51c2b5925" LastKnownName="新增生产请购单明细" />
+      </annotatedElements>
+    </comment>
+    <comment Id="e2fe874f-96bb-4dda-8630-df4093b18561">
+      <elementDefinition Id="ee95bdff-d91a-45a3-99c6-2794cc6758f3" />
+      <body>1、只能修改/删除未审核的生产请购单
+2、只能修改请购数量</body>
+      <annotatedElements>
+        <opaqueActionMoniker Id="3d6fa862-f331-4a99-ba00-dd78f67d66d4" LastKnownName="修改/删除生产请购单明细" />
+      </annotatedElements>
+    </comment>
+    <comment Id="e965a3af-2566-4700-a8b5-62148c93e357">
+      <elementDefinition Id="bf894446-1e9a-439f-b67e-e5063a45d622" />
+      <body>1、请购单号系统自动生成；
+2、请购日期默认为当前日期，不可修改；
+3、项目、仓库通过选择带出；
+4、状态默认为未审核；
+SELECT DISTINCT
+    --合同编号
+       A.ContractCode,
+       --项目名称
+       A.ProjectName,
+       --仓库编码
+       B.WarehouseCode,
+       --仓库名称
+       B.WarehouseName
+FROM [dbo].[MES_BN_MatchingTableDetail] A
+    INNER JOIN [dbo].[SYS_Part] B
+        ON A.PartCode = B.PartCode
+           AND B.IsEnable = '1'
+WHERE A.ProductPlanCode = 'ppc001';</body>
+      <annotatedElements>
+        <opaqueActionMoniker Id="e3410e67-984e-4883-87ca-2129ab56782d" LastKnownName="新增生产请购单" />
+      </annotatedElements>
+    </comment>
+  </ownedCommentsInternal>
+  <packagedElements>
+    <activityRootModelHasActivity>
+      <activity Id="2431655e-00cc-46a4-911b-6557fb7360c6" name="0303生产请购" isAbstract="false" isLeaf="false" isActiveClass="false" isReentrant="false" isReadOnly="false" isSingleExecution="false">
+        <elementDefinition Id="b9c6d6a0-6711-4fe8-b404-2f039eb36397" />
+        <nodes>
+          <initialNode Id="6b7280f7-39b7-4124-806d-c128307492d7" name="Initial1" isLeaf="false">
+            <elementDefinition Id="97015dbe-3622-4233-8d7c-ab62457c3983" />
+            <flowNodeTargets>
+              <controlFlow Id="fe1b6020-ea36-4fc3-8c96-e74a9f32074b" isLeaf="false">
+                <opaqueActionMoniker Id="34987557-847b-4cd7-8ef7-2e1c4c3983a4" LastKnownName="选择生产计划" />
+                <elementDefinition Id="1b15495c-346f-4e3d-9989-af59d9cb8cb5" />
+              </controlFlow>
+            </flowNodeTargets>
+          </initialNode>
+          <opaqueAction Id="34987557-847b-4cd7-8ef7-2e1c4c3983a4" name="选择生产计划" isLeaf="false">
+            <elementDefinition Id="cdb025b0-4e16-4507-8532-02551c78bf6a" />
+            <flowNodeTargets>
+              <controlFlow Id="da57c1ee-4800-4798-8c85-df0c4cc364b4" isLeaf="false">
+                <opaqueActionMoniker Id="6d282662-e44a-440c-9dcb-32845dd2b2c0" LastKnownName="修改/删除生产请购单" />
+                <elementDefinition Id="aca49d66-333a-4695-93a8-c1006c53570a" />
+              </controlFlow>
+              <controlFlow Id="04b6baf1-9548-42d5-b832-78f61f0703d4" isLeaf="false">
+                <opaqueActionMoniker Id="e3410e67-984e-4883-87ca-2129ab56782d" LastKnownName="新增生产请购单" />
+                <elementDefinition Id="881ba1d5-a6b7-4318-99ef-50d16ab16aac" />
+              </controlFlow>
+            </flowNodeTargets>
+          </opaqueAction>
+          <activityFinalNode Id="e51cb159-eb03-439d-9ff3-aec11ce5325b" name="ActivityFinal1" isLeaf="false">
+            <elementDefinition Id="73f22d55-bcdd-4f92-a835-dad01edc8cf5" />
+          </activityFinalNode>
+          <opaqueAction Id="6d282662-e44a-440c-9dcb-32845dd2b2c0" name="修改/删除生产请购单" isLeaf="false">
+            <elementDefinition Id="67534ee8-8781-4c41-9df1-a3dbe371d9be" />
+            <flowNodeTargets>
+              <controlFlow Id="3743caaf-984b-43a3-820a-97670c1c24e2" isLeaf="false">
+                <opaqueActionMoniker Id="356c7e2a-2b23-4ef6-ab67-e7f51c2b5925" LastKnownName="新增生产请购单明细" />
+                <elementDefinition Id="dca97373-e49a-4029-b515-6744610971bd" />
+              </controlFlow>
+            </flowNodeTargets>
+          </opaqueAction>
+          <opaqueAction Id="356c7e2a-2b23-4ef6-ab67-e7f51c2b5925" name="新增生产请购单明细" isLeaf="false">
+            <elementDefinition Id="9ef8da10-9ee6-413f-b71b-2c5315ae268e" />
+            <flowNodeTargets>
+              <controlFlow Id="957d3f79-a759-4ff9-abe3-c48fcdc6e257" isLeaf="false">
+                <opaqueActionMoniker Id="3d6fa862-f331-4a99-ba00-dd78f67d66d4" LastKnownName="修改/删除生产请购单明细" />
+                <elementDefinition Id="9f3906d0-2ef7-40a2-8aaa-ae70683134ed" />
+              </controlFlow>
+            </flowNodeTargets>
+          </opaqueAction>
+          <opaqueAction Id="3d6fa862-f331-4a99-ba00-dd78f67d66d4" name="修改/删除生产请购单明细" isLeaf="false">
+            <elementDefinition Id="736e55b2-ee73-485f-9c25-8f4892da7d79" />
+            <flowNodeTargets>
+              <controlFlow Id="c13abfef-3634-4eb4-9d2d-7da1b3cd9b6d" isLeaf="false">
+                <opaqueActionMoniker Id="a643c898-c796-4914-b135-5fc9516c58a6" LastKnownName="审核生产请购单" />
+                <elementDefinition Id="c8b49fac-696a-48d1-975b-8300471ef22c" />
+              </controlFlow>
+            </flowNodeTargets>
+          </opaqueAction>
+          <opaqueAction Id="a643c898-c796-4914-b135-5fc9516c58a6" name="审核生产请购单" isLeaf="false">
+            <elementDefinition Id="867ca68a-7c27-40c2-964e-ed8b93d61428" />
+            <flowNodeTargets>
+              <controlFlow Id="6bd0e175-a6b0-4912-8cb9-d7a28707de7c" isLeaf="false">
+                <activityFinalNodeMoniker Id="e51cb159-eb03-439d-9ff3-aec11ce5325b" LastKnownName="ActivityFinal1" />
+                <elementDefinition Id="70a30c1e-3285-49fe-917f-07da4963f179" />
+              </controlFlow>
+            </flowNodeTargets>
+          </opaqueAction>
+          <opaqueAction Id="e3410e67-984e-4883-87ca-2129ab56782d" name="新增生产请购单" isLeaf="false">
+            <elementDefinition Id="ee00dfca-3b40-4df9-9f75-bb4fb9276277" />
+          </opaqueAction>
+        </nodes>
+      </activity>
+    </activityRootModelHasActivity>
+  </packagedElements>
+  <package Id="c936cd3f-00d1-437e-81ba-373612ef0189" name="HCJXUML">
+    <elementDefinition Id="6348ac1d-75ba-4a39-8ebf-237333c18d4f" />
+    <profileInstances>
+      <packageHasProfileInstances Id="bbe41eb4-d813-4f82-a6d4-d1eab38688f1">
+        <profileInstance Id="85dc95cc-6df6-4aeb-999d-b4108780a9a8" name="StandardProfileL2">
+          <elementDefinition Id="e34d544e-0fea-4ed6-ac5e-1b74119ac791" />
+        </profileInstance>
+        <elementDefinition Id="0caec977-1f8c-4ba3-a7db-8cc9ad9cc73b" />
+      </packageHasProfileInstances>
+      <packageHasProfileInstances Id="8cfc750a-8a7a-403d-93ed-106a63b90d61">
+        <profileInstance Id="303b5a59-93a0-4f77-b9a7-e82438bd9317" name="StandardProfileL3">
+          <elementDefinition Id="532ea607-fb19-44b8-8502-3351b05452be" />
+        </profileInstance>
+        <elementDefinition Id="29349502-908c-4fda-9054-c48619c59ed0" />
+      </packageHasProfileInstances>
+    </profileInstances>
+  </package>
+</activityRootModel>

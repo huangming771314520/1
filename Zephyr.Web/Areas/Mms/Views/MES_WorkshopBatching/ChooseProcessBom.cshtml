@@ -1,0 +1,244 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>ChooseDispatchModel</title>
+    <link href="~/Content/js/jquery-easyui-1.7.0/themes/icon.css" rel="stylesheet" />
+    <link href="~/Content/js/jquery-easyui-1.7.0/themes/default/easyui.css" rel="stylesheet" />
+    <script src="~/Content/js/jquery-easyui-1.7.0/jquery.min.js"></script>
+    <script src="~/Content/js/jquery-easyui-1.7.0/jquery.easyui.min.js"></script>
+    <script src="~/Content/js/core/utils.js"></script>
+    <script src="~/Content/js/core/common.js"></script>
+</head>
+<body style="margin:5px;">
+    <div class="easyui-layout" id="layout_model" data-options="height:$(window).height()-10">
+        <form style="padding: 1px;">
+            @*<div style="margin-bottom:10px">
+                    <a href="#" class="easyui-linkbutton" id="Btn_OK">确 定</a>
+                </div>*@
+            <div>
+                <table id="bom_tree_dg"></table>
+            </div>
+        </form>
+    </div>
+
+    <script>
+
+        (function ($) {
+            "use strict";
+            var Page = {
+                init: function () {
+                    this.load_bom_item_dg();
+                },
+                getThisIframe: function () {
+                    if (!parent) return null;
+                    var iframes = parent.document.getElementsByTagName('iframe');
+                    if (iframes.length == 0) return null;
+                    for (var i = 0; i < iframes.length; ++i) {
+                        var iframe = iframes[i];
+                        if (iframe.contentWindow === self) { //self 指的是当前窗口
+                            return iframe;
+                        }
+                    }
+                },
+                destroyIframe: function (iframeEl) {
+                    if (!iframeEl) return;
+                    iframeEl.parentNode.removeChild(iframeEl);
+                    iframeEl = null;
+                },
+                bind: function () {
+                    //var iframe = Page.getThisIframe();
+                    //var thiswin = parent.$(iframe).parent();
+                    //var options = thiswin.window("options");
+                    //console.log(options.params);
+
+                    //$("#Btn_OK").click(function () {
+                    //    var list = [];
+                    //    var CheckRow = $("#month_plan_detail_dg").datagrid('getChecked');
+                    //    var Bom_Check = $("#bom_tree_dg").treegrid('getPanel').find("td[field]").find("img[src='/Content/images/checkmark.gif']");
+                    //    var PartCode = Bom_Check.attr('PartCode');
+                    //    var PartFigureCode = Bom_Check.attr('PartFigureCode');
+                    //    var PartName = Bom_Check.attr('PartName');
+                    //    var MaterialCode = Bom_Check.attr('MaterialCode') == "null" ? "" : Bom_Check.attr('MaterialCode');
+                    //    var ProcessType = Bom_Check.attr('ProcessType');
+                    //    var PartQuantity = Bom_Check.attr('PartQuantity');
+                    //    for (var i in CheckRow) {
+                    //        var item = CheckRow[i];
+                    //        list.push(
+                    //            {
+                    //                ContractCode: item.ContractCode,//合同编号
+                    //                ProductID: item.ProductID,//产品ID
+                    //                PartCode: PartCode,//子零件编号
+                    //                PartName: PartName,//子零件名称
+                    //                RootPartCode: item.PartCode,//产品下的根零件编号
+                    //                PartQuantity: PartQuantity,//单台数量
+                    //                Quantity: item.Quantity,//合同数量
+                    //                ProcessType: ProcessType,//工艺类型
+                    //                MonthPlanCode: item.PlanCode,//月计划编号
+                    //                PartFigureCode: PartFigureCode,//子零件图号
+                    //                MaterialCode: MaterialCode//子零件材质
+                    //            }
+                    //        );
+                    //    }
+                    //    var iframe = Page.getThisIframe();
+                    //    var thiswin = parent.$(iframe).parent();
+                    //    var options = thiswin.window("options");
+                    //    if (list.length > 0) {
+                    //        $(iframe).parent().parent().hide();
+                    //        $(iframe).parent().parent().siblings("div.panel.layout-panel.layout-panel-center").find('iframe[src="/mms/APS_ProjectProduceDetial/Index2"]')[0].contentWindow.ChooseMonthPlan(list);
+                    //    }
+                    //    else {
+                    //        $.messager.alert('提醒', '请选择工艺类型!', 'warning');
+                    //    }
+                    //});
+                },
+                //load_month_plan_dg: function () {
+                //    $('#month_plan_dg').datagrid({
+                //        queryParams: { ContractCode: '0' },
+                //        url: '/api/Mms/APS_MonthPlan/GetMonthPlanList',
+                //        method: 'get',
+                //        width: '100%',
+                //        height: $(window).height() / 2 - 100 + 'px',
+                //        columns: [[
+                //            { field: 'PartFigureCode', title: '根零件图号', width: 180 },
+                //            { field: 'PartName', title: '零件名称', width: 135 }
+                //        ]],
+                //        checkOnSelect: true,
+                //        selectOnCheck: false,
+                //        singleSelect: true,
+                //        onClickRow: this.click_row_month_plan_dg
+                //    });
+                //},
+                //load_month_plan_detail_dg: function () {
+                //    $('#month_plan_detail_dg').datagrid({
+                //        queryParams: { PartCode: '0' },
+                //        url: '/api/Mms/APS_MonthPlan/GetMonthPlanRootPartCode',
+                //        method: 'get',
+                //        width: '100%',
+                //        height: $(window).height() / 2 - 33 + 'px',
+                //        columns: [[
+                //            { field: 'ck', checkbox: true },
+                //            { field: 'PlanCode', title: '计划编号', width: 120 },
+                //            { field: 'PartFigureCode', title: '根零件图号', width: 170 }
+                //        ]],
+                //        onLoadSuccess: function () {
+                //            $(".datagrid-header-check").html("");
+                //        },
+                //        checkOnSelect: false,
+                //        selectOnCheck: false,
+                //        singleSelect: true,
+                //        onCheck: function (index, row) {
+                //            var tree_length = $("#bom_tree_dg").treegrid('getPanel').find("td[field]").find("img[src='/Content/images/checkmark.gif']").length;
+                //            if (tree_length == 0) {
+                //                $('#month_plan_detail_dg').datagrid('uncheckRow', index);
+                //                com.message('error', '请勾选需要排计划的零件!');
+                //                return;
+                //            }
+                //        }
+                //    });
+                //},
+                load_bom_item_dg: function () {
+                    var iframe = Page.getThisIframe();
+                    var thiswin = parent.$(iframe).parent();
+                    var options = thiswin.window("options");
+                    var params = options.params;
+                    var PartCode = params.PartCode;
+                    var ContractCode = params.ContractCode;
+                    var ProductID = params.ProductID;
+
+                    $('#bom_tree_dg').treegrid({
+                        queryParams: { TableName: 'PRS_Process_BOM', NodeField: 'PartCode', ParentNodeField: 'ParentCode', ParentNodeValue: PartCode, WhereSql: 'where ContractCode=\'' + ContractCode + '\'' },
+                        url: '/api/mms/MES_WorkshopBatchingDetail/GetProductTreeList',
+                        method: 'get',
+                        animate: true,
+                        width: '100%',
+                        height: $(window).height() - 20,
+                        rownumbers: true,
+                        striped: true,
+                        singleSelect: true,
+                        idField: 'PartCode',
+                        treeField: 'PartFigureCode',
+                        columns: [[
+                            { title: 'ID', field: 'ID', hidden: 'true', width: 60 },
+                            { title: '图号', field: 'PartFigureCode', width: 300 },
+                            { title: '零件名称', field: 'PartName', width: 210 }
+                        ]],
+                        loadFilter: function (d) {
+                            if (d != null && d.length > 0) {
+                                var jsonData = eval(d);
+                                return utils.toTreeData(jsonData, 'PartCode', 'ParentCode', "children");
+                            }
+                            else {
+                                return '';
+                            }
+                        },
+                        onDblClickRow: function (row) {
+                            options.onSelect(row);
+                            Page.destroyIframe(iframe);
+                            thiswin.window('destroy');
+                        },
+                        onLoadSuccess: function () {
+                            
+                        }
+                    })
+                },
+                //click_row_month_plan_dg: function (index, row) {
+                //    Page.click_row_month_plan_detail_dg(0, row);
+                //    var queryParams = $('#month_plan_detail_dg').datagrid('options').queryParams = { PartCode: row.PartCode };
+                //    $('#month_plan_detail_dg').datagrid('reload');
+                //},
+                //click_row_month_plan_detail_dg: function (index, row) {
+                //    var PartCode = row.PartCode;
+                //    $('#bom_tree_dg').treegrid("options").queryParams =
+                //        {
+                //            TableName: 'PRS_Process_BOM',
+                //            NodeField: 'PartCode',
+                //            ParentNodeField: 'ParentCode',
+                //            ParentNodeValue: PartCode,
+                //            WhereSql: 'order by new_id',
+                //            IsLevel: false
+                //        };
+                //    $('#bom_tree_dg').treegrid('reload');//重新加载树
+                //    $('#bom_tree_dg').treegrid('collapseAll');//默认折叠所有节点
+                //},
+                //fixWidth: function (percent) {
+                //    return document.body.clientWidth * percent;//根据自身情况更改
+                //},
+                //setColumnBackColor: function (value, row, index) {
+                //    if (value == 0) {
+                //        return 'background-color: red;';
+                //    }
+                //    else if (value > 0) {
+                //        return 'background-color: #C0FF3E;';
+                //    }
+                //},
+                //setColumnCheckBox: function (value, row, ProcessType) {
+                //    var ProductPlanRate = '';
+                //    switch (ProcessType) {
+                //        case 1:
+                //            ProductPlanRate = row.BlankingTotal;
+                //            break;
+                //        case 2:
+                //            ProductPlanRate = row.WeldingTotal;
+                //            break;
+                //        case 3:
+                //            ProductPlanRate = row.MachiningTotal;
+                //            break;
+                //        case 4:
+                //            ProductPlanRate = row.AssemblingTotal;
+                //            break;
+                //        default:
+                //            break;
+                //    }
+                //    return value == -1 ? '无' : '<img class="ckb" PartQuantity="' + row.PartQuantity + '" MaterialCode="' + row.MaterialCode + '" PartFigureCode="' + row.PartFigureCode + '" ContractCode="' + row.ContractCode + '" ProductID="' + row.ProductID + '" PartCode="' + row.PartCode + '" PartName="' + row.PartName + '" ProcessType="' + ProcessType + '" src="/Content/images/checknomark.gif"/>' + '(<span class="product_rate">' + ProductPlanRate + '</span>)';
+                //}
+            };
+            $(document).ready(function () {
+                Page.init();
+            });
+        })(window.jQuery);
+    </script>
+
+</body>
+
+</html>
